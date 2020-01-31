@@ -1,0 +1,57 @@
+---
+# tasks file for desktop
+
+- name: "Ensure packages are installed"
+  yum:
+    name:
+      - vagrant
+      - ansible
+      - git
+      - openssl
+      - screen
+      - mutt
+      - virt-manager
+      - task
+      - timew
+      - hledger
+      - hledger-web
+      - ImageMagick 
+      - asciidoctor
+      - asciidoctor-pdf
+    state: latest
+
+#We need to become user Jelle because otherwise we cannot access the
+#Kerberized NFS share without a ticket.
+- block:
+  - name: "Ensure mutt runcom file"
+    template:
+      src: templates/muttrc.j2
+      dest: /home/jelle/.muttrc
+  
+  - name: "Ensure gpg runcom file"
+    template:
+      src: templates/gpg.rc.j2
+      dest: /home/jelle/.gpg.rc
+  
+  - name: "Ensure screen runcom file"
+    template:
+      src: templates/screenrc.j2
+      dest: /home/jelle/.screenrc
+  become: True
+  become_user: jelle
+
+- name: "Ensure mail is forwarded to procmail with forward file"
+  template:
+    src: templates/forward.j2
+    dest: /home/jelle/.forward
+    owner: jelle
+    group: jelle
+  delegate_to: deneb.galaxy.derksencomputing.nl
+
+- name: "Ensure procmailrc file to automatically sort email"
+  template:
+    src: templates/procmailrc.j2
+    dest: /home/jelle/.procmailrc
+    owner: jelle
+    group: jelle
+  delegate_to: deneb.galaxy.derksencomputing.nl

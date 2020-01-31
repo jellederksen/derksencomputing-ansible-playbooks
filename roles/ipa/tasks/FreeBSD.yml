@@ -1,0 +1,92 @@
+---
+
+- name: "Ensure base64 command to decode keytab is installed"
+  pkgng:
+    name: base64
+    state: present
+
+- name: "Ensure ldap ports are installed"
+  portinstall:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "net/openldap24-client"
+    - "security/pam_ldap"
+    - "net/nss_ldap"
+
+#The ldap config file is the same in three places. So
+#we template the same file to three destinations.
+- name: "Ensure LDAP config file"
+  template:
+    src: templates/FreeBSD/ldap.conf.j2
+    dest: "{{ item }}"
+  with_items:
+    - /usr/local/etc/openldap/ldap.conf
+    - /usr/local/etc/nss_ldap.conf
+    - /usr/local/etc/ldap.conf
+
+- name: "Ensure PAM SSHD config with LDAP authentication"
+  template:
+    src: templates/FreeBSD/sshd.j2
+    dest: /etc/pam.d/sshd
+
+- name: "Ensure PAM system config with LDAP authentication"
+  template:
+    src: templates/FreeBSD/system.j2
+    dest: /etc/pam.d/system
+
+- name: "Ensure nsswitch config with LDAP user and password backend"
+  template:
+    src: templates/FreeBSD/nsswitch.conf.j2
+    dest: /etc/nsswitch.conf
+
+- name: "Ensure krb5 main config file"
+  template:
+    src: templates/FreeBSD/krb5.conf.j2
+    dest: /etc/krb5.conf
+
+- name: "Ensure kerberos keytab is available"
+  stat: 
+    path: /etc/krb5.keytab
+  register: stat_kerberos_keytab
+
+- name: "Ensure Kerberos keytab file is fetched from IPA server and stored in Keytab file"
+  block:
+    #We must use the raw module to delegate the command and slurp task To the
+    #FreeIPA server because of this bug: https://github.com/ansible/ansible/issues/63180
+    #Ansible uses the FreeBSD path to the Python interpreter on the FreeIPA hosts.
+    #- name: "Get Kerberos keytab om IPA server"
+    #  command: "/usr/sbin/ipa-getkeytab --keytab=/tmp/krb5_{{ ansible_hostname }}.keytab --principal=host/{{ ansible_fqdn }}"
+    #  delegate_to: vega.galaxy.derksencomputing.nl
+
+    #- name: "Get host's Kerberos keytab from IPA server"
+    #  slurp:
+    #    src: "/tmp/krb5_{{ ansible_hostname }}.keytab"
+    #  delegate_to: vega.galaxy.derksencomputing.nl
+    #  register: kerberos_keytab
+
+    #Raw module as workaround for bug 63180 
+    - name: "Get Kerberos keytab from IPA server"
+      raw: "{{ item }}"
+      args:
+        executable: /bin/sh
+      delegate_to: vega.galaxy.derksencomputing.nl
+      with_items:
+        - "echo '{{ ipa_admin_pass }}' | /usr/bin/kinit admin"
+        - "/usr/sbin/ipa-getkeytab --keytab=/tmp/krb5_{{ ansible_hostname }}.keytab --principal='host/{{ ansible_fqdn }}'"
+        #TODO: replace the command below and loop over the kerberos_service_principals list
+        #We need to fetch all extra principals, if there are any, and store them in the keytab.
+        - "/usr/sbin/ipa-getkeytab --keytab=/tmp/krb5_{{ ansible_hostname }}.keytab --principal='nfs/{{ ansible_fqdn }}'"
+        - "/usr/bin/base64 /tmp/krb5_{{ ansible_hostname }}.keytab"
+        - "/bin/rm /tmp/krb5_{{ ansible_hostname }}.keytab"
+      register: kerberos_keytab
+      #no_log: True
+
+    #We use the template function to copy the fetched base64 keytab to the remote host.
+    #This prefents echoing a large base64 string on the commandline and redirecting it
+    #to the keytab file. 
+    - name: "Ensure krb5 keytab file"
+      template:
+        src: templates/FreeBSD/krb5.keytab.j2
+        dest: /etc/krb5.keytab
+  when: (stat_kerberos_keytab.stat.exists == False) or (update_kerberos_keytab.changed == True)

@@ -1,0 +1,23 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }} 
+#    Hostname: {{ template_host }}
+
+# OPENDKIM TRUSTED HOSTS
+# To use this file, uncomment the #ExternalIgnoreList and/or the #InternalHosts
+# option in /etc/opendkim.conf then restart OpenDKIM. Additional hosts
+# may be added on separate lines (IP addresses, hostnames, or CIDR ranges).
+# The localhost IP (127.0.0.1) should always be the first entry in this file.
+127.0.0.1
+::1
+{% if opendkim_trustedhosts is defined %}
+{% for host in opendkim_trustedhosts %}
+{{ host }}
+{% endfor %}
+{% endif %}
+#host.example.com
+#192.168.1.0/24
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

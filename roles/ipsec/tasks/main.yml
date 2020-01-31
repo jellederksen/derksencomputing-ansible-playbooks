@@ -1,0 +1,21 @@
+---
+# tasks file for ipsec
+
+- name: "Ensure isakmpd is enabled and started"
+  service:
+    name: isakmpd
+    state: started
+    enabled: true
+    arguments: -K 
+
+- name: "Ensure ipsec is enabled"
+  service:
+    name: ipsec
+    enabled: true
+
+- name: "Ensure ipsec config"
+  template:
+    src: templates/ipsec.conf.j2
+    dest: /etc/ipsec.conf
+    mode: "u=rw,g=,o="
+  notify: restart_ipsec

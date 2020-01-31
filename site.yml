@@ -1,0 +1,75 @@
+#!/usr/bin/ansible-playbook --ask-vault-pass
+---
+
+#We first run the ipsec role so we can connect to Alcor over IPsec
+- name: Configure IPSec tunnel between wormhole and blackhole
+  hosts: ipsec
+  become: true
+  roles:
+    - ipsec
+  tags:
+    - ipsec
+
+- name: Configure nodes with common settings
+  hosts: all:!ipsec
+  become: true
+  roles:
+    - common
+  tags:
+    - common
+
+- name: Configure firewall's 
+  hosts: firewall
+  become: true
+  roles:
+    - firewall
+  tags:
+    - firewall
+
+- name: Install and configure ipa server and clients
+  hosts: ipa
+  become: True
+  roles:
+    - role: ipa
+  tags:
+    - ipa
+
+- name: Setup and configure mail
+  hosts: mail
+  become: true
+  roles:
+    - mail
+  tags:
+    - mail
+
+- name: Setup and configure DNS-servers
+  hosts: dns
+  become: true
+  roles:
+    - dns
+  tags:
+    - dns
+
+- name: Configure desktop nodes
+  hosts: desktops
+  become: true
+  roles:
+    - desktop
+  tags:
+    - desktop
+
+- name: Configure NFS exports and mounts
+  hosts: nfs
+  become: true
+  roles:
+    - nfs
+  tags:
+    - nfs
+
+#- name: Confgiure NTP client
+#  hosts: all:!ipsec
+#  become: true
+#  roles:
+#    - ntp
+#  tags:
+#    - ntp

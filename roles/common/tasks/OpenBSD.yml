@@ -1,0 +1,50 @@
+---
+
+- name: "Ensure repository config"
+  template:
+    src: templates/OpenBSD/installurl.j2
+    dest: /etc/installurl
+    owner: root
+    group: wheel
+    mode: 0644
+
+- name: "Ensure packages are installed"
+  openbsd_pkg:
+    name: "{{ item }}"
+    state: present
+  loop:
+  - bash
+  - wget
+
+- name: "Ensure packages are up to date"
+  openbsd_pkg:
+    name: '*'
+    state: latest
+
+- name: "Ensure base system patches are installed"
+  shell: syspatch
+  changed_when: False
+
+- name: "Ensure user management config"
+  template:
+    src: templates/OpenBSD/usermgmt.conf.j2
+    dest: /etc/usermgmt.conf
+    owner: root
+    group: wheel
+    mode: 0644
+
+- name: "Ensure Korn Shell profile file"
+  template:
+    src: templates/OpenBSD/profile.j2
+    dest: /etc/profile
+    owner: root
+    group: wheel
+    mode: 0644
+
+- name: "Ensure Korn Shell skel runcom file"
+  template:
+    src: templates/OpenBSD/kshrc.j2
+    dest: /etc/skel/.kshrc
+    owner: root
+    group: wheel
+    mode: 0644

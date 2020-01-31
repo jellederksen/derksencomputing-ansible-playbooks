@@ -1,0 +1,22 @@
+[libdefaults]
+    default_realm = GALAXY.DERKSENCOMPUTING.NL
+
+[domain_realm]
+  .galaxy.derksencomputing.nl = GALAXY.DERKSENCOMPUTING.NL
+  galaxy.derksencomputing.nl = GALAXY.DERKSENCOMPUTING.NL
+  altair.galaxy.derksencomputing.nl = GALAXY.DERKSENCOMPUTING.NL
+
+[realms]
+    GALAXY.DERKSENCOMPUTING.NL = {
+        kdc = vega.galaxy.derksencomputing.nl
+        v4_name_convert = {
+            rcmd = host
+        }
+        default_domain = galaxy.derksencomputing.nl
+    }
+
+[logging]
+kdc = FILE:/var/heimdal/kdc.log
+kdc = SYSLOG:INFO
+default = SYSLOG:INFO:USER
+

@@ -1,0 +1,18 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+#Set primary prompt string
+if [[ ${UID} -eq 0 ]]; then
+	PS1="${USER}@$(hostname -s):\${PWD}\# "
+else
+	PS1="${USER}@$(hostname -s):\${PWD}\$ "
+fi
+
+#Set vi editing mode
+set -o vi
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

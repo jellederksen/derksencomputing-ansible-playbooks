@@ -1,0 +1,4 @@
+ipsec_dmz_net: 172.16.0.0/24
+ipsec_cld_net: 172.16.1.0/24
+ipsec_lan_net: 10.0.0.0/24
+ipsec_wls_net: 10.0.1.0/24

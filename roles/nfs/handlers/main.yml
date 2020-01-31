@@ -1,0 +1,7 @@
+---
+# handlers file for nfs
+
+#We use the command module and not the service module because the service
+#module cannot handle the onereload keyword on reloading the mountd daemon
+- name: reload_mountd
+  command: /etc/rc.d/mountd onereload

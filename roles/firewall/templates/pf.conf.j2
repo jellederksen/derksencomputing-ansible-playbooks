@@ -1,0 +1,235 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+{% if ansible_hostname == "sirius" %}
+#macros
+ext_if="vio0"
+lan_if="vio1"
+wls_if="vio2"
+dmz_if="vio3"
+cld_if="enc0"
+
+ext_ip="80.127.97.42"
+lan_ip="10.0.0.1"
+wls_ip="10.0.1.1"
+dmz_ip="172.16.0.1"
+
+ext_net="80.127.97.40/29"
+lan_net="10.0.0.0/24"
+wls_net="10.0.1.0/24"
+dmz_net="172.16.0.0/24"
+cld_net="172.16.1.0/24"
+
+table <wormhole> { 80.127.97.42 }
+table <blackhole> { 149.210.150.253 }
+
+#options
+set skip on { lo0, enc0 }
+set block-policy return
+set loginterface $ext_if
+set state-policy if-bound
+set debug emerg
+set limit states 10000
+set optimization normal
+set reassemble yes
+
+#scrub all traffic
+match in all scrub (random-id)
+
+#default drop rules
+block log all
+
+#ext rules
+#<ruleset id="00000" description="icmp rules" eol="20200101">
+pass in log quick on $ext_if inet proto icmp from any to <wormhole>
+pass out log quick on $ext_if inet proto icmp from { $ext_net $lan_net $wls_net $dmz_net } to any nat-to <wormhole>
+#</ruleset>
+
+#<ruleset id="00001" description="allow smtp from internet to firewall for mail delivery" eol="20200101">
+pass in log quick on $ext_if inet proto tcp from any to <wormhole> port smtp
+#</ruleset>
+
+#<ruleset id="00002" description="allow dns from internet to firewall for domain resolving" eol="20200101">
+pass in log quick on $ext_if inet proto { udp, tcp } from any to <wormhole> port domain
+#</ruleset>
+
+#<ruleset id="00003" description="allow ssh from internet to firewall for access" eol="20200101">
+pass in log quick on $ext_if inet proto tcp from any to <wormhole> port ssh
+#</ruleset>
+
+#lan rules
+#<ruleset id="10000" description="icmp rules" eol="20200101">
+pass in log quick on $lan_if inet proto icmp from $lan_net to any
+pass out log quick on $lan_if inet proto icmp from { $wls_net $dmz_net $cld_net } to $lan_net
+#</ruleset>
+
+#<ruleset id="10001" description="allow lan to internet" eol="20200101">
+pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname }
+pass out log quick on $ext_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname } nat-to <wormhole>
+#</ruleset>
+
+#<ruleset id="10002" description="allow lan to dmz" eol="20200101">
+pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to $dmz_net 
+pass out log quick on $dmz_if inet proto { tcp udp } from $lan_net to $dmz_net
+#</ruleset>
+
+#<ruleset id="10003" description="allow lan to cld" eol="20200101">
+pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to $cld_net 
+pass out log quick on $cld_if inet proto { tcp udp } from $lan_net to $cld_net
+#</ruleset>
+
+#<ruleset id="10003" description="allow lan to wls" eol="20200101">
+pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to $wls_net 
+pass out log quick on $wls_if inet proto { tcp udp } from $lan_net to $wls_net
+#</ruleset>
+
+#wls rules
+#<ruleset id="20000" description="icmp rules" eol="20200101">
+pass in log quick on $wls_if inet proto icmp from $wls_net to any
+pass out log quick on $wls_if inet proto icmp from { $lan_net $dmz_net $cld_net } to $wls_net
+#</ruleset>
+
+#<ruleset id="20001" description="allow wls to internet" eol="20200101">
+pass in log quick on $wls_if inet proto { tcp udp } from $wls_net to any port { ssh www https nicname }
+pass out log quick on $ext_if inet proto {tcp udp } from $wls_net to any port { ssh www https nicname } nat-to <wormhole>
+#</ruleset>
+
+#<ruleset id="20002" description="allow wls to dmz" eol="20200101">
+pass in log quick on $wls_if inet proto { tcp udp } from $wls_net to $dmz_net
+pass out log quick on $dmz_if inet proto { tcp udp }  from $wls_net to $dmz_net
+#</ruleset>
+
+#dmz rules
+#<ruleset id="30000" description="icmp rules" eol="20200101">
+pass in log quick on $dmz_if inet proto icmp from $dmz_net to any
+pass out log quick on $dmz_if inet proto icmp from { $lan_net $wls_net $cld_net } to $dmz_net
+#</ruleset>
+
+#<ruleset id="30001" description="allow dmz to internet" eol="20200101">
+pass in log quick on $dmz_if inet proto { tcp udp } from $dmz_net to any port { www https domain }
+pass out log quick on $ext_if inet proto { tcp udp } from $dmz_net to any port { www https domain } nat-to <wormhole>
+#</ruleset>
+
+#<ruleset id="40003" description="allow dmz to cld" eol="20200101">
+pass in log quick on $dmz_if inet proto { tcp udp } from $dmz_net to $cld_net 
+pass out log quick on $dmz_if inet proto { tcp udp } from $cld_net to $dmz_net
+#</ruleset>
+
+#cld rules
+#<ruleset id="40003" description="allow wls to cld" eol="20200101">
+pass in log quick on $wls_if inet proto { tcp udp } from $wls_net to $cld_net 
+pass out log quick on $wls_if inet proto { tcp udp } from $cld_net to $wls_net
+#</ruleset>
+
+#<ruleset id="40001" description="allow cloud net to dmz net" eol="20200101">
+pass out quick on $dmz_if from $cld_net to $dmz_net
+#</ruleset>
+
+#host rules
+#<ruleset id="50000" description="allow ssh access from desktops to sirius" eol="20200101">
+pass in log quick on { $lan_if $wls_if } inet proto tcp from { $lan_net $wls_net } to $lan_ip port ssh
+#</ruleset>
+
+#<ruleset id="50001" description="allow all traffic between wormhole and blackhole" eol="20200101">
+pass in log quick on $ext_if from <blackhole> to <wormhole> 
+pass out log quick on $ext_if from <wormhole> to <blackhole>
+#</ruleset>
+
+#<ruleset id="50002" description="allow traffic from sirius to dmz" eol="20200101">
+pass out log quick on $dmz_if inet proto { tcp udp } from $dmz_ip to $dmz_net
+#</ruleset>
+
+#<ruleset id="50002" description="allow sirius to internet for domain resolving" eol="20200101">
+pass out log quick on $ext_if inet proto { tcp udp } from $ext_ip to any port 53
+#</ruleset>
+
+#<ruleset id="50003" description="allow sirius to internet for updates and packages" eol="20200101">
+pass out log quick on $ext_if inet proto tcp from $ext_ip to any port { www https }
+#</ruleset>
+
+{% elif ansible_hostname == "algol" %}
+
+#macros
+ext_if="vio0"
+int_if="vio1"
+cld_if="enc0"
+
+ext_ip="149.210.150.253"
+ext_net="149.210.150.0/24"
+int_ip="172.16.1.1"
+int_net="172.16.1.0/24"
+lan_net="10.0.0.0/24"
+wls_net="10.0.1.0/24"
+dmz_net="172.16.0.0/24"
+
+table <wormhole> { 80.127.97.42 }
+table <blackhole> { 149.210.150.253 }
+
+#options
+set skip on { lo0, enc0 }
+set block-policy return
+set loginterface $ext_if
+set state-policy if-bound
+set debug emerg
+set limit states 10000
+set optimization normal
+set reassemble yes
+
+#scrub all traffic
+match in all scrub (random-id)
+
+#default drop rules
+block log all
+
+#ext rules
+#<ruleset id="00000" description="icmp rules" eol="20200101">
+pass in log quick on $ext_if inet proto icmp from any to <blackhole>
+pass out log quick on $ext_if inet proto icmp from <blackhole> to any
+#</ruleset>
+
+#<ruleset id="00001" description="allow smtp for mail delivery" eol="20200101">
+pass in log quick on $ext_if inet proto tcp from any to <blackhole> port smtp
+pass out log quick on $ext_if inet proto tcp from <blackhole> to any port smtp
+#</ruleset>
+
+#<ruleset id="00002" description="allow dns from internet to firewall for domain resolving" eol="20200101">
+pass in log quick on $ext_if inet proto { udp, tcp } from any to <blackhole> port domain
+#</ruleset>
+
+#<ruleset id="00003" description="allow ssh from internet to firewall for access" eol="20200101">
+pass in log quick on $ext_if inet proto tcp from any to <blackhole> port ssh
+#</ruleset>
+
+#<ruleset id="00004" description="allow http and https for website www.jellederksen.nl" eol="20200101">
+pass in log quick on $ext_if inet proto tcp from any to <blackhole> port { www https }
+#</ruleset>
+
+#cld rules
+#<ruleset id="10000" description="allow ssh access from wls_net and lan_net to cld_if" eol="20200101">
+pass in log quick on $cld_if inet proto tcp from { $lan_net $wls_net } port ssh
+pass out log quick on $cld_if inet proto tcp to { $lan_net $wls_net } port ssh
+#</ruleset>
+
+#host rules
+#<ruleset id="20000" description="allow traffic between wormhole and blackhole" eol="20200101">
+pass in log quick on $ext_if from <wormhole> to <blackhole>
+pass out log quick on $ext_if from <blackhole> to <wormhole>
+#</ruleset>
+
+#<ruleset id="20001" description="allow from blackhole to internet for packages and updates" eol="20200101">
+pass out log quick on $ext_if inet proto tcp from <blackhole> to any port { www https }
+#</ruleset>
+
+#<ruleset id="20001" description="allow from blackhole to internet for dns" eol="20200101">
+pass out log quick on $ext_if inet proto { tcp, udp } from <blackhole> to any port 53
+#</ruleset>
+
+pass in quick on vio1 from any to any
+pass out quick on vio1 from any to any
+
+{% endif %}
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

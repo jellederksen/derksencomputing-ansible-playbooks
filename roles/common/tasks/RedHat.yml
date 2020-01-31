@@ -1,0 +1,28 @@
+---
+
+- name: "Ensure Copr repository config"
+  template:
+    src: templates/RedHat/CentOS-Copr.repo.j2
+    dest: /etc/yum.repos.d/CentOS-Copr.repo
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Ensure packages are installed"
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - ksh
+    - policycoreutils
+
+- name: "Ensure packages are up to date"
+  yum:
+    name: '*'
+    state: latest
+
+- name: "Ensure symbolic link to Korn shell exists"
+  file:
+    src: /bin/ksh93
+    dest: /bin/ksh
+    state: link

@@ -1,0 +1,7 @@
+---
+# handlers file for ipa
+
+- name: restart_ypldap
+  service:
+    name: ypldap
+    state: restarted

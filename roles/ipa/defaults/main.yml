@@ -1,0 +1,3 @@
+---
+# defaults file for ipa
+auth_method: ldap

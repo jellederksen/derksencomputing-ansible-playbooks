@@ -1,0 +1,48 @@
+#config send en get mail from mail server
+set mbox_type=Maildir
+set spoolfile=imaps://jelle@deneb.galaxy.derksencomputing.nl:993
+set folder=imaps://jelle@deneb.galaxy.derksencomputing.nl:993
+set record="imaps://jelle@deneb.galaxy.derksencomputing.nl:993/Sent"
+set postponed="imaps://jelle@deneb.galaxy.derksencomputing.nl:993/Drafts"
+set move=no
+set from="Jelle Derksen <jelle@jellederksen.nl>;"
+set mail_check=60
+set timeout=10
+set crypt_autosign
+set smtp_url="smtp://deneb.galaxy.derksencomputing.nl"
+
+#looks
+set pager_index_lines = 10
+color normal default default
+color attachment brightyellow default
+color hdrdefault green default
+color indicator brightblue default
+color markers brightblue default
+color quoted white default
+color signature blue default
+color status brightgreen default
+color tilde brightblue default
+color tree blue default
+color header brightgreen default ^From:
+color header brightblue default ^To:
+color header brightblue default ^Reply-To:
+color header blue default ^Cc:
+color header brightgreen default ^Subject:
+color body brightblue default [\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+
+color body brightblue default (https?|ftp)://[\-\.\,/%~_:?\#a-zA-Z0-9]+
+
+#Fetch mail imap
+bind index G imap-fetch-mail
+bind pager G imap-fetch-mail
+
+#vi settings
+set editor=vi
+
+#Set pager to less
+set pager=less
+
+#mutt gpg encryption
+source ~/.gpg.rc
+
+#mail alias
+alias foobar foo bar <foobar@jellederksen.nl>

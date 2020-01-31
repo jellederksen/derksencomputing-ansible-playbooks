@@ -1,0 +1,84 @@
+---
+# tasks file for zfs
+
+- name: "Ensure zfsnap is installed"
+  pkgng:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - zfsnap2-2.0.0.b3
+
+- name: "Ensure zfs hourly snapshot cronjob"
+  cron:
+    name: "zfs hourly snapshot {{ item }}"
+    minute: 0
+    user: root
+    job: "/usr/local/sbin/zfsnap snapshot -a 24h -r zroot{{ item }}"
+    cron_file: /etc/crontab
+  with_items:
+  - /datestore
+  - /usr/home
+
+- name: "Ensure zfs daily snapshot cronjob"
+  cron:
+    name: "zfs daily snapshot {{ item }}"
+    minute: 0
+    hour: 0
+    user: root
+    job: "/usr/local/sbin/zfsnap snapshot -a 7d -r zroot{{ item }}"
+    cron_file: /etc/crontab
+  with_items:
+  - /datestore
+  - /usr/home
+
+- name: "Ensure zfs weekly snapshot cronjob"
+  cron:
+    name: "zfs weekly snapshot {{ item }}"
+    minute: 0
+    hour: 0
+    weekday: 0
+    user: root
+    job: "/usr/local/sbin/zfsnap snapshot -a 1w -r zroot{{ item }}"
+    cron_file: /etc/crontab
+  with_items:
+  - /datestore
+  - /usr/home
+
+- name: "Ensure zfs monthly snapshot cronjob"
+  cron:
+    name: "zfs monthly snapshot {{ item }}"
+    minute: 0
+    hour: 0
+    day: 1 
+    user: root
+    job: "/usr/local/sbin/zfsnap snapshot -a 1m -r zroot{{ item }}"
+    cron_file: /etc/crontab
+  with_items:
+  - /datestore
+  - /usr/home
+
+- name: "Ensure yearly snapshot cronjob"
+  cron:
+    name: "zfs yearly snapshot {{ item }}"
+    minute: 0
+    hour: 0
+    day: 1
+    month: 1
+    user: root
+    job: "/usr/local/sbin/zfsnap snapshot -a 1y -r zroot{{ item }}"
+    cron_file: /etc/crontab
+  with_items:
+  - /datestore
+  - /usr/home
+
+- name: "Ensure purge old snapshots cronjob"
+  cron:
+    name: "Purge old snapshots {{ item }}"
+    minute: 0
+    hour: 3
+    user: root
+    job: "/usr/local/sbin/zfsnap destroy -rv zroot{{ item }}"
+    cron_file: /etc/crontab
+  with_items:
+  - /datestore
+  - /usr/home

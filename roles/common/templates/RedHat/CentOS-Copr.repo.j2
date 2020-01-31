@@ -1,0 +1,19 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+[group_ksh-latest]
+name=Copr repo for latest owned by @ksh
+baseurl=https://copr-be.cloud.fedoraproject.org/results/@ksh/latest/epel-7-$basearch/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=1
+gpgkey=https://copr-be.cloud.fedoraproject.org/results/@ksh/latest/pubkey.gpg
+repo_gpgcheck=0
+enabled=1
+enabled_metadata=1
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

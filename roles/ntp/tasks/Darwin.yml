@@ -1,0 +1,6 @@
+---
+
+- name: "Ensure the ntp config file"
+  template:
+    src: templates/ntpd.conf.j2
+    dest: /etc/ntp.conf

@@ -1,0 +1,30 @@
+---
+# handlers file for mail
+
+- name: restart_postfix
+  service:
+    name: postfix
+    state: restarted
+
+- name: update_transport_table
+  command: /usr/local/sbin/postmap transport
+  args:
+    chdir: /etc/postfix
+
+- name: update_aliases_table
+  command: postalias -f aliases
+  args:
+    chdir: /etc/postfix
+
+- name: restart_dovecot
+  service:
+    name: dovecot
+    state: restarted
+
+- name: restart_opendkim
+  service:
+    name: opendkim
+    state: restarted
+
+- name: reload_firewalld
+  command: /usr/bin/firewall-cmd --reload

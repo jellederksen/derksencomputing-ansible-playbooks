@@ -1,0 +1,117 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+{% if mailserver_type == 'forwarder'  %}
+
+# SMTP from your server to others
+smtp_tls_key_file = /etc/ssl/private/{{ ansible_nodename }}.key
+smtp_tls_cert_file = /etc/ssl/{{ ansible_nodename }}.crt
+#smtp_tls_CAfile = /etc/ssl/cert.pem
+smtp_tls_security_level = may
+smtp_tls_note_starttls_offer = yes
+smtp_tls_mandatory_protocols=!SSLv2,!SSLv3
+smtp_tls_protocols=!SSLv2,!SSLv3
+smtp_tls_loglevel = 1
+smtp_tls_session_cache_database = btree:/var/postfix/smtp_tls_session_cache
+
+# SMTP from other servers to yours
+smtpd_tls_key_file = /etc/ssl/private/{{ ansible_nodename }}.key
+smtpd_tls_cert_file = /etc/ssl/{{ ansible_nodename }}.crt
+#smtpd_tls_CAfile = /etc/ssl/cert.pem
+smtpd_tls_security_level = may
+smtpd_tls_auth_only = yes
+smtpd_tls_mandatory_protocols=!SSLv2,!SSLv3
+smtpd_tls_protocols=!SSLv2,!SSLv3
+smtpd_tls_loglevel = 1
+smtpd_tls_session_cache_database = btree:/var/postfix/smtpd_tls_session_cache
+
+compatibility_level = 2
+queue_directory = /var/spool/postfix
+command_directory = /usr/local/sbin
+daemon_directory = /usr/local/libexec/postfix
+data_directory = /var/postfix
+mail_owner = _postfix
+inet_protocols = all
+unknown_local_recipient_reject_code = 550
+mynetworks = 168.100.189.0/28, 127.0.0.0/8, 172.16.0.4/32
+  
+alias_maps = hash:/etc/postfix/aliases
+alias_database = hash:/etc/postfix/aliases
+
+debug_peer_level = 2
+debugger_command =
+	 PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+	 ddd $daemon_directory/$process_name $process_id & sleep 5
+sendmail_path = /usr/local/sbin/sendmail
+newaliases_path = /usr/local/sbin/newaliases
+mailq_path = /usr/local/sbin/mailq
+setgid_group = _postdrop
+meta_directory = /etc/postfix
+shlib_directory = no
+relay_domains = {{ mail_domains | join(', ') }}
+transport_maps = hash:/etc/postfix/transport
+recipient_delimiter = +
+
+# OpenDKIM and Rspamd milter
+milter_default_action = accept
+smtpd_milters = inet:localhost:8891 inet:localhost:11332
+non_smtpd_milters = inet:localhost:8891
+
+{% elif mailserver_type == 'destination'  %}
+
+# SMTP from your server to others
+smtp_tls_key_file = /etc/ssl/private/{{ ansible_nodename }}.key
+smtp_tls_cert_file = /etc/ssl/{{ ansible_nodename }}.crt
+#smtp_tls_CAfile = /etc/ssl/cert.pem
+smtp_tls_security_level = may
+smtp_tls_note_starttls_offer = yes
+smtp_tls_mandatory_protocols=!SSLv2,!SSLv3
+smtp_tls_protocols=!SSLv2,!SSLv3
+smtp_tls_loglevel = 1
+smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache
+
+# SMTP from other servers to yours
+smtpd_tls_key_file = /etc/pki/tls/private/{{ ansible_nodename }}.key
+smtpd_tls_cert_file = /etc/pki/tls/certs/{{ ansible_nodename }}.crt
+#smtpd_tls_CAfile = /etc/pki/tls/cert.pem
+smtpd_tls_security_level = may
+smtpd_tls_auth_only = yes
+smtpd_tls_mandatory_protocols=!SSLv2,!SSLv3
+smtpd_tls_protocols=!SSLv2,!SSLv3
+smtpd_tls_loglevel = 1
+smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_tls_session_cache
+
+compatibility_level = 2
+queue_directory = /var/spool/postfix
+command_directory = /usr/sbin
+daemon_directory = /usr/libexec/postfix
+data_directory = /var/lib/postfix
+mail_owner = postfix
+inet_interfaces = all
+inet_protocols = all
+mydestination = $myhostname, localhost.$mydomain, localhost, {{ mail_domains | join(',') }}
+unknown_local_recipient_reject_code = 550
+mynetworks = 168.100.189.0/28, 127.0.0.0/8, 172.16.0.0/24, 172.16.1.0/24, 10.0.0.0/24, 10.0.1.0/24
+relayhost = [172.16.1.1]
+smtp_fallback_relay = [172.16.0.1]
+
+alias_maps = hash:/etc/postfix/aliases
+alias_database = hash:/etc/postfix/aliases
+
+home_mailbox = Maildir/
+debug_peer_level = 2
+debugger_command =
+	 PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+	 ddd $daemon_directory/$process_name $process_id & sleep 5
+sendmail_path = /usr/sbin/sendmail.postfix
+newaliases_path = /usr/bin/newaliases.postfix
+mailq_path = /usr/bin/mailq.postfix
+setgid_group = postdrop
+recipient_delimiter = +
+
+{% endif %}
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

@@ -1,0 +1,44 @@
+- name: "Ensure primary zone directorie"
+  file:
+    path: "/var/nsd/zones/master/{{ item }}"
+    state: directory
+    mode: 0755
+    owner: _nsd
+    group: _nsd
+
+- name: "Ensure master zone file"
+  template:
+    src: "templates/zone.{{ item }}.j2"
+    dest: "/var/nsd/zones/master/{{ item }}/zone.db"
+    owner: _nsd
+    group: _nsd
+    mode: 0640
+  register: zone_file
+
+- name: "Ensure key signing key exists"
+  command: doas -u _nsd /usr/local/sbin/dnssec-keygen -f KSK -3 -a RSASHA256 -b 2048 -r /dev/random -n ZONE "{{ item }}"
+  args:
+    chdir: "/var/nsd/zones/master/{{ item }}"
+    creates: "/var/nsd/zones/master/{{ item }}/dsset-{{ item }}."
+
+- name: "Ensure zone signing key exits"
+  command: doas -u _nsd /usr/local/sbin/dnssec-keygen -3 -a RSASHA256 -b 1024 -r /dev/random -n ZONE "{{ item }}"
+  args:
+    chdir: "/var/nsd/zones/master/{{ item }}"
+    creates: "/var/nsd/zones/master/{{ item }}/dsset-{{ item }}."
+
+- name: "Ensure dnssec zone is (re)signed"
+  shell: doas -u _nsd /usr/local/sbin/dnssec-signzone -N date -S -K . -g -d . -a -r /dev/random -o "{{ item }}" zone.db
+  args:
+    chdir: "/var/nsd/zones/master/{{ item }}"
+  when: zone_file.changed
+  notify: restart_nsd
+
+- name: "Ensure dnssec resign cronjob exists"
+  cron:
+    name: "Resign dnssec zone {{ item }}"
+    user: _nsd
+    minute: "30"
+    hour: "3"
+    weekday: "1"
+    job: "cd /var/nsd/zones/master/{{ item }} && /usr/local/sbin/dnssec-signzone -N date -S -K . -g -d . -a -r /dev/random -o {{ item }} zone.db && /etc/rc.d/nsd restart"

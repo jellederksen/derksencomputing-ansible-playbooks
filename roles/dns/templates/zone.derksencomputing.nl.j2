@@ -1,0 +1,50 @@
+#jinja2:lstrip_blocks: True
+;Ansible information:
+;    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+;    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+;    Hostname: {{ template_host }}
+
+$ORIGIN derksencomputing.nl.
+$TTL 3600
+
+@ IN SOA wormhole.derksencomputing.nl. jelle.derksencomputing.nl. (
+        2020011307        ;Serial number
+        3600              ;Refresh
+        600               ;Retry
+        2764800           ;Expire
+        3600              ;Min TTL
+)
+        NS        wormhole.derksencomputing.nl.
+        NS        blackhole.derksencomputing.nl.
+        MX        10 blackhole.derksencomputing.nl.
+        MX        20 wormhole.derksencomputing.nl.
+
+www             IN        A        149.210.150.253
+wormhole        IN        A        80.127.97.42
+blackhole       IN        A        149.210.150.253
+
+{% for mailserver in groups['mail'] %}
+  {%  if hostvars[mailserver]['opendkim_keys'] is defined %}
+    {%  for opendkim_key in hostvars[mailserver]['opendkim_keys']['results'] %}
+      {%  if opendkim_key.item == 'derksencomputing.nl' %}
+{{ opendkim_key.content | b64decode }}
+      {%  endif %}
+    {%  endfor %}
+  {%  endif %}
+{% endfor %}
+
+@               IN      TXT     "v=spf1 mx -all"
+_DMARC          IN      TXT     "v=DMARC1; p=reject; rua=mailto:dmarc@derksencomputing.nl; ruf=mailto:dmarc@derksencomputing.nl; sp=reject; fo=1; pct=100; adkim=s; aspf=s"
+
+edunix.nl._report._dmarc	TXT	"v=DMARC1"
+epsilix.com._report._dmarc	TXT	"v=DMARC1"
+epsilix.nl._report._dmarc	TXT	"v=DMARC1"
+jdcomputing.nl._report._dmarc	TXT	"v=DMARC1"
+jellederksen.nl._report._dmarc	TXT	"v=DMARC1"
+kuberoot.nl._report._dmarc	TXT	"v=DMARC1"
+opencomputing.nl._report._dmarc	TXT	"v=DMARC1"
+tastingtime.nl._report._dmarc	TXT	"v=DMARC1"
+
+;------------------------------------------------------------------------------
+;Copyright (c) 2017 by {{ name }} - {{ company }}
+;------------------------------------------------------------------------------

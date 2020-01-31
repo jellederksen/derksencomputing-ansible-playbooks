@@ -1,0 +1,7 @@
+---
+# handlers file for ipsec
+
+- name: restart_ipsec
+  service:
+    name: isakmpd
+    state: restarted

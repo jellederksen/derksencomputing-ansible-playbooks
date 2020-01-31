@@ -1,0 +1,8 @@
+---
+# tasks file for ipa
+
+- include_tasks: ipa_server.yml
+  when: "'ipa_servers' in group_names"
+
+- include_tasks: ipa_client.yml
+  when: "'ipa_clients' in group_names"

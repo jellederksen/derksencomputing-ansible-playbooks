@@ -1,0 +1,27 @@
+---
+# tasks file for firewall
+
+- name: "Ensure services file"
+  template:
+    src: templates/services.j2
+    dest: /etc/services
+    owner: root
+    group: wheel
+    mode: 0644
+
+- name: "Ensure pf configuration"
+  template:
+    src: templates/pf.conf.j2
+    dest: /etc/pf.conf
+    owner: root
+    group: wheel
+    mode: 0600
+    backup: yes
+    validate: '/sbin/pfctl -nf %s'
+  notify: pf_reload
+
+- name: "Ensure forwarding is enabled"
+  sysctl:
+    name: net.inet.ip.forwarding
+    value: "1"
+    sysctl_set: yes

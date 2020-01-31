@@ -1,0 +1,55 @@
+- name: "Ensure mail packages are installed"
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - postfix
+    - dovecot
+    - procmail
+    - epel-release
+
+- name: "Ensure Postfix config"
+  template:
+    src: templates/main.cf.j2
+    dest: /etc/postfix/main.cf
+    #validate: smtpd -n -f %s
+  notify: restart_postfix
+
+- name: "Ensure Postfix aliases table"
+  template:
+    src: templates/aliases.j2
+    dest: /etc/postfix/aliases
+    #validate: smtpd -n -f %s
+  notify:
+    - update_aliases_table
+    - restart_postfix
+
+- name: "Ensure Dovecot ssl config"
+  template:
+    src: templates/10-ssl.conf.j2
+    dest: /etc/dovecot/conf.d/10-ssl.conf
+  notify: restart_dovecot
+
+- name: "Ensure Postfix is enabled and started"
+  service:
+    name: postfix
+    enabled: yes
+    state: started
+
+- name: "Ensure Dovecot is enabled and started"
+  service:
+    name: dovecot
+    enabled: yes
+    state: started
+
+
+- name: "Ensure imaps port is open"
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+  with_items:
+    - imaps
+    - smtp
+  notify: reload_firewalld
+

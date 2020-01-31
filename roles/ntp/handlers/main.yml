@@ -1,0 +1,13 @@
+---
+# handlers file for ntp
+
+- name: restart_ntpd
+  service:
+    name: ntpd
+    state: restarted
+
+
+- name: restart_openntpd
+  service:
+    name: openntpd
+    state: restarted

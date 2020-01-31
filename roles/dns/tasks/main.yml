@@ -1,0 +1,57 @@
+---
+
+- name: "Ensure packages are installed"
+  openbsd_pkg:
+    name: isc-bind-9.11.14p0v0
+    state: present
+
+- name: Ensure root is allowed to sign as _nsd"
+  template:
+    src: templates/doas.conf.j2
+    dest: /etc/doas.conf
+    mode: 0644
+
+- name: Ensure nsd files are owned by nsd"
+  file:
+    path: /var/nsd
+    owner: _nsd
+    group: _nsd
+    recurse: yes
+
+- name: "Ensure NSD configuration"
+  template:
+    src: templates/nsd.conf.j2
+    dest: /var/nsd/etc/nsd.conf
+    owner: _nsd
+    group: _nsd
+    mode: 0640
+  notify: restart_nsd
+
+- name: "Ensure nsd-control keypairs"
+  command: doas -u _nsd /usr/sbin/nsd-control-setup
+  args:
+    creates: "/var/nsd/etc/nsd_server.key"
+
+#I include a separate tasks file so we can loop over the primary domains
+#and manage the domains individually. We do this so changing one domain
+#does not trigger a resign for the other domain.
+- name: "Ensure dns zones exist and are dnssec signed"
+  include: configure_dns_domain.yml
+  with_items: "{{ primary_zones }}"
+  when: primary_zones is defined
+
+- name: "Ensure secondary zone directory"
+  file:
+    path: "/var/nsd/zones/slave/{{ item }}"
+    state: directory
+    mode: 0755
+    owner: _nsd
+    group: _nsd
+  with_items: "{{ secondary_zones }}"
+  when: secondary_zones is defined
+
+- name: "Ensure NSD daemon is enabled and started"
+  service:
+    name: nsd
+    state: started
+    enabled: true

@@ -1,0 +1,7 @@
+---
+# handlers file for dns
+
+- name: restart_nsd
+  service:
+    name: nsd
+    state: restarted

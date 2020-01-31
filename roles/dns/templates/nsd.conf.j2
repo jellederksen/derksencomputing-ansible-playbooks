@@ -1,0 +1,41 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+server:
+        hide-version: yes
+        verbosity: 2
+        ip-address: {{ dns_listen_ip }}
+
+remote-control:
+        control-enable: yes
+
+{% if primary_zones is defined %}
+{% for zone in primary_zones %}
+zone:
+        name: {{ zone }}
+        zonefile: "/var/nsd/zones/master/{{ zone }}/zone.db.signed"
+{% if secondary_server is defined %}
+        notify: {{ secondary_server }} NOKEY
+        provide-xfr: {{ secondary_server }} NOKEY
+{% endif %}
+
+{% endfor %}
+{% elif secondary_zones is defined %} 
+{% for zone in secondary_zones %}
+zone:
+        name: {{ zone }}
+        zonefile: "/var/nsd/zones/slave/{{ zone }}/zone.db.signed"
+{% if primary_server is defined %}
+        allow-notify: {{ primary_server }} NOKEY
+        request-xfr: {{ primary_server }} NOKEY
+{% endif %}
+
+
+{% endfor %}
+{% endif %}
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

@@ -1,0 +1,5 @@
+---
+# handlers file for firewall
+
+- name: pf_reload
+  shell: /sbin/pfctl -f /etc/pf.conf
