@@ -4,7 +4,7 @@
 #We first run the ipsec role so we can connect to Alcor over IPsec
 - name: Configure IPSec tunnel between wormhole and blackhole
   hosts: ipsec
-  become: true
+  become: True
   roles:
     - ipsec
   tags:
@@ -12,7 +12,7 @@
 
 - name: Configure nodes with common settings
   hosts: all:!ipsec
-  become: true
+  become: True
   roles:
     - common
   tags:
@@ -20,7 +20,7 @@
 
 - name: Configure firewall's 
   hosts: firewall
-  become: true
+  become: True
   roles:
     - firewall
   tags:
@@ -34,9 +34,17 @@
   tags:
     - ipa
 
+- name: Confgiure NTP client
+  hosts: all:!ipsec
+  become: True
+  roles:
+    - ntp
+  tags:
+    - ntp
+
 - name: Setup and configure mail
   hosts: mail
-  become: true
+  become: True
   roles:
     - mail
   tags:
@@ -44,7 +52,7 @@
 
 - name: Setup and configure DNS-servers
   hosts: dns
-  become: true
+  become: True
   roles:
     - dns
   tags:
@@ -52,7 +60,7 @@
 
 - name: Configure desktop nodes
   hosts: desktops
-  become: true
+  become: True
   roles:
     - desktop
   tags:
@@ -60,16 +68,24 @@
 
 - name: Configure NFS exports and mounts
   hosts: nfs
-  become: true
+  become: True
   roles:
     - nfs
   tags:
     - nfs
 
-#- name: Confgiure NTP client
-#  hosts: all:!ipsec
-#  become: true
-#  roles:
-#    - ntp
-#  tags:
-#    - ntp
+- name: Configure ZFS snapshots
+  hosts: zfs
+  become: True
+  roles:
+    - zfs
+  tags:
+    - zfs
+
+- name: Configure backups
+  hosts: backup
+  become: True
+  roles:
+    - backup
+  tags:
+    - backup

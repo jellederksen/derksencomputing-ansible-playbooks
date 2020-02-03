@@ -1,0 +1,47 @@
+---
+# tasks file for backup
+
+- name: "Ensure Borgbackup dependencies are installed"
+  pkgng:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python37
+    - py37-pip
+    - openssl
+    - fusefs-libs
+    - pkgconf
+    - git
+
+- name: "Ensure Borgbackup is installed"
+  portinstall:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "archivers/py-borgbackup"
+    - "sysutils/fusefs-sshfs"
+
+- name: "Ensure fuse is loaded at boot"
+  lineinfile:
+    path: /boot/loader.conf
+    line: 'fuse_load="YES"'
+  register: firsttime_fuse
+
+#When fuseload kernel module is configured to load at boot
+#for the first time, we need to load it manually to enable it.
+- name: "Ensure fuse kernel moduule is loaded"
+  shell: /sbin/kldload fuse
+  when: firsttime_fuse.changed == True
+
+- name: "Ensure sysctl usermount is set"
+  sysctl:
+    name: vfs.usermount
+    value: '1'
+    sysctl_set: yes
+  register: firsttime_sysctl
+
+#When sysctl is configured to load vfs.usermount at boot for
+#the first time, we need to load it once manually to enable it.
+- name: "Ensure sysctl usermound is enabled"
+  shell: /sbin/sysctl vfs.usermount=1
+  when: firsttime_sysctl.changed == True

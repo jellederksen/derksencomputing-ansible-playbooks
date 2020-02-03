@@ -1,0 +1,5 @@
+- name: "Ensure chrony config file"
+  template:
+    src: templates/RedHat/chronyd.conf.j2
+    dest: /etc/chronyd.conf
+  notify: reload_chronyd

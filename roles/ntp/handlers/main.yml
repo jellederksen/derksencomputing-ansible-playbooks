@@ -6,8 +6,12 @@
     name: ntpd
     state: restarted
 
-
 - name: restart_openntpd
   service:
     name: openntpd
+    state: restarted
+
+- name: reload_chronyd
+  service:
+    name: chronyd
     state: restarted

@@ -13,6 +13,6 @@
 
 - name: "Ensure openntpd config file"
   template:
-    src: templates/ntpd.conf.j2
+    src: templates/FreeBSD/ntpd.conf.j2
     dest: /usr/local/etc/ntpd.conf
   notify: restart_openntpd

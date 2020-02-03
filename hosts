@@ -45,3 +45,9 @@ altair.galaxy.derksencomputing.nl
 [nfs:children]
 nfs_servers
 nfs_clients
+
+[zfs]
+altair.galaxy.derksencomputing.nl
+
+[backup]
+altair.galaxy.derksencomputing.nl

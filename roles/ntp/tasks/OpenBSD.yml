@@ -2,7 +2,7 @@
 
 - name: "Ensure ntpd config"
   template:
-    src: templates/ntpd.conf.j2
+    src: templates/OpenBSD/ntpd.conf.j2
     dest: /etc/ntpd.conf
   notify:
     - restart_ntpd

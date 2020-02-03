@@ -6,7 +6,7 @@
     name: "{{ item }}"
     state: present
   with_items:
-  - zfsnap2-2.0.0.b3
+  - zfsnap2-2.0.0.b3_1
 
 - name: "Ensure zfs hourly snapshot cronjob"
   cron:
@@ -16,8 +16,12 @@
     job: "/usr/local/sbin/zfsnap snapshot -a 24h -r zroot{{ item }}"
     cron_file: /etc/crontab
   with_items:
-  - /datestore
-  - /usr/home
+  - /ROOT/default
+  #We need to create the datastore zfs dataset first. For now we snapshot the
+  #root dataset so we have backups. Creating the datastore dataset requires
+  #me to copy all data from the root dataset to the new dataset. This task
+  #is on the backlog.
+  #- /datestore
 
 - name: "Ensure zfs daily snapshot cronjob"
   cron:
@@ -28,8 +32,8 @@
     job: "/usr/local/sbin/zfsnap snapshot -a 7d -r zroot{{ item }}"
     cron_file: /etc/crontab
   with_items:
-  - /datestore
-  - /usr/home
+  - /ROOT/default
+  #- /datestore
 
 - name: "Ensure zfs weekly snapshot cronjob"
   cron:
@@ -41,8 +45,8 @@
     job: "/usr/local/sbin/zfsnap snapshot -a 1w -r zroot{{ item }}"
     cron_file: /etc/crontab
   with_items:
-  - /datestore
-  - /usr/home
+  - /ROOT/default
+  #- /datestore
 
 - name: "Ensure zfs monthly snapshot cronjob"
   cron:
@@ -54,8 +58,8 @@
     job: "/usr/local/sbin/zfsnap snapshot -a 1m -r zroot{{ item }}"
     cron_file: /etc/crontab
   with_items:
-  - /datestore
-  - /usr/home
+  - /ROOT/default
+  #- /datestore
 
 - name: "Ensure yearly snapshot cronjob"
   cron:
@@ -68,8 +72,8 @@
     job: "/usr/local/sbin/zfsnap snapshot -a 1y -r zroot{{ item }}"
     cron_file: /etc/crontab
   with_items:
-  - /datestore
-  - /usr/home
+  - /ROOT/default
+  #- /datestore
 
 - name: "Ensure purge old snapshots cronjob"
   cron:
@@ -80,5 +84,5 @@
     job: "/usr/local/sbin/zfsnap destroy -rv zroot{{ item }}"
     cron_file: /etc/crontab
   with_items:
-  - /datestore
-  - /usr/home
+  - /ROOT/default
+  #- /datestore

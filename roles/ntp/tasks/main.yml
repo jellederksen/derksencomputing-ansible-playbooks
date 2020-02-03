@@ -2,4 +2,4 @@
 # tasks file for ntp
 
 - include_tasks: "{{ ansible_os_family }}.yml"
-  static: no
+  #static: no

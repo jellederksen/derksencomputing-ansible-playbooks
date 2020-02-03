@@ -108,8 +108,8 @@ pass out log quick on $dmz_if inet proto icmp from { $lan_net $wls_net $cld_net 
 #</ruleset>
 
 #<ruleset id="30001" description="allow dmz to internet" eol="20200101">
-pass in log quick on $dmz_if inet proto { tcp udp } from $dmz_net to any port { www https domain }
-pass out log quick on $ext_if inet proto { tcp udp } from $dmz_net to any port { www https domain } nat-to <wormhole>
+pass in log quick on $dmz_if inet proto { tcp udp } from $dmz_net to any port { www https domain ssh ntp }
+pass out log quick on $ext_if inet proto { tcp udp } from $dmz_net to any port { www https domain ssh ntp } nat-to <wormhole>
 #</ruleset>
 
 #<ruleset id="40003" description="allow dmz to cld" eol="20200101">
