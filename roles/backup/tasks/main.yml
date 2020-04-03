@@ -1,3 +1,9 @@
+#Before executing this role, create the backup repo on the Borgbase website,
+#generate a ssh-keypair, and upload the public-key to Borgbase and connect to
+#the remote backup-server to store the server's ssh fingerprint. Automating
+#these steps with the Borgbase API is on the TODO list. For now this role
+#provides a working remote backup solution.
+
 ---
 # tasks file for backup
 
@@ -9,7 +15,6 @@
     - python37
     - py37-pip
     - openssl
-    - fusefs-libs
     - pkgconf
     - git
 
@@ -19,29 +24,40 @@
     state: present
   with_items:
     - "archivers/py-borgbackup"
-    - "sysutils/fusefs-sshfs"
 
-- name: "Ensure fuse is loaded at boot"
-  lineinfile:
-    path: /boot/loader.conf
-    line: 'fuse_load="YES"'
-  register: firsttime_fuse
+#Initialize the remote Borg archive. If the remote Borg archive already
+#exists, the command will exit with return code 2. We will ignore this
+#exit code and continue. This task will report changed when the archive
+#initialized for the first time.
+- name: "Ensure borg backup is initialized"
+  shell: "/usr/local/bin/borg init --encryption=repokey-blake2 {{ borgbase_repo }}"
+  environment:
+    BORG_PASSPHRASE: "{{ borgbase_passphrase }}"
+  register: borg_repo_initialized
+  changed_when: borg_repo_initialized.rc == 0
+  failed_when:
+    - borg_repo_initialized.rc != 0
+    - borg_repo_initialized.rc != 2
 
-#When fuseload kernel module is configured to load at boot
-#for the first time, we need to load it manually to enable it.
-- name: "Ensure fuse kernel moduule is loaded"
-  shell: /sbin/kldload fuse
-  when: firsttime_fuse.changed == True
+- name: "Ensure Borg repo key is exported"
+  shell: "/usr/local/bin/borg key export {{ borgbase_repo }} /root/borg_base_key_export"
+  args:
+    creates: /root/borg_base_key_export
 
-- name: "Ensure sysctl usermount is set"
-  sysctl:
-    name: vfs.usermount
-    value: '1'
-    sysctl_set: yes
-  register: firsttime_sysctl
+- name: "Ensure old Borg archives are removed from repo"
+  cron:
+    name: "Prune old Borg archives"
+    minute: 0
+    hour: 1
+    user: root
+    job: 'BORG_PASSPHRASE="{{ borgbase_passphrase }}" /usr/local/bin/borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=12 --keep-yearly=1 "{{ borgbase_repo }}"'
+    cron_file: /etc/crontab
 
-#When sysctl is configured to load vfs.usermount at boot for
-#the first time, we need to load it once manually to enable it.
-- name: "Ensure sysctl usermound is enabled"
-  shell: /sbin/sysctl vfs.usermount=1
-  when: firsttime_sysctl.changed == True
+- name: "Ensure Daily backup to Borgbase remote repo"
+  cron:
+    name: "Create daily Borg backup"
+    minute: 0
+    hour: 3
+    user: root
+    job: 'BORG_PASSPHRASE="{{ borgbase_passphrase }}" /usr/local/bin/borg create {{ borgbase_repo }}::"$(date +%Y%m%d)" {{ borg_to_backup }}'
+    cron_file: /etc/crontab
