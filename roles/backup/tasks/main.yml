@@ -44,13 +44,11 @@
   args:
     creates: /root/borg_base_key_export
 
-- name: "Ensure the Borg Archive password is present"
-  cron:
-    name: BORG_PASSPHRASE
-    env: yes
-    job: "{{ borgbase_passphrase }}"
-    user: root
-    cron_file: /etc/crontab
+- name: "Ensure borg_backup Borg wrapper script is available"
+  template:
+    src: templates/borg_backup
+    dest: /usr/local/sbin/borg_backup
+    mode: 0700
 
 - name: "Ensure old Borg archives are removed from repo"
   cron:
@@ -58,7 +56,7 @@
     minute: 0
     hour: 1
     user: root
-    job: '/usr/local/bin/borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=12 --keep-yearly=1 "{{ borgbase_repo }}"'
+    job: "/usr/local/sbin/borg_backup prune"
     cron_file: /etc/crontab
 
 - name: "Ensure Daily backup to Borgbase remote repo"
@@ -67,5 +65,5 @@
     minute: 0
     hour: 3
     user: root
-    job: '/usr/local/bin/borg create "{{ borgbase_repo }}::$(/bin/date +%Y%m%d)" {{ borg_to_backup }}'
+    job: "/usr/local/sbin/borg_backup backup"
     cron_file: /etc/crontab

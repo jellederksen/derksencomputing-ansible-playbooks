@@ -1,0 +1,38 @@
+#!/usr/local/bin/bash
+
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+export BORG_PASSPHRASE="{{ borgbase_passphrase }}"
+repo="{{ borgbase_repo }}"
+date="$(/bin/date +%Y%m%d)"
+back_up="{{ borg_to_backup }}"
+
+if [[ ! ${1} -lt 1 ]]; then
+	echo "${0}: [backup] [prune]"
+	exit 1
+fi
+
+if [[ ${1} == backup ]]; then
+	if ! /usr/local/bin/borg create "${repo}::${date}" $back_up; then
+		echo "${0} failed to create backup"
+		exit 1
+	fi
+elif [[ ${1} == prune ]]; then
+	if ! /usr/local/bin/borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=12 --keep-yearly=1 "${repo}"; then
+		echo "${0} failed to prune backup"
+		exit 1
+	fi
+else
+	echo "${1} unknown option"
+	echo "${0}: [backup] [prune]"
+	exit 1
+fi
+
+exit 0
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------
