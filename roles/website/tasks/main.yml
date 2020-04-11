@@ -1,0 +1,42 @@
+---
+# tasks file for website
+
+- name: "Check if httpd configuration file exists"
+  stat:
+     path: /etc/httpd.conf
+  register: httpd_config
+
+- name: "Ensure httpd default configuration file"
+  template:
+    src: templates/default_httpd.conf.j2
+    dest: /etc/httpd.conf
+  when: not httpd_config.stat.exists
+
+- name: "Ensure httpd daemon is enabled and started"
+  service:
+    name: httpd
+    state: started
+    enabled: true
+
+- name: "Ensure acme client configuration file"
+  template:
+    src: templates/acme-client.conf.j2
+    dest: /etc/acme-client.conf
+
+- name: "Ensure keypair signed by Letsencrypt"
+  shell: /usr/sbin/acme-client www.jellederksen.nl
+  args:
+    creates: /etc/ssl/www.jellederksen.nl.fullchain.pem
+
+- name: "Ensure certificate resign cronjob"
+  cron:
+    name: "letsencrypt certificate resign cronjob"
+    minute: "0"
+    hour: "5"
+    job: "/usr/sbin/acme-client www.jellederksen.nl && /usr/sbin/rcctl reload httpd"
+
+- name: "Ensure httpd final configuration file"
+  template:
+    src: templates/final_httpd.conf.j2
+    dest: /etc/httpd.conf
+  notify: restart_httpd

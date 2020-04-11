@@ -8,7 +8,7 @@ $ORIGIN derksencomputing.nl.
 $TTL 3600
 
 @ IN SOA wormhole.derksencomputing.nl. jelle.derksencomputing.nl. (
-        2020040101        ;Serial number
+        2020041001        ;Serial number
         3600              ;Refresh
         600               ;Retry
         2764800           ;Expire
@@ -19,6 +19,7 @@ $TTL 3600
         MX        10 blackhole.derksencomputing.nl.
         MX        20 wormhole.derksencomputing.nl.
 
+@               IN        A        149.210.150.253
 www             IN        A        149.210.150.253
 wormhole        IN        A        80.127.97.42
 blackhole       IN        A        149.210.150.253
@@ -45,6 +46,9 @@ jellederksen.nl._report._dmarc	TXT	"v=DMARC1"
 kuberoot.nl._report._dmarc	TXT	"v=DMARC1"
 opencomputing.nl._report._dmarc	TXT	"v=DMARC1"
 tastingtime.nl._report._dmarc	TXT	"v=DMARC1"
+
+@	IN	CAA	0 issue "letsencrypt.org"
+@	IN	CAA	0 issuewild ";"
 
 ;------------------------------------------------------------------------------
 ;Copyright (c) 2017 by {{ name }} - {{ company }}

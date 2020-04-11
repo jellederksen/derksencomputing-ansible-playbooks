@@ -8,7 +8,7 @@ $ORIGIN epsilix.nl.
 $TTL 3600
 
 @ IN SOA wormhole.derksencomputing.nl. jelle.derksencomputing.nl. (
-        2020040101        ;Serial number
+        2020041001        ;Serial number
         3600              ;Refresh
         600               ;Retry
         2764800           ;Expire
@@ -19,6 +19,7 @@ $TTL 3600
         MX        10 blackhole.derksencomputing.nl.
         MX        20 wormhole.derksencomputing.nl.
 
+@               IN        A        149.210.150.253
 www             IN        A        149.210.150.253
 
 {% for mailserver in groups['mail'] %}
@@ -33,6 +34,9 @@ www             IN        A        149.210.150.253
 
 @               IN      TXT     "v=spf1 mx -all"
 _DMARC          IN      TXT     "v=DMARC1; p=reject; rua=mailto:dmarc@derksencomputing.nl; ruf=mailto:dmarc@derksencomputing.nl; sp=reject; fo=1; pct=100; adkim=s; aspf=s"
+
+@       IN      CAA     0 issue ";"
+@       IN      CAA     0 issuewild ";"
 
 ;------------------------------------------------------------------------------
 ;Copyright (c) 2017 by {{ name }} - {{ company }}

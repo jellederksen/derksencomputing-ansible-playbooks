@@ -1,0 +1,28 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+#
+# $OpenBSD: acme-client.conf,v 1.2 2019/06/07 08:08:30 florian Exp $
+#
+authority letsencrypt {
+	api url "https://acme-v02.api.letsencrypt.org/directory"
+	account key "/etc/acme/letsencrypt-privkey.pem"
+}
+
+authority letsencrypt-staging {
+	api url "https://acme-staging-v02.api.letsencrypt.org/directory"
+	account key "/etc/acme/letsencrypt-staging-privkey.pem"
+}
+
+domain www.jellederksen.nl {
+	alternative names { jellederksen.nl www.derksencomputing.nl derksencomputing.nl }
+	domain key "/etc/ssl/private/www.jellederksen.nl.key"
+	domain full chain certificate "/etc/ssl/www.jellederksen.nl.fullchain.pem"
+	sign with letsencrypt
+}
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

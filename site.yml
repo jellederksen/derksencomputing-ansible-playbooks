@@ -89,3 +89,11 @@
     - backup
   tags:
     - backup
+
+- name: Configure websites
+  hosts: webservers
+  become: True
+  roles:
+    - website
+  tags:
+    - website

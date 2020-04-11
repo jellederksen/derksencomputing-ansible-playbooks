@@ -1,0 +1,16 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+server "default" {
+        listen on * port 80
+        location "/.well-known/acme-challenge/*" {
+                root "/acme"
+                root strip 2
+        }
+}
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------
