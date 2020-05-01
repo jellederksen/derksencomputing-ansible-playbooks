@@ -22,6 +22,7 @@
   shell: /bin/grep -q '^ipa_automount_location =.*default.*$' /etc/sssd/sssd.conf
   register: automount_check
   changed_when: False
+  ignore_errors: True
   when: 
     - remote_homedir is defined
     - remote_homedir == True
