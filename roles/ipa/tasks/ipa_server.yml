@@ -10,7 +10,7 @@
 #    - freeipa-server-common
 
 - name: Ensure ipa server is installed and configured
-  shell: "/usr/sbin/ipa-server-install --setup-dns --unattended --no-forwarders --admin-password '{{ ipa_admin_pass }}' --ds-password '{{ ipa_ds_pass }}' --domain '{{ ipa_domain }}' --realm '{{ ipa_realm }}'"
+  shell: "/usr/sbin/ipa-server-install --setup-dns --auto-reverse --unattended --no-forwarders --admin-password '{{ ipa_admin_pass }}' --ds-password '{{ ipa_ds_pass }}' --domain '{{ ipa_domain }}' --realm '{{ ipa_realm }}'"
   args:
     creates: /etc/ipa/default.conf
   no_log: True

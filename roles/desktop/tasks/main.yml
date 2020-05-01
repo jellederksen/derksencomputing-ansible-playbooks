@@ -17,7 +17,7 @@
       - hledger-web
       - ImageMagick 
       - asciidoctor
-      - asciidoctor-pdf
+      - rubygem-asciidoctor-pdf
     state: latest
 
 #We need to become user Jelle because otherwise we cannot access the
