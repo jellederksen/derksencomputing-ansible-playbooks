@@ -8,7 +8,7 @@
     - freeipa-client
 
 - name: "Ensure client are enrolled with IPA domain"
-  shell: "/usr/sbin/ipa-client-install --unattended --principal admin --password '{{ ipa_admin_pass }}'"  
+  shell: "/usr/sbin/ipa-client-install --unattended --force-join --principal admin --password '{{ ipa_admin_pass }}'"  
   args:
     creates: /etc/ipa/default.conf
 
