@@ -1,5 +1,6 @@
 ansible_become_method: doas
 mailserver_type: forwarder
+external_fqdn: wormhole.derksencomputing.nl
 dns_listen_ip: 80.127.97.42
 secondary_server: 149.210.150.253
 primary_zones:

@@ -5,6 +5,10 @@
 
 {% if mailserver_type == 'forwarder'  %}
 
+# Set the ehlo fqdn to the derksencomputing.nl fqdn for reverse DNS checks
+myhostname = {{ external_fqdn }}
+smtpd_banner = $myhostname
+
 # SMTP from your server to others
 smtp_tls_key_file = /etc/ssl/private/{{ ansible_nodename }}.key
 smtp_tls_cert_file = /etc/ssl/{{ ansible_nodename }}.crt

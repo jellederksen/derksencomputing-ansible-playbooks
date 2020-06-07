@@ -180,6 +180,11 @@ pass out log quick on $ext_if inet proto tcp from 172.16.2.2 to { 213.136.12.213
 pass out log quick on $xdz_if inet proto tcp from $lan_net to 172.16.2.2 port ssh
 #</ruleset>
 
+#<ruleset id="60006" description="allow alnitak to internet for letsencrypt certificate request" eol="20200101">
+pass in log quick on $xdz_if inet proto tcp from 172.16.2.2 to any port { 80, 443 }
+pass out log quick on $ext_if inet proto tcp from 172.16.2.2 to any port { 80, 443 } nat-to <meet>
+#</ruleset>
+
 {% elif ansible_hostname == "algol" %}
 
 #macros

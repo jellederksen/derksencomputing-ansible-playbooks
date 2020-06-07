@@ -24,7 +24,7 @@
     - update_aliases_table
     - restart_postfix
 
-- name: "Ensure Dovecot ssl config"
+- name: "Ensure Dovecot SSL config"
   template:
     src: templates/10-ssl.conf.j2
     dest: /etc/dovecot/conf.d/10-ssl.conf
@@ -41,7 +41,6 @@
     name: dovecot
     enabled: yes
     state: started
-
 
 - name: "Ensure imaps port is open"
   firewalld:

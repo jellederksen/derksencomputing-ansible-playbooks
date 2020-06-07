@@ -1,0 +1,5 @@
+---
+# tasks file for monitoring
+
+- include_tasks: monitoring_server.yml
+  when: "monitoring_servers' in group_names"

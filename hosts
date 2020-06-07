@@ -9,6 +9,7 @@ sirius.galaxy.derksencomputing.nl
 algol.galaxy.derksencomputing.nl
 altair.galaxy.derksencomputing.nl
 polaris.galaxy.derksencomputing.nl
+rigel.galaxy.derksencomputing.nl
 
 [ipa:children]
 ipa_servers
@@ -56,3 +57,8 @@ altair.galaxy.derksencomputing.nl
 
 [webservers]
 algol.galaxy.derksencomputing.nl
+
+[monitoring_servers]
+rigel.galaxy.derksencomputing.nl
+
+[monitoring_clients]
