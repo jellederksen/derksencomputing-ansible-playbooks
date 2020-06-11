@@ -15,3 +15,5 @@ secondary_zones:
   - opencomputing.nl
   - tastingtime.nl
   - derksencomputing.nl
+  - celiciaceramics.nl
+  - celiciaceramics.com

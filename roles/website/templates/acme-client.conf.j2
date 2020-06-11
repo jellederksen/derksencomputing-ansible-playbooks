@@ -16,10 +16,10 @@ authority letsencrypt-staging {
 	account key "/etc/acme/letsencrypt-staging-privkey.pem"
 }
 
-domain www.jellederksen.nl {
-	alternative names { jellederksen.nl www.derksencomputing.nl derksencomputing.nl }
-	domain key "/etc/ssl/private/www.jellederksen.nl.key"
-	domain full chain certificate "/etc/ssl/www.jellederksen.nl.fullchain.pem"
+domain www.derksencomputing.nl {
+	alternative names { derksencomputing.nl www.jellederksen.nl jellederksen.nl www.tastingtime.nl tastingtime.nl www.celiciaceramics.com celiciaceramics.com www.celiciaceramics.nl celiciaceramics.nl }
+	domain key "/etc/ssl/private/www.derksencomputing.nl.key"
+	domain full chain certificate "/etc/ssl/www.derksencomputing.nl.fullchain.pem"
 	sign with letsencrypt
 }
 

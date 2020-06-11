@@ -24,16 +24,16 @@
     dest: /etc/acme-client.conf
 
 - name: "Ensure keypair signed by Letsencrypt"
-  shell: /usr/sbin/acme-client www.jellederksen.nl
+  shell: /usr/sbin/acme-client www.derksencomputing.nl
   args:
-    creates: /etc/ssl/www.jellederksen.nl.fullchain.pem
+    creates: /etc/ssl/www.derksencomputing.nl.fullchain.pem
 
 - name: "Ensure certificate resign cronjob"
   cron:
     name: "letsencrypt certificate resign cronjob"
     minute: "0"
     hour: "5"
-    job: "/usr/sbin/acme-client www.jellederksen.nl && /usr/sbin/rcctl reload httpd"
+    job: "/usr/sbin/acme-client www.derksencomputing.nl && /usr/sbin/rcctl reload httpd"
 
 - name: "Ensure httpd final configuration file"
   template:

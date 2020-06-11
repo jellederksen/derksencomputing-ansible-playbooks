@@ -1,11 +1,11 @@
-#- name: "Ensure mail packages are installed"
-#  openbsd_pkg:
-#    name: "{{ packages }}"
-#  vars:
-#    packages:
-#      - rspamd-1.9.4
-#      - postfix-3.5.20191109-sasl2-ldap
-#      - opendkim-2.10.3p1
+- name: "Ensure mail packages are installed"
+  openbsd_pkg:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - rspamd-1.9.4
+      - postfix-3.5.20200203-sasl2-ldap
+      - opendkim-2.10.3p1
 
 - name: "Ensure OpenSMTP is stopped and disabled"
   service:

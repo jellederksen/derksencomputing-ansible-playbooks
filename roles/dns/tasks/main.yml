@@ -1,9 +1,9 @@
 ---
 
-#- name: "Ensure packages are installed"
-#  openbsd_pkg:
-#    name: isc-bind-9.11.14p0v0
-#    state: present
+- name: "Ensure packages are installed"
+  openbsd_pkg:
+    name: isc-bind-9.11.19v0
+    state: present
 
 - name: Ensure root is allowed to sign as _nsd"
   template:
