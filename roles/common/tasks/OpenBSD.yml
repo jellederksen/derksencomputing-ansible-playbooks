@@ -15,6 +15,7 @@
   loop:
   - bash
   - wget
+  - gtar-1.32p1-static
 
 - name: "Ensure packages are up to date"
   openbsd_pkg:
