@@ -1,0 +1,26 @@
+---
+
+- name: "Ensure packages are installed"
+  pkgng:
+    name: "{{ item }}"
+    state: present
+  loop:
+  - bash
+  - wget
+  - ksh
+  - gtar-1.32
+
+- name: "Ensure updates are fetched"
+  shell: freebsd-update fetch
+  register: update_fetch
+  changed_when: "'No updates needed' not in update_fetch.stdout"
+
+- name: "Ensure updates are installed"
+  shell: freebsd-update install
+  register: update_install
+  when: update_fetch.changed
+
+- name: "Ensure packages are updated"
+  shell: pkg upgrade -y
+  register: pkg_upgrade
+  changed_when: "'Your packages are up to date' not in pkg_upgrade.stdout"
