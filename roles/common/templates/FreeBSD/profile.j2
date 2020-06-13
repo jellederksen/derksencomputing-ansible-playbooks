@@ -1,0 +1,37 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+# $FreeBSD: releng/12.1/bin/sh/profile 337849 2018-08-15 14:41:24Z brd $
+#
+# System-wide .profile file for sh(1).
+#
+# Uncomment this to give you the default 4.2 behavior, where disk
+# information is shown in K-Blocks
+# BLOCKSIZE=K; export BLOCKSIZE
+#
+# For the setting of languages and character sets please see
+# login.conf(5) and in particular the charset and lang options.
+# For full locales list check /usr/share/locale/*
+# You should also read the setlocale(3) man page for information
+# on how to achieve more precise control of locale settings.
+#
+# Check system messages
+# msgs -q
+# Allow terminal messages
+# mesg y
+
+#Set primary prompt string
+if [[ ${UID} -eq 0 ]]; then
+	PS1="${USER}@$(hostname -s):\${PWD}\# "
+else
+	PS1="${USER}@$(hostname -s):\${PWD}\$ "
+fi
+
+#Set vi editing mode
+set -o vi
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

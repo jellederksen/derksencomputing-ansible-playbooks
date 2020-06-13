@@ -7,7 +7,7 @@
   loop:
   - bash
   - wget
-  - ksh
+  - ksh93
   - gtar-1.32
 
 - name: "Ensure updates are fetched"
@@ -24,3 +24,19 @@
   shell: pkg upgrade -y
   register: pkg_upgrade
   changed_when: "'Your packages are up to date' not in pkg_upgrade.stdout"
+
+- name: "Ensure Korn Shell profile file"
+  template:
+    src: templates/FreeBSD/profile.j2
+    dest: /etc/profile
+    owner: root
+    group: wheel
+    mode: 0644
+
+- name: "Ensure Korn Shell skel runcom file"
+  template:
+    src: templates/FreeBSD/dot.kshrc.j2
+    dest: /usr/share/skel/dot.kshrc
+    owner: root
+    group: wheel
+    mode: 0644
