@@ -1,4 +1,6 @@
 ---
 
+#This role depends on the mail role for supplying the OpenDKIM keys
+#which are included in the DNS zones information records.
 dependencies:
   - role: mail

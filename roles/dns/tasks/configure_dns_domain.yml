@@ -1,4 +1,4 @@
-- name: "Ensure primary zone directorie"
+- name: "Ensure primary zone directories"
   file:
     path: "/var/nsd/zones/master/{{ item }}"
     state: directory

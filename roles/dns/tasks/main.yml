@@ -1,6 +1,6 @@
 ---
 
-- name: "Ensure packages are installed"
+- name: "Ensure required DNS packages are installed"
   openbsd_pkg:
     name: isc-bind-9.11.19v0
     state: present
@@ -11,14 +11,14 @@
     dest: /etc/doas.conf
     mode: 0644
 
-- name: Ensure nsd files are owned by nsd"
+- name: Ensure NSD files are owned by user _nsd"
   file:
     path: /var/nsd
     owner: _nsd
     group: _nsd
     recurse: yes
 
-- name: "Ensure NSD configuration"
+- name: "Ensure NSD configuration file"
   template:
     src: templates/nsd.conf.j2
     dest: /var/nsd/etc/nsd.conf
@@ -33,9 +33,9 @@
     creates: "/var/nsd/etc/nsd_server.key"
 
 #I include a separate tasks file so we can loop over the primary domains
-#and manage the domains individually. We do this so changing one domain
-#does not trigger a resign for the other domain.
-- name: "Ensure dns zones exist and are dnssec signed"
+#and manage the domains individually. We do this so updating one DNS zone
+#does not trigger a resign of the other zones.
+- name: "Ensure DNS zones exist and are DNSSEC signed"
   include: configure_dns_domain.yml
   with_items: "{{ primary_zones }}"
   when: primary_zones is defined
