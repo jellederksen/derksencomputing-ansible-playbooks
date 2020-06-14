@@ -262,8 +262,10 @@ pass out log quick on $ext_if inet proto tcp from <blackhole> to any port { www 
 pass out log quick on $ext_if inet proto { tcp, udp } from <blackhole> to any port 53
 #</ruleset>
 
-pass in quick on vio1 from any to any
-pass out quick on vio1 from any to any
+#<ruleset id="20002" description="allow from derksencomputing networks to VPN cloud DMZ" eol="20200101">
+pass in log quick on $int_if from { $lan_net $wls_net $dmz_net } to $dmz_net
+pass out log quick on $int_if from $int_ip to { $lan_net $wls_net $dmz_net }
+#</ruleset>
 
 {% endif %}
 #------------------------------------------------------------------------------

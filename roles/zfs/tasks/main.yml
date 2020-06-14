@@ -6,7 +6,7 @@
     name: "{{ item }}"
     state: present
   with_items:
-  - zfsnap2-2.0.0.b3_1
+  - zfsnap2-2.0.0.b3_2
 
 - name: "Ensure zfs hourly snapshot cronjob"
   cron:
