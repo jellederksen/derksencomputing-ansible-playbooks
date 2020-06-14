@@ -1,6 +1,16 @@
 ---
 # tasks file for desktop
 
+- name: "Ensure google-chrome repo is available and enabled"
+  yum_repository:
+    name: google-chrome
+    file: google-chrome
+    description: Google Chrome Repo
+    baseurl: http://dl.google.com/linux/chrome/rpm/stable/x86_64
+    gpgkey: https://dl.google.com/linux/linux_signing_key.pub
+    gpgcheck: yes
+    enabled: yes
+
 - name: "Ensure packages are installed"
   yum:
     name:
@@ -18,10 +28,13 @@
       - ImageMagick 
       - asciidoctor
       - rubygem-asciidoctor-pdf
+      - telnet
+      - wget
+      - google-chrome-stable
     state: latest
 
 #We need to become user Jelle because otherwise we cannot access the
-#Kerberized NFS share without a ticket.
+#Kerberized NFS share without a valid Kerberos ticket.
 - block:
   - name: "Ensure mutt runcom file"
     template:
@@ -40,6 +53,9 @@
   become: True
   become_user: jelle
 
+#The mail forward and sotrings functions are handeled on the mail
+#server. Therefore we forward the following two tasks to the mail
+#server.
 - name: "Ensure mail is forwarded to procmail with forward file"
   template:
     src: templates/forward.j2
