@@ -26,6 +26,7 @@
   ipa_host:
     name: "{{ hostvars[item]['ansible_fqdn'] }}"
     description: Node of derksencomputing.nl domain
+    # TODO: algol and sirius have two interfaces. The wrong IP-adres is added to the DNS zone
     ip_address:  "{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
     state: present
     ipa_host: vega.galaxy.derksencomputing.nl
