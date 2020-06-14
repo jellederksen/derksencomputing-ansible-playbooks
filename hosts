@@ -3,7 +3,7 @@ vega.galaxy.derksencomputing.nl
 
 [ipa_clients]
 alcor.galaxy.derksencomputing.nl
-megrez.galaxy.derksencomputing.nl #ansible_connection=local
+megrez.galaxy.derksencomputing.nl ansible_connection=local
 deneb.galaxy.derksencomputing.nl
 sirius.galaxy.derksencomputing.nl
 algol.galaxy.derksencomputing.nl

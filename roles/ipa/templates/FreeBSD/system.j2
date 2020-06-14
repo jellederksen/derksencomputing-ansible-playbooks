@@ -1,3 +1,8 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
 #
 # $FreeBSD: releng/12.1/lib/libpam/pam.d/system 197769 2009-10-05 09:28:54Z des $
 #
@@ -24,3 +29,7 @@ session		required	pam_lastlog.so		no_fail
 # password
 #password	sufficient	pam_krb5.so		no_warn try_first_pass
 password	required	pam_unix.so		no_warn try_first_pass
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

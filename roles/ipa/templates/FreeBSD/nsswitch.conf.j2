@@ -1,3 +1,8 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
 #
 # nsswitch.conf(5) - name service switch configuration file
 # $FreeBSD: releng/12.1/lib/libc/net/nsswitch.conf 338729 2018-09-17 18:56:47Z brd $
@@ -16,3 +21,7 @@ services: compat
 services_compat: nis
 protocols: files
 rpc: files
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

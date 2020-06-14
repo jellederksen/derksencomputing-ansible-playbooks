@@ -80,7 +80,7 @@
         - "/usr/bin/base64 /tmp/krb5_{{ ansible_hostname }}.keytab"
         - "/bin/rm /tmp/krb5_{{ ansible_hostname }}.keytab"
       register: kerberos_keytab
-      #no_log: True
+      no_log: True
 
     #We use the template function to copy the fetched base64 keytab to the remote host.
     #This prefents echoing a large base64 string on the commandline and redirecting it

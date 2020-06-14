@@ -1,13 +1,13 @@
 ---
 
-#- name: Ensure the ipa server packages are installed
-#  yum:
-#    name: "{{ item }}"
-#    state: present
-#  loop:
-#    - freeipa-server
-#    - freeipa-server-dns
-#    - freeipa-server-common
+- name: Ensure the ipa server packages are installed
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - freeipa-server
+    - freeipa-server-dns
+    - freeipa-server-common
 
 - name: Ensure ipa server is installed and configured
   shell: "/usr/sbin/ipa-server-install --setup-dns --auto-reverse --unattended --no-forwarders --admin-password '{{ ipa_admin_pass }}' --ds-password '{{ ipa_ds_pass }}' --domain '{{ ipa_domain }}' --realm '{{ ipa_realm }}'"
@@ -34,7 +34,13 @@
     validate_certs: False
   with_items:
     - "{{ groups['ipa_clients'] }}"
+  # Ignore errors is set because when a node is down, that hosts Ansible setup
+  # variables are not set "{{ hostvars[item]['ansible_fqdn'] }}" is undefined.
+  # Because failed hosts are always included in this task, we set ignore_errors
+  # to True so the paybook on the IPA-server will continue even if some hosts
+  # are down.
   ignore_errors: True
+  no_log: True
 
 - name: Ensure IPA users exist
   ipa_user:
@@ -50,7 +56,7 @@
     update_password: on_create
   with_items:
     - "{{ ipa_users }}"
-  #no_log: True
+  no_log: True
 
 - name: Ensure sudo rules exists
   ipa_sudorule:

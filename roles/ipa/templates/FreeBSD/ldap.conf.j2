@@ -1,3 +1,8 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
 #
 # LDAP Defaults
 #
@@ -13,3 +18,7 @@ tls_cacert /etc/ssl/ca.crt
 #SIZELIMIT	12
 #TIMELIMIT	15
 #DEREF		never
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

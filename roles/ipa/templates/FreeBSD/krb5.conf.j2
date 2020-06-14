@@ -1,3 +1,8 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
 [libdefaults]
     default_realm = GALAXY.DERKSENCOMPUTING.NL
 
@@ -20,3 +25,6 @@ kdc = FILE:/var/heimdal/kdc.log
 kdc = SYSLOG:INFO
 default = SYSLOG:INFO:USER
 
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

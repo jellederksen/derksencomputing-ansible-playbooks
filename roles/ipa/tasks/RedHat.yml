@@ -33,4 +33,3 @@
     - remote_homedir is defined
     - remote_homedir == True
     - automount_check.failed == True
-    
