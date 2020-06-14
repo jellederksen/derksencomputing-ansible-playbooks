@@ -106,7 +106,6 @@
   template:
     src: templates/transport.j2
     dest: /etc/postfix/transport
-    #validate: smtpd -n -f %s
   notify: 
     - update_transport_table
     - restart_postfix
@@ -115,7 +114,6 @@
   template:
     src: templates/aliases.j2
     dest: /etc/postfix/aliases
-    #validate: smtpd -n -f %s
   notify: 
     - update_aliases_table
     - restart_postfix
@@ -124,7 +122,6 @@
   template:
     src: templates/main.cf.j2
     dest: /etc/postfix/main.cf
-    #validate: smtpd -n -f %s
   notify: restart_postfix
 
 - name: "Ensure Postfix is enabled and started"

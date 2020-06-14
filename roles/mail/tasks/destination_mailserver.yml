@@ -12,14 +12,12 @@
   template:
     src: templates/main.cf.j2
     dest: /etc/postfix/main.cf
-    #validate: smtpd -n -f %s
   notify: restart_postfix
 
 - name: "Ensure Postfix aliases table"
   template:
     src: templates/aliases.j2
     dest: /etc/postfix/aliases
-    #validate: smtpd -n -f %s
   notify:
     - update_aliases_table
     - restart_postfix
@@ -51,4 +49,3 @@
     - imaps
     - smtp
   notify: reload_firewalld
-

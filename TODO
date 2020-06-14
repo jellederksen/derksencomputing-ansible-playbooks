@@ -21,3 +21,12 @@ role: ipsec
 file: ipsec/tasks/main.yml
 task: Ensure ipsec config
 todo: Replace IPSec on time password with certificate authentication
+
+role: mail
+file: mail/tasks/forwarding_mailserver.yml
+task: Ensure Postfix config
+todo: Setup multiple Postfix instances. One for internal use
+      algol/sirius.galaxy.derksencomputing.nl and one for external
+      use wormhole/blackhole.derksencomputing.nl. The Postfix
+      mail daemon should present itself with the correct ehlo
+      name when connecting on the internal or external interface.

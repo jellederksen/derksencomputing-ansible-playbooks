@@ -3,9 +3,9 @@
 #    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
 #    Hostname: {{ template_host }}
 
-{% if mailserver_type == 'forwarder'  %}
+{% if mailserver_type == 'forwarder' %}
 
-# Set the ehlo fqdn to the derksencomputing.nl fqdn for reverse DNS checks
+# Set the ehlo to the external fqdn for reverse DNS checks from the internet when delivering email
 myhostname = {{ external_fqdn }}
 smtpd_banner = $myhostname
 
@@ -63,7 +63,7 @@ milter_default_action = accept
 smtpd_milters = inet:localhost:8891 inet:localhost:11332
 non_smtpd_milters = inet:localhost:8891
 
-{% elif mailserver_type == 'destination'  %}
+{% elif mailserver_type == 'destination' %}
 
 # SMTP from your server to others
 smtp_tls_key_file = /etc/ssl/private/{{ ansible_nodename }}.key
