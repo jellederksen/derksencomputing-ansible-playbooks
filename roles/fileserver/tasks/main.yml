@@ -1,17 +1,54 @@
 ---
-# tasks file for zfs
+# tasks file for fileservers
 
-- name: "Ensure zfsnap is installed"
+- name: "Ensure fileserver packages are installed"
   pkgng:
-    name: "{{ item }}"
+    name: zfsnap2-2.0.0.b3_2
     state: present
-  with_items:
-  - zfsnap2-2.0.0.b3_2
+
+#There is no daemon enable command on FreeBSD to enable daemons to start at boot time. I don't
+#want to use the template module to template a core system file for a specific nfs daemon. We
+#might override some settings if we use the template engine from a different role. I can't use
+#the service modele enable function either. There is no way to enable nfs version 4 that way.
+- name: "Ensure nfsd version 4 is enabled"
+  blockinfile:
+    path: /etc/rc.conf
+    block: |
+      rpcbind_enable="YES"
+      nfs_server_enable="YES"
+      mountd_flags="-r"
+      nfsv4_server_enable="YES"
+      gssd_enable="YES"
+      gssd_flags="-h"
+
+- name: "Ensure nfsd is restricted to nfs protocol version 4"
+  sysctl:
+    name: "vfs.nfsd.server_min_nfsvers"
+    value: "4"
+    sysctl_set: yes
+
+- name: "Ensure exported directories exists"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items: "{{ nfs_exports }}"
+
+- name: "Ensure exports file exists"
+  template:
+    src: templates/exports.j2
+    dest: /etc/exports
+  notify: reload_mountd
+
+- name: "Ensure nfs daemon is started and enabled at boot time"
+  service:
+    name: nfsd
+    state: started
 
 - name: "Ensure zfs hourly snapshot cronjob"
   cron:
     name: "zfs hourly snapshot {{ item }}"
-    minute: 0
+    minute: "0"
     user: root
     job: "/usr/local/sbin/zfsnap snapshot -a 24h -r zroot{{ item }}"
     cron_file: /etc/crontab
@@ -26,8 +63,8 @@
 - name: "Ensure zfs daily snapshot cronjob"
   cron:
     name: "zfs daily snapshot {{ item }}"
-    minute: 0
-    hour: 0
+    minute: "0"
+    hour: "0"
     user: root
     job: "/usr/local/sbin/zfsnap snapshot -a 7d -r zroot{{ item }}"
     cron_file: /etc/crontab
@@ -38,9 +75,9 @@
 - name: "Ensure zfs weekly snapshot cronjob"
   cron:
     name: "zfs weekly snapshot {{ item }}"
-    minute: 0
-    hour: 0
-    weekday: 0
+    minute: "0"
+    hour: "0"
+    weekday: "0"
     user: root
     job: "/usr/local/sbin/zfsnap snapshot -a 1w -r zroot{{ item }}"
     cron_file: /etc/crontab
@@ -51,9 +88,9 @@
 - name: "Ensure zfs monthly snapshot cronjob"
   cron:
     name: "zfs monthly snapshot {{ item }}"
-    minute: 0
-    hour: 0
-    day: 1 
+    minute: "0"
+    hour: "0"
+    day: "1 "
     user: root
     job: "/usr/local/sbin/zfsnap snapshot -a 1m -r zroot{{ item }}"
     cron_file: /etc/crontab
@@ -64,10 +101,10 @@
 - name: "Ensure yearly snapshot cronjob"
   cron:
     name: "zfs yearly snapshot {{ item }}"
-    minute: 0
-    hour: 0
-    day: 1
-    month: 1
+    minute: "0"
+    hour: "0"
+    day: "1"
+    month: "1"
     user: root
     job: "/usr/local/sbin/zfsnap snapshot -a 1y -r zroot{{ item }}"
     cron_file: /etc/crontab
@@ -78,8 +115,8 @@
 - name: "Ensure purge old snapshots cronjob"
   cron:
     name: "Purge old snapshots {{ item }}"
-    minute: 0
-    hour: 3
+    minute: "0"
+    hour: "3"
     user: root
     job: "/usr/local/sbin/zfsnap destroy -rv zroot{{ item }}"
     cron_file: /etc/crontab

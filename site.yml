@@ -66,13 +66,13 @@
   tags:
     - desktop
 
-- name: Configure NFS exports and mounts
-  hosts: nfs
+- name: Configure file services
+  hosts: fileservers
   become: True
   roles:
-    - nfs
+    - fileserver
   tags:
-    - nfs
+    - fileserver
 
 - name: Configure ZFS snapshots
   hosts: zfs

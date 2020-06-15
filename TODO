@@ -30,3 +30,12 @@ todo: Setup multiple Postfix instances. One for internal use
       use wormhole/blackhole.derksencomputing.nl. The Postfix
       mail daemon should present itself with the correct ehlo
       name when connecting on the internal or external interface.
+
+role: fileserver
+file: fileserver/tasks/mail.yml
+task: snapshot cronjobs
+todo: Change the ZFS dataset from default/root to datastore so the user data
+      is separated from the OS data. This requires a reinstall of the FreeBSD
+      OS and a restore of a full datastore backup. After creating the ZFS
+      datastore update the ZFS snapshot cronjobs in the Ansible fileserver
+      role.

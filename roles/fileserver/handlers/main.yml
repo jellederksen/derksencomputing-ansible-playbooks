@@ -1,5 +1,5 @@
 ---
-# handlers file for nfs
+# handlers file for fileservers
 
 #We use the command module and not the service module because the service
 #module cannot handle the onereload keyword on reloading the mountd daemon

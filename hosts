@@ -40,14 +40,8 @@ polaris.galaxy.derksencomputing.nl
 sirius.galaxy.derksencomputing.nl
 algol.galaxy.derksencomputing.nl
 
-[nfs_servers]
+[fileservers]
 altair.galaxy.derksencomputing.nl
-
-[nfs_clients]
-
-[nfs:children]
-nfs_servers
-nfs_clients
 
 [zfs]
 altair.galaxy.derksencomputing.nl
@@ -60,5 +54,3 @@ algol.galaxy.derksencomputing.nl
 
 [monitoring_servers]
 rigel.galaxy.derksencomputing.nl
-
-[monitoring_clients]
