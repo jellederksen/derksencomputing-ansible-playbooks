@@ -1,17 +1,17 @@
 #!/usr/bin/ansible-playbook --ask-vault-pass
 ---
 
-#We first run the ipsec role so we can connect to Alcor over IPsec
+#We first run the vpn role so we can connect to Alcor over IPsec
 - name: Configure IPSec tunnel between wormhole and blackhole
-  hosts: ipsec
+  hosts: vpn
   become: True
   roles:
-    - ipsec
+    - vpn
   tags:
-    - ipsec
+    - vpn
 
 - name: Configure nodes with common settings
-  hosts: all:!ipsec
+  hosts: all:!vpn
   become: True
   roles:
     - common
@@ -35,12 +35,28 @@
     - ipa
 
 - name: Configure time server and clients
-  hosts: all:!ipsec
+  hosts: all:!vpn
   become: True
   roles:
     - time
   tags:
     - time
+
+- name: Configure file services
+  hosts: fileservers
+  become: True
+  roles:
+    - fileserver
+  tags:
+    - fileserver
+
+- name: Configure backups
+  hosts: backup
+  become: True
+  roles:
+    - backup
+  tags:
+    - backup
 
 - name: Setup and configure mail
   hosts: mail
@@ -58,38 +74,6 @@
   tags:
     - dns
 
-- name: Configure desktop nodes
-  hosts: desktops
-  become: True
-  roles:
-    - desktop
-  tags:
-    - desktop
-
-- name: Configure file services
-  hosts: fileservers
-  become: True
-  roles:
-    - fileserver
-  tags:
-    - fileserver
-
-- name: Configure ZFS snapshots
-  hosts: zfs
-  become: True
-  roles:
-    - zfs
-  tags:
-    - zfs
-
-- name: Configure backups
-  hosts: backup
-  become: True
-  roles:
-    - backup
-  tags:
-    - backup
-
 - name: Configure websites
   hosts: webservers
   become: True
@@ -97,3 +81,11 @@
     - website
   tags:
     - website
+
+- name: Configure desktop nodes
+  hosts: desktops
+  become: True
+  roles:
+    - desktop
+  tags:
+    - desktop

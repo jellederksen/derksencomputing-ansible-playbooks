@@ -1,5 +1,5 @@
 ---
-# tasks file for ipsec
+# tasks file for vpn
 
 - name: "Ensure isakmpd is enabled and started"
   service:

@@ -1,5 +1,5 @@
 ---
-# handlers file for ipsec
+# handlers file for vpn
 
 - name: restart_ipsec
   service:
