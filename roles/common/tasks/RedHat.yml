@@ -17,6 +17,7 @@
     - policycoreutils
     - wget
     - telnet
+    - tcpdump
 
 - name: "Ensure packages are up to date"
   yum:

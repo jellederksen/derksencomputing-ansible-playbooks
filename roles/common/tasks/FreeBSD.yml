@@ -9,6 +9,7 @@
   - wget
   - ksh93
   - gtar-1.32
+  - tcpdump
 
 - name: "Ensure updates are fetched"
   shell: freebsd-update fetch
