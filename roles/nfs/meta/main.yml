@@ -1,0 +1,8 @@
+---
+
+#This role depends on the ipa role for setting up Kerberos authentication,
+#creating NFS principals and distributing those principals to the keytabs
+#on right systems.
+
+dependencies:
+  - role: ipa 
