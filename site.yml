@@ -34,13 +34,13 @@
   tags:
     - ipa
 
-- name: Confgiure NTP client
+- name: Configure time server and clients
   hosts: all:!ipsec
   become: True
   roles:
-    - ntp
+    - time
   tags:
-    - ntp
+    - time
 
 - name: Setup and configure mail
   hosts: mail

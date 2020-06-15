@@ -1,10 +1,15 @@
 {% if inventory_hostname == "vega.galaxy.derksencomputing.nl" %}
-2.centos.pool.ntp.org iburst
-{% else %}
-server vega.galaxy.derksencomputing.nl iburst
-{% endif %}
 # Use public servers from the pool.ntp.org project.
 # Please consider joining the pool (http://www.pool.ntp.org/join.html).
+server 0.centos.pool.ntp.org iburst
+server 1.centos.pool.ntp.org iburst
+server 2.centos.pool.ntp.org iburst
+server 3.centos.pool.ntp.org iburst
+{% else %}
+# Use public servers from the pool.ntp.org project.
+# Please consider joining the pool (http://www.pool.ntp.org/join.html).
+server vega.galaxy.derksencomputing.nl iburst
+{% endif %}
 
 # Record the rate at which the system clock gains/losses time.
 driftfile /var/lib/chrony/drift
@@ -23,8 +28,16 @@ rtcsync
 # the system clock.
 #minsources 2
 
+{% if inventory_hostname == "vega.galaxy.derksencomputing.nl" %}
+# Allow NTP client access from local network.
+allow 10.0.0.0/24
+allow 10.0.1.0/24
+allow 172.16.0.0/24
+allow 172.16.1.0/24
+{% else %}
 # Allow NTP client access from local network.
 #allow 192.168.0.0/16
+{% endif %}
 
 # Serve time even if not synchronized to a time source.
 #local stratum 10
