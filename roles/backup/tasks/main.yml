@@ -9,14 +9,15 @@
 
 - name: "Ensure Borgbackup dependencies are installed"
   pkgng:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
-  with_items:
-    - python37
-    - py37-pip
-    - openssl
-    - pkgconf
-    - git
+  vars:
+    packages:
+      - python37
+      - py37-pip
+      - openssl
+      - pkgconf
+      - git
 
 - name: "Ensure Borgbackup is installed"
   portinstall:
@@ -53,8 +54,8 @@
 - name: "Ensure old Borg archives are removed from repo"
   cron:
     name: "Prune old Borg archives"
-    minute: 0
-    hour: 1
+    minute: "0"
+    hour: "1"
     user: root
     job: "/usr/local/sbin/borg_backup prune"
     cron_file: /etc/crontab
@@ -62,8 +63,8 @@
 - name: "Ensure Daily backup to Borgbase remote repo"
   cron:
     name: "Create daily Borg backup"
-    minute: 0
-    hour: 3
+    minute: "0"
+    hour: "3"
     user: root
     job: "/usr/local/sbin/borg_backup backup"
     cron_file: /etc/crontab
