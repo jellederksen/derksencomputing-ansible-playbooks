@@ -69,6 +69,9 @@ ssl_key = </etc/pki/tls/private/{{ ansible_fqdn }}.key
 #   no_ticket - Disable SSL session tickets.
 #ssl_options =
 
+# Set diffie Hellman parameters file
+ssl_dh=</etc/dovecot/dh.pem
+
 #------------------------------------------------------------------------------
 #Copyright (c) 2017 by {{ name }} - {{ company }}
 #------------------------------------------------------------------------------
