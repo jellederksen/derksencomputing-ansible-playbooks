@@ -71,8 +71,8 @@ pass out log quick on $lan_if inet proto icmp from { $wls_net $dmz_net $cld_net 
 #</ruleset>
 
 #<ruleset id="10001" description="allow lan to internet" eol="20200101">
-pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname }
-pass out log quick on $ext_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname } nat-to <wormhole>
+pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname isakmp ipsec-nat-t }
+pass out log quick on $ext_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname isakmp ipsec-nat-t } nat-to <wormhole>
 #</ruleset>
 
 #<ruleset id="10002" description="allow lan to dmz" eol="20200101">
