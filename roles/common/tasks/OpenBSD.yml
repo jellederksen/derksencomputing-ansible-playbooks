@@ -17,6 +17,7 @@
   - wget
   - ksh93
   - gtar-1.32p1-static
+  - pftop
 
 - name: "Ensure packages are up to date"
   openbsd_pkg:

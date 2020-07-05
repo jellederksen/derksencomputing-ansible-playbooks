@@ -1,6 +1,6 @@
 kerberos_service_principals:
   - nfs
-borgbase_repo: kr21g0ua@kr21g0ua.repo.borgbase.com:repo
+borgbase_repo: tsx1fypn@tsx1fypn.repo.borgbase.com:repo
 borgbase_passphrase: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           30393930363534396663373330313033306338393266646339643336383533646336316430376261
@@ -9,4 +9,4 @@ borgbase_passphrase: !vault |
           3532623532643733650a633638316130376631353562316663363662366138646166326336373237
           6133
 
-borg_to_backup: /datastore/home/jelle/Downloads
+borg_to_backup: /datastore/home/jelle/Documents /datastore/home/jelle/Downloads /datastore/home/jelle/Pictures
