@@ -2,4 +2,7 @@
 # tasks file for monitoring
 
 - include_tasks: monitoring_server.yml
-  when: "monitoring_servers' in group_names"
+  when: "'monitoring_servers' in group_names"
+
+- include_tasks: monitoring_client.yml
+  when: "'monitoring_clients' in group_names"

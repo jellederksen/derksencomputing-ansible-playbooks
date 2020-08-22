@@ -1,2 +1,12 @@
 ---
 # handlers file for monitoring
+
+- name: restart_prometheus
+  service:
+    state: restarted
+    name: prometheus
+
+- name: reload_firewalld
+  service:
+    state: restarted
+    name: firewalld

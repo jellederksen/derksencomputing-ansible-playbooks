@@ -89,3 +89,11 @@
     - desktop
   tags:
     - desktop
+
+- name: Setup monitoring
+  hosts: monitoring
+  become: True
+  roles:
+    - monitoring
+  tags:
+    - monitoring

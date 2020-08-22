@@ -13,7 +13,4 @@ secondary_zones:
   - jellederksen.nl
   - kuberoot.nl
   - opencomputing.nl
-  - tastingtime.nl
   - derksencomputing.nl
-  - celiciaceramics.nl
-  - celiciaceramics.com

@@ -6,7 +6,6 @@ mail_domains:
   - jellederksen.nl
   - kuberoot.nl
   - opencomputing.nl
-  - tastingtime.nl
   - derksencomputing.nl
 opendkim_trustedhosts:
   - 172.16.0.4

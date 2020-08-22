@@ -42,7 +42,6 @@
     mode: '0755'
   with_items:
     - www.jellederksen.nl
-    - www.tastingtime.nl
 
 - name: "Ensure the website's files are deployed"
   unarchive:
@@ -52,7 +51,6 @@
     group: daemon
   with_items:
     - www.jellederksen.nl
-    - www.tastingtime.nl
 
 - name: "Ensure httpd final configuration file"
   template:

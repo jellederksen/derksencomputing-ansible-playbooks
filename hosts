@@ -52,5 +52,16 @@ altair.galaxy.derksencomputing.nl
 [webservers]
 algol.galaxy.derksencomputing.nl
 
+[monitoring:children]
+monitoring_servers
+monitoring_clients
+
 [monitoring_servers]
 rigel.galaxy.derksencomputing.nl
+
+[monitoring_clients]
+rigel.galaxy.derksencomputing.nl
+megrez.galaxy.derksencomputing.nl
+deneb.galaxy.derksencomputing.nl
+alcor.galaxy.derksencomputing.nl
+polaris.galaxy.derksencomputing.nl
