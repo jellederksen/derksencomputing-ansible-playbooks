@@ -14,4 +14,10 @@ scrape_configs:
 
   - job_name: 'node_exporter'
     static_configs:
-    - targets: ['rigel.galaxy.derksencomputing.nl:9100','megrez.galaxy.derksencomputing.nl:9100','deneb.galaxy.derksencomputing.nl:9100','alcor.galaxy.derksencomputing.nl:9100','polaris.galaxy.derksencomputing.nl:9100']
+    - targets: ['rigel.galaxy.derksencomputing.nl:9100','megrez.galaxy.derksencomputing.nl:9100','deneb.galaxy.derksencomputing.nl:9100','alcor.galaxy.derksencomputing.nl:9100','polaris.galaxy.derksencomputing.nl:9100','sirius.galaxy.derksencomputing.nl:9100','algol.galaxy.derksencomputing.nl:9100','vega.galaxy.derksencomputing.nl:9100','altair.galaxy.derksencomputing.nl:9100']
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - localhost:9093

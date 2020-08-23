@@ -6,6 +6,11 @@
     state: restarted
     name: prometheus
 
+- name: restart_alertmanager
+  service:
+    state: restarted
+    name: alertmanager
+
 - name: reload_firewalld
   service:
     state: restarted

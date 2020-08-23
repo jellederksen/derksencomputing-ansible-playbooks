@@ -122,6 +122,11 @@ pass in log quick on $dmz_if inet proto { tcp udp } from $dmz_net to $cld_net
 pass out log quick on $dmz_if inet proto { tcp udp } from $cld_net to $dmz_net
 #</ruleset>
 
+#<ruleset id="40003" description="allow rigel to megrez for Prometheus monitoring" eol="20200101">
+pass in log quick on $dmz_if inet proto tcp from 172.16.0.8 to 10.0.0.2
+pass out log quick on $lan_if inet proto tcp from 172.16.0.8 to 10.0.0.2
+#</ruleset>
+
 #cld rules
 #<ruleset id="40003" description="allow wls to cld" eol="20200101">
 pass in log quick on $wls_if inet proto { tcp udp } from $wls_net to $cld_net 
@@ -152,6 +157,10 @@ pass out log quick on $ext_if inet proto { tcp udp } from $ext_ip to any port 53
 
 #<ruleset id="50003" description="allow sirius to internet for updates and packages" eol="20200101">
 pass out log quick on $ext_if inet proto tcp from $ext_ip to any port { www https }
+#</ruleset>
+
+#<ruleset id="50004" description="allow rigel to sirius for Prometheus monitoring" eol="20200101">
+pass in log quick on $dmz_if inet proto tcp from 172.16.0.8 to $dmz_ip port 9100
 #</ruleset>
 
 #xdz rules
@@ -265,6 +274,10 @@ pass out log quick on $ext_if inet proto { tcp, udp } from <blackhole> to any po
 #<ruleset id="20002" description="allow from derksencomputing networks to VPN cloud DMZ" eol="20200101">
 pass in log quick on $int_if from { $lan_net $wls_net $dmz_net } to $dmz_net
 pass out log quick on $int_if from $int_ip to { $lan_net $wls_net $dmz_net }
+#</ruleset>
+
+#<ruleset id="20003" description="allow rigel to algol for Prometheus monitoring" eol="20200101">
+pass in log quick on $int_if inet proto tcp from 172.16.0.8 to $int_ip port 9100
 #</ruleset>
 
 {% endif %}

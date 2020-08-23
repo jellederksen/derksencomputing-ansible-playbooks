@@ -61,7 +61,7 @@
     state: started
     name: prometheus
     daemon_reload: yes
-    enabled: true
+    enabled: True
 
 - name: Open TCP port 9090 
   firewalld:
@@ -69,6 +69,61 @@
     permanent: yes
     state: enabled
   notify: reload_firewalld
+
+- name: Add Alertmanager systemaccount
+  user:
+    name: alertmanager
+    shell: /bin/false
+    create_home: False
+
+- name: Download Alertmanager archive
+  get_url:
+    url: https://github.com/prometheus/alertmanager/releases/download/v0.21.0/alertmanager-0.21.0.linux-amd64.tar.gz
+    dest: /root
+    mode: '0440'
+
+- name: Unarchive Alertmanager
+  unarchive:
+    src: /root/alertmanager-0.21.0.linux-amd64.tar.gz
+    dest: /root
+    remote_src: yes
+
+- name: Copy Alertmanager binaries to correct path
+  copy:
+    src: "/root/alertmanager-0.21.0.linux-amd64/{{ item }}"
+    dest: /usr/local/bin
+    remote_src: yes
+    mode: 0755
+  with_items:
+    - alertmanager
+    - amtool
+
+- name: Create Alertmanager configuration directory
+  file:
+    path: /etc/alertmanager
+    state: directory
+    mode: '0755'
+
+- name: Setup Alertmanager configuration file
+  template:
+    src: templates/alertmanager.yml.j2
+    dest: /etc/alertmanager/alertmanager.yml
+    owner: alertmanager
+    group: alertmanager
+    mode: '0644'
+  notify: restart_alertmanager
+
+- name: Setup Alertmanager systemd unit file
+  template:
+    src: templates/alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+
+- name: Start and enable Alertmanager
+  systemd:
+    state: started
+    name: alertmanager
+    daemon_reload: yes
+    enabled: True
 
 - name: Add Grafana repository
   yum_repository:
@@ -88,7 +143,7 @@
   service:
     state: started
     name: grafana-server
-    enabled: true
+    enabled: True
 
 - name: Open TCP port 3000 
   firewalld:

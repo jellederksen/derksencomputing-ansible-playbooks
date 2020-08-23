@@ -1,0 +1,14 @@
+---
+
+- name: Install Node_exporter
+  pkgng:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - node_exporter
+
+- name: "Ensure node_exporter is enabled and started"
+  service:
+    name: node_exporter
+    state: started
+    enabled: true
