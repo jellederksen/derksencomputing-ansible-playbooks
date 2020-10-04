@@ -132,7 +132,7 @@
     file: grafana_repo
     baseurl: https://packages.grafana.com/oss/rpm
     gpgcheck: yes
-    gpgkey: /etc/pki/tls/certs/ca-bundle.crt
+    gpgkey: https://packages.grafana.com/gpg.key
 
 - name: Install Grafana
   yum:
