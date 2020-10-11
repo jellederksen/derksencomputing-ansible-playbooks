@@ -13,18 +13,7 @@
     state: present
   vars:
     packages:
-      - python37
-      - py37-pip
-      - openssl
-      - pkgconf
-      - git
-
-- name: "Ensure Borgbackup is installed"
-  portinstall:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - "archivers/py-borgbackup"
+      - py37-borgbackup
 
 #Initialize the remote Borg archive. If the remote Borg archive already
 #exists, the command will exit with return code 2. We will ignore this

@@ -1,18 +1,13 @@
 ---
 
-- name: "Ensure base64 command to decode keytab is installed"
+- name: "Ensure required packages are installed"
   pkgng:
-    name: base64
-    state: present
-
-- name: "Ensure ldap ports are installed"
-  portinstall:
     name: "{{ item }}"
     state: present
   with_items:
-    - "net/openldap24-client"
-    - "security/pam_ldap"
-    - "net/nss_ldap"
+    - openldap-client
+    - pam_ldap
+    - nss_ldap
 
 #The ldap config file is the same in three places. So
 #we template the same file to three destinations.
@@ -24,6 +19,11 @@
     - /usr/local/etc/openldap/ldap.conf
     - /usr/local/etc/nss_ldap.conf
     - /usr/local/etc/ldap.conf
+
+- name: "Ensure root CA certificate is available for ldaps"
+  template:
+    src: templates/FreeBSD/idm_root_ca.crt.j2
+    dest: /etc/ssl/ca.crt
 
 - name: "Ensure PAM SSHD config with LDAP authentication"
   template:
