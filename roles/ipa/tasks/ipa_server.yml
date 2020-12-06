@@ -15,9 +15,6 @@
     creates: /etc/ipa/default.conf
   no_log: True
 
-- name: print password ipa admin
-  debug: var=ipa_admin_pass
-
 - name: Ensure the default login shell is bash
   ipa_config:
     ipadefaultloginshell: /bin/bash
