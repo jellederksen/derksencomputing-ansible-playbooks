@@ -3,7 +3,7 @@ file: ipa/tasks/ipa_server.yml
 task: Ensure nodes are enrolled
 todo: Algol and Sirius have two interfaces. The wrong IP is added to the DNS
       zone. Change the task so the internal private IP-adres is added instead
-      of the public IP address.
+      of the public IP-address.
 
 role: backup
 file: backup/tasks/main.yml
