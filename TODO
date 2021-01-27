@@ -9,7 +9,7 @@ role: backup
 file: backup/tasks/main.yml
 task: To be created
 todo: Automate the creation of the remote BorgBackup repo with the Borgbackup
-      IPA.
+      API.
 
 role: ipa
 file: ipa/tasks/FreeBSD.yml
