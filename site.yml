@@ -1,7 +1,7 @@
 #!/usr/bin/ansible-playbook --ask-vault-pass
 ---
 
-#We first run the vpn role so we can connect to Alcor over IPsec
+# We first run the vpn role so we can connect to Alcor over IPsec
 #- name: Configure IPSec tunnel between wormhole and blackhole
 #  hosts: vpn
 #  become: True
