@@ -15,7 +15,7 @@ role: ipa
 file: ipa/tasks/FreeBSD.yml
 task: Ensure nodes are enrolled
 todo: Loop over the kerberos_service_principals list and store them in the
-      keytab file on the given host. relace the commands that are used now.
+      keytab file on the given host. Replace the commands that are used now.
 
 role: vpn
 file: vpn/tasks/main.yml
