@@ -20,7 +20,7 @@ todo: Loop over the kerberos_service_principals list and store them in the
 role: vpn
 file: vpn/tasks/main.yml
 task: Ensure ipsec config
-todo: Replace IPSec on time password with certificate authentication
+todo: Replace IPSec one time password with certificate authentication
 
 role: mail
 file: mail/tasks/forwarding_mailserver.yml
