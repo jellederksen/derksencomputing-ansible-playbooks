@@ -97,3 +97,11 @@
     - monitoring
   tags:
     - monitoring
+
+- name: Setup Hasicorp Vault
+  hosts: vault
+  become: True
+  roles:
+    - vault
+  tags:
+    - vault

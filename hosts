@@ -8,7 +8,7 @@ deneb.galaxy.derksencomputing.nl
 sirius.galaxy.derksencomputing.nl
 algol.galaxy.derksencomputing.nl
 altair.galaxy.derksencomputing.nl
-polaris.galaxy.derksencomputing.nl
+#polaris.galaxy.derksencomputing.nl
 rigel.galaxy.derksencomputing.nl
 alnitak.galaxy.derksencomputing.nl
 
@@ -35,7 +35,7 @@ algol.galaxy.derksencomputing.nl
 
 [desktops]
 #megrez.galaxy.derksencomputing.nl
-polaris.galaxy.derksencomputing.nl
+#polaris.galaxy.derksencomputing.nl
 
 [dns]
 sirius.galaxy.derksencomputing.nl
@@ -65,9 +65,12 @@ rigel.galaxy.derksencomputing.nl
 #megrez.galaxy.derksencomputing.nl
 deneb.galaxy.derksencomputing.nl
 alcor.galaxy.derksencomputing.nl
-polaris.galaxy.derksencomputing.nl
+#polaris.galaxy.derksencomputing.nl
 sirius.galaxy.derksencomputing.nl
 algol.galaxy.derksencomputing.nl
 altair.galaxy.derksencomputing.nl
 vega.galaxy.derksencomputing.nl
+alnitak.galaxy.derksencomputing.nl
+
+[vault]
 alnitak.galaxy.derksencomputing.nl
