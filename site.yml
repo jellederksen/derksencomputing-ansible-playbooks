@@ -105,3 +105,11 @@
     - vault
   tags:
     - vault
+
+- name: Setup project management Kanboard
+  hosts: kanboard
+  become: True
+  roles:
+    - kanboard
+  tags:
+    - kanboard

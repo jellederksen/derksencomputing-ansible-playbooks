@@ -1,0 +1,59 @@
+---
+# tasks file for kanboard
+
+- name: Ensure Kanboard dependancy packages are installed
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - httpd
+    - httpd-tools
+    - php
+    - php-opcache
+    - php-gd
+    - php-curl
+    - php-mysqlnd
+    - php-mbstring
+    - php-json
+    - php-xml
+    - mod_ssl
+    - php-ldap
+    - php-pecl-zip
+
+- name: Check if Kanboard is installed
+  stat:
+    path: /var/www/html/index.php
+  register: kanboard_index
+
+- name: Download and install Kanboard when Kanboard is not installed
+  block:
+    - name: Download latest Kanboard from Github
+      get_url:
+        url: https://github.com/kanboard/kanboard/archive/v1.2.18.tar.gz
+        dest: /tmp
+        mode: "0644"
+    - name: Extract gzip tarball file in httpd directory
+      unarchive:
+        src: /tmp/v1.2.18.tar.gz
+        dest: /var/www/html
+  when: not kanboard_index.stat.exists
+
+- name: Ensure Kanboard http is redirected to https
+  template:
+    src: templates/htaccess.j2
+    dest: /var/www/html/.htaccess
+
+- name: Enable and start httpd daemon
+  service:
+    name: httpd
+    state: started
+    enabled: True
+
+- name: Open firewall ports for http and https traffic
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+  with_items:
+    - http
+    - https
