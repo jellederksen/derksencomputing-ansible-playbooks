@@ -63,7 +63,6 @@ pass in log quick on $ext_if inet proto { udp, tcp } from any to <wormhole> port
 pass in log quick on $ext_if inet proto tcp from any to <wormhole> port ssh
 #</ruleset>
 
-
 #lan rules
 #<ruleset id="10000" description="icmp rules" eol="20200101">
 pass in log quick on $lan_if inet proto icmp from $lan_net to any
@@ -71,8 +70,8 @@ pass out log quick on $lan_if inet proto icmp from { $wls_net $dmz_net $cld_net 
 #</ruleset>
 
 #<ruleset id="10001" description="allow lan to internet" eol="20200101">
-pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname isakmp ipsec-nat-t }
-pass out log quick on $ext_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname isakmp ipsec-nat-t } nat-to <wormhole>
+pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname isakmp ipsec-nat-t bitcoin litecoin }
+pass out log quick on $ext_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname isakmp ipsec-nat-t bitcoin litecoin } nat-to <wormhole>
 #</ruleset>
 
 #<ruleset id="10002" description="allow lan to dmz" eol="20200101">
@@ -161,6 +160,14 @@ pass out log quick on $ext_if inet proto tcp from $ext_ip to any port { www http
 
 #<ruleset id="50004" description="allow rigel to sirius for Prometheus monitoring" eol="20200101">
 pass in log quick on $dmz_if inet proto tcp from 172.16.0.8 to $dmz_ip port 9100
+#</ruleset>
+
+#<ruleset id="50005" description="allow deneb to sirius for backup mail delivery" eol="20200101">
+pass in log quick on $dmz_if inet proto tcp from 172.16.0.4 to $dmz_ip port smtp
+#</ruleset>
+
+#<ruleset id="50006" description="allow sirius to internet for mail delivery" eol="20200101">
+pass out log quick on $ext_if inet proto tcp from $ext_ip to any port smtp
 #</ruleset>
 
 #xdz rules

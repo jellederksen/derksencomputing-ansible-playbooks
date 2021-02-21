@@ -66,8 +66,8 @@ non_smtpd_milters = inet:localhost:8891
 {% elif mailserver_type == 'destination' %}
 
 # SMTP from your server to others
-smtp_tls_key_file = /etc/ssl/private/{{ ansible_nodename }}.key
-smtp_tls_cert_file = /etc/ssl/{{ ansible_nodename }}.crt
+smtp_tls_key_file = /etc/pki/tls/private/{{ ansible_nodename }}.key
+smtp_tls_cert_file = /etc/pki/tls/certs/{{ ansible_nodename }}.crt
 #smtp_tls_CAfile = /etc/ssl/cert.pem
 smtp_tls_security_level = may
 smtp_tls_note_starttls_offer = yes
