@@ -3,9 +3,9 @@
     name: "{{ packages }}"
   vars:
     packages:
-      - rspamd-1.9.4
-      - postfix-3.5.20200203-sasl2-ldap
-      - opendkim-2.10.3p1
+      - rspamd-2.5p1
+      - postfix-3.6.20200627-sasl2-ldap
+      - opendkim-2.10.3p2
 
 - name: "Ensure OpenSMTP is stopped and disabled"
   service:

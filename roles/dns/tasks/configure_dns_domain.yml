@@ -16,19 +16,19 @@
   register: zone_file
 
 - name: "Ensure key signing key exists"
-  command: doas -u _nsd /usr/local/sbin/dnssec-keygen -f KSK -3 -a RSASHA256 -b 2048 -r /dev/random -n ZONE "{{ item }}"
+  command: doas -u _nsd /usr/local/sbin/dnssec-keygen -f KSK -3 -a RSASHA256 -b 2048 -n ZONE "{{ item }}"
   args:
     chdir: "/var/nsd/zones/master/{{ item }}"
     creates: "/var/nsd/zones/master/{{ item }}/dsset-{{ item }}."
 
 - name: "Ensure zone signing key exits"
-  command: doas -u _nsd /usr/local/sbin/dnssec-keygen -3 -a RSASHA256 -b 1024 -r /dev/random -n ZONE "{{ item }}"
+  command: doas -u _nsd /usr/local/sbin/dnssec-keygen -3 -a RSASHA256 -b 1024 -n ZONE "{{ item }}"
   args:
     chdir: "/var/nsd/zones/master/{{ item }}"
     creates: "/var/nsd/zones/master/{{ item }}/dsset-{{ item }}."
 
 - name: "Ensure dnssec zone is (re)signed"
-  shell: doas -u _nsd /usr/local/sbin/dnssec-signzone -N date -S -K . -g -d . -a -r /dev/random -o "{{ item }}" zone.db
+  shell: doas -u _nsd /usr/local/sbin/dnssec-signzone -N date -S -K . -g -d . -a -o "{{ item }}" zone.db
   args:
     chdir: "/var/nsd/zones/master/{{ item }}"
   when: zone_file.changed

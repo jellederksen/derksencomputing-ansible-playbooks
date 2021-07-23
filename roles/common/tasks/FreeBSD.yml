@@ -8,18 +8,18 @@
   - bash
   - wget
   - ksh93
-  - gtar-1.32
+  - gtar
   - tcpdump
 
-- name: "Ensure updates are fetched"
-  shell: freebsd-update fetch
-  register: update_fetch
-  changed_when: "'No updates needed' not in update_fetch.stdout"
-
-- name: "Ensure updates are installed"
-  shell: freebsd-update install
-  register: update_install
-  when: update_fetch.changed
+#- name: "Ensure updates are fetched"
+# shell: freebsd-update fetch
+#  register: update_fetch
+#  changed_when: "'No updates needed' not in update_fetch.stdout"
+#
+#- name: "Ensure updates are installed"
+#  shell: freebsd-update install
+#  register: update_install
+#  when: update_fetch.changed
 
 - name: "Ensure packages are updated"
   shell: pkg upgrade -y

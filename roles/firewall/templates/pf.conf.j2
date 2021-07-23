@@ -60,7 +60,7 @@ pass in log quick on $ext_if inet proto { udp, tcp } from any to <wormhole> port
 #</ruleset>
 
 #<ruleset id="00003" description="allow ssh from internet to firewall for access" eol="20200101">
-pass in log quick on $ext_if inet proto tcp from any to <wormhole> port ssh
+#pass in log quick on $ext_if inet proto tcp from any to <wormhole> port ssh
 #</ruleset>
 
 #lan rules
@@ -251,7 +251,7 @@ pass in log quick on $ext_if inet proto { udp, tcp } from any to <blackhole> por
 #</ruleset>
 
 #<ruleset id="00003" description="allow ssh from internet to firewall for access" eol="20200101">
-pass in log quick on $ext_if inet proto tcp from any to <blackhole> port ssh
+#pass in log quick on $ext_if inet proto tcp from any to <blackhole> port ssh
 #</ruleset>
 
 #<ruleset id="00004" description="allow http and https for website www.jellederksen.nl" eol="20200101">

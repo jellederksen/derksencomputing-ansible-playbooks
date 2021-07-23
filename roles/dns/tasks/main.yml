@@ -2,7 +2,7 @@
 
 - name: "Ensure required DNS packages are installed"
   openbsd_pkg:
-    name: isc-bind-9.11.19v0
+    name: isc-bind-9.16.10v2
     state: present
 
 - name: Ensure root is allowed to sign as _nsd"

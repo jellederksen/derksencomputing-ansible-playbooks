@@ -1,12 +1,12 @@
-- name: "Ensure mail packages are installed"
-  yum:
-    name: "{{ packages }}"
-  vars:
-    packages:
-    - postfix
-    - dovecot
-    - procmail
-    - epel-release
+#- name: "Ensure mail packages are installed"
+#  yum:
+#    name: "{{ packages }}"
+#  vars:
+#    packages:
+#    - postfix
+#    - dovecot
+#    - procmail
+#    - epel-release
 
 - name: "Ensure Postfix config"
   template:

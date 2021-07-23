@@ -1,5 +1,5 @@
 [ipa_servers]
-vega.galaxy.derksencomputing.nl
+#vega.galaxy.derksencomputing.nl
 
 [ipa_clients]
 alcor.galaxy.derksencomputing.nl
@@ -69,7 +69,7 @@ alcor.galaxy.derksencomputing.nl
 sirius.galaxy.derksencomputing.nl
 algol.galaxy.derksencomputing.nl
 altair.galaxy.derksencomputing.nl
-vega.galaxy.derksencomputing.nl
+#vega.galaxy.derksencomputing.nl
 alnitak.galaxy.derksencomputing.nl
 
 [vault]
