@@ -1,0 +1,37 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+#       $OpenBSD: dhcpd.conf,v 1.1 2014/07/11 21:20:10 deraadt Exp $
+#
+# DHCP server options.
+# See dhcpd.conf(5) and dhcpd(8) for more information.
+#
+
+# Network:              192.168.1.0/255.255.255.0
+# Domain name:          my.domain
+# Name servers:         192.168.1.3 and 192.168.1.5
+# Default router:       192.168.1.1
+# Addresses:            192.168.1.32 - 192.168.1.127
+#
+option  domain-name "{{ domain_name }}";
+option  domain-name-servers 172.16.0.2;
+
+#lan network
+subnet 10.0.0.0 netmask 255.255.255.0 {
+        option routers 10.0.0.1;
+        range 10.0.0.100 10.0.0.200;
+}
+
+#wls network
+subnet 10.0.1.0 netmask 255.255.255.0 {
+        option routers 10.0.1.1;
+        range 10.0.1.100 10.0.1.200;
+}
+
+#dmz network
+subnet 172.16.0.0 netmask 255.255.255.0 {
+        option routers 172.16.0.1;
+        range 172.16.0.100 172.16.0.200;
+}

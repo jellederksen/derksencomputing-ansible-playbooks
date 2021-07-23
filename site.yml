@@ -113,3 +113,11 @@
     - kanboard
   tags:
     - kanboard
+
+- name: Setup dhcp server
+  hosts: dhcp
+  become: True
+  roles:
+    - dhcp
+  tags:
+    - dhcp
