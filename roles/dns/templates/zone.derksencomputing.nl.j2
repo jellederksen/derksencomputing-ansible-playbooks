@@ -8,7 +8,7 @@ $ORIGIN derksencomputing.nl.
 $TTL 3600
 
 @ IN SOA wormhole.derksencomputing.nl. jelle.derksencomputing.nl. (
-        2021070301        ;Serial number
+        2021073001        ;Serial number
         3600              ;Refresh
         600               ;Retry
         2764800           ;Expire
@@ -21,9 +21,8 @@ $TTL 3600
 
 @               IN        A        149.210.150.253
 www             IN        A        149.210.150.253
-wormhole        IN        A        80.127.97.42
+wormhole        IN        A        45.83.232.124
 blackhole       IN        A        149.210.150.253
-meet		IN        A        80.127.97.43
 
 {% for mailserver in groups['mail'] %}
   {%  if hostvars[mailserver]['opendkim_keys'] is defined %}

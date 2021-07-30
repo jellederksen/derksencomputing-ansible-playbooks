@@ -5,29 +5,28 @@
 
 {% if ansible_hostname == "sirius" %}
 #macros
-ext_if="vio0"
+ext_if="pppoe0"
 lan_if="vio1"
 wls_if="vio2"
 dmz_if="vio3"
 cld_if="enc0"
 xdz_if="vio4"
 
-ext_ip="80.127.97.42"
+ext_ip="45.83.232.124"
 lan_ip="10.0.0.1"
 wls_ip="10.0.1.1"
 dmz_ip="172.16.0.1"
 xdz_ip="172.16.2.2"
 
-ext_net="80.127.97.40/29"
+ext_net="45.83.232.124/32"
 lan_net="10.0.0.0/24"
 wls_net="10.0.1.0/24"
 dmz_net="172.16.0.0/24"
 cld_net="172.16.1.0/24"
 xdz_net="172.16.2.0/24"
 
-table <wormhole> { 80.127.97.42 }
+table <wormhole> { 45.83.232.124 }
 table <blackhole> { 149.210.150.253 }
-table <meet> { 80.127.97.43 }
 
 #options
 set skip on { lo0, enc0 }
@@ -175,30 +174,8 @@ pass out log quick on $ext_if inet proto tcp from $ext_ip to any port smtp
 pass out log quick on $xdz_if inet proto icmp from { $xdz_net $wls_net $dmz_net $cld_net $lan_net } to $xdz_net
 #</ruleset>
 
-#<ruleset id="60002" description="allow Jitsi meet access from internet to firewall forward to alnitak" eol="20200101">
-pass in log quick on $ext_if inet proto tcp from any to <meet> port { 80, 443, 4443 } rdr-to 172.16.2.2
-pass out log quick on $xdz_if inet proto tcp from any to 172.16.2.2 port { 80, 443, 4443 }
-pass in log quick on $ext_if inet proto udp from any to <meet> port 10000 rdr-to 172.16.2.2
-pass out log quick on $xdz_if inet proto udp from any to 172.16.2.2 port 10000
-#</ruleset>
-
-#<ruleset id="60003" description="allow alnitak to google for dns" eol="20200101">
-pass in log quick on $xdz_if inet proto { udp, tcp } from 172.16.2.2 to 8.8.8.8 port 53
-pass out log quick on $ext_if inet proto { udp, tcp } from 172.16.2.2 to 8.8.8.8 port 53 nat-to <meet>
-#</ruleset>
-
-#<ruleset id="60004" description="allow alnitak to Ubuntu and Jitsi for updates" eol="20200101">
-pass in log quick on $xdz_if inet proto tcp from 172.16.2.2 to { 213.136.12.213, 130.79.200.22 }  port { www, https }
-pass out log quick on $ext_if inet proto tcp from 172.16.2.2 to { 213.136.12.213, 130.79.200.22 } port { www, https } nat-to <meet>
-#</ruleset>
-
-#<ruleset id="60005" description="allow ssh access to alnitak from lan" eol="20200101">
+#<ruleset id="60002" description="allow ssh access to alnitak from lan" eol="20200101">
 pass out log quick on $xdz_if inet proto tcp from $lan_net to 172.16.2.2 port ssh
-#</ruleset>
-
-#<ruleset id="60006" description="allow alnitak to internet for letsencrypt certificate request" eol="20200101">
-pass in log quick on $xdz_if inet proto tcp from 172.16.2.2 to any port { 80, 443 }
-pass out log quick on $ext_if inet proto tcp from 172.16.2.2 to any port { 80, 443 } nat-to <meet>
 #</ruleset>
 
 {% elif ansible_hostname == "algol" %}
@@ -216,7 +193,7 @@ lan_net="10.0.0.0/24"
 wls_net="10.0.1.0/24"
 dmz_net="172.16.0.0/24"
 
-table <wormhole> { 80.127.97.42 }
+table <wormhole> { 45.83.232.124 }
 table <blackhole> { 149.210.150.253 }
 
 #options

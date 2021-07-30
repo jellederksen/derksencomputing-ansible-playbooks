@@ -4,7 +4,7 @@ ansible_default_ipv4.address: 172.16.1.1
 mailserver_type: forwarder
 external_fqdn: blackhole.derksencomputing.nl
 dns_listen_ip: 149.210.150.253
-primary_server: 80.127.97.42
+primary_server: 45.83.232.124
 secondary_zones:
   - edunix.nl
   - epsilix.com
