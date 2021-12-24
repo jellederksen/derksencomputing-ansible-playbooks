@@ -2,6 +2,11 @@
 # handlers file for vault
 
 - name: restart_vault
+  listen: x509_certificate_event
   service:
     name: vault
     state: restarted
+
+- name: reload_firewalld
+  shell:
+    cmd: /usr/sbin/firewalld --reload

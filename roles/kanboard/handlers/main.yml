@@ -1,2 +1,12 @@
 ---
-# handlers file for kanboard
+# Handlers file for kanboard
+
+- name: reload_firewalld
+  shell:
+    cmd: /usr/sbin/firewalld --reload
+
+- name: restart_httpd
+  listen: x509_certificate_event
+  service:
+    name: httpd
+    state: restarted

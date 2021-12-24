@@ -1,0 +1,11 @@
+{% if mail_domains is defined %}
+{% for domain in mail_domains %}
+domain {
+    {{ domain }} {
+        path = "/etc/mail/dkim/keys/{{ domain }}/{{ domain }}.key";
+        selector = "{{ inventory_hostname_short }}";
+    }
+}
+
+{% endfor %}
+{% endif %}

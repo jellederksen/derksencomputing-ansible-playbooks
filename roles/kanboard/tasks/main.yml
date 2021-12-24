@@ -22,26 +22,64 @@
 
 - name: Check if Kanboard is installed
   stat:
-    path: /var/www/html/index.php
+    path: /var/www/html/kanboard/index.php
   register: kanboard_index
 
 - name: Download and install Kanboard when Kanboard is not installed
   block:
     - name: Download latest Kanboard from Github
       get_url:
-        url: https://github.com/kanboard/kanboard/archive/v1.2.18.tar.gz
+        url: https://github.com/kanboard/kanboard/archive/refs/tags/v1.2.20.tar.gz
         dest: /tmp
         mode: "0644"
+
+    - name: Ensure the Kanboard Apache root directory exists
+      file:
+        path: /var/www/html/kanboard
+        state: directory
+        mode: '0755'
+        owner: apache
+        group: apache
+
     - name: Extract gzip tarball file in httpd directory
       unarchive:
-        src: /tmp/v1.2.18.tar.gz
-        dest: /var/www/html
+        src: /tmp/kanboard-1.2.20.tar.gz
+        dest: /var/www/html/kanboard
+        remote_src: True
+        extra_opts: [--strip-components=1]
+    - name: Ensure Apache own the Kanboard files
+      file:
+        path: /var/www/html/kanboard
+        state: directory
+        recurse: yes
+        owner: apache
+        group: apache
+    - name: Ensure the selinux contaxt so Apache can write the data directory
+      sefcontext:
+        target: '/var/www/html/kanboard/data(/.*)?'
+        setype: httpd_sys_content_rw_t
+        state: present
+      register: kanboard_selinux_context
+
+    - name: Restore the selinux context on the Kanboard Apache root
+      command: 
+        cmd: restorecon /var/www/html/kanboard
+      when: kanboard_selinux_context.changed
   when: not kanboard_index.stat.exists
 
-- name: Ensure Kanboard http is redirected to https
+- name: Allow Apache to read the private key
+  acl:
+    path: "/etc/pki/tls/private/kanboard.galaxy.derksencomputing.nl.key"
+    entity: apache
+    etype: user
+    permissions: r
+    state: present
+
+- name: Ensure Apache kanboard virtualhosts file
   template:
-    src: templates/htaccess.j2
-    dest: /var/www/html/.htaccess
+    src: templates/kanboard.galaxy.derksencomputing.nl.conf.j2
+    dest: /etc/httpd/conf.d/kanboard.galaxy.derksencomputing.nl.conf
+  notify: restart_httpd
 
 - name: Enable and start httpd daemon
   service:
@@ -57,3 +95,4 @@
   with_items:
     - http
     - https
+  notify: reload_firewalld

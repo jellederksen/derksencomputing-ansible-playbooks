@@ -1,0 +1,21 @@
+---
+
+- name: "Fetch dsset records of local dns zones for unbound DNSSEC anchor"
+  slurp:
+    src: "/var/nsd/zones/master/{{ item }}/dsset-{{ item }}."
+  register: dnssec_dsset_records
+  with_items:
+    - "{{ primary_zones }}"
+
+- name: "Ensure unbound config file"
+  template:
+    src: templates/unbound.conf.j2
+    dest: /var/unbound/etc/unbound.conf
+    mode: 0644
+  notify: restart_unbound
+
+- name: "Ensure unbound is enabled and started"
+  service:
+    name: unbound
+    enabled: True
+    state: started

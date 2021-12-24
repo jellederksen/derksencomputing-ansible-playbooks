@@ -5,3 +5,8 @@
   service:
     name: nsd
     state: restarted
+
+- name: restart_unbound
+  service:
+    name: unbound
+    state: restarted

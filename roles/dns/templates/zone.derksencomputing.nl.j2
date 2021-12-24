@@ -7,28 +7,31 @@
 $ORIGIN derksencomputing.nl.
 $TTL 3600
 
-@ IN SOA wormhole.derksencomputing.nl. jelle.derksencomputing.nl. (
-        2021073001        ;Serial number
-        3600              ;Refresh
-        600               ;Retry
-        2764800           ;Expire
-        3600              ;Min TTL
+@ IN SOA quasar.derksencomputing.nl. jelle.derksencomputing.nl. (
+        2021122201       ;Serial number
+        1200             ;Refresh
+        120              ;Retry
+        2419200          ;Expire
+        3600             ;Min TTL
 )
-        NS        wormhole.derksencomputing.nl.
+        NS        quasar.derksencomputing.nl.
         NS        blackhole.derksencomputing.nl.
         MX        10 blackhole.derksencomputing.nl.
-        MX        20 wormhole.derksencomputing.nl.
+        MX        10 quasar.derksencomputing.nl.
 
 @               IN        A        149.210.150.253
 www             IN        A        149.210.150.253
 wormhole        IN        A        45.83.232.124
 blackhole       IN        A        149.210.150.253
+quasar          IN        A        136.144.215.240
 
 {% for mailserver in groups['mail'] %}
-  {%  if hostvars[mailserver]['opendkim_keys'] is defined %}
-    {%  for opendkim_key in hostvars[mailserver]['opendkim_keys']['results'] %}
-      {%  if opendkim_key.item == 'derksencomputing.nl' %}
-{{ opendkim_key.content | b64decode }}
+  {%  if hostvars[mailserver]['dkim_pub_keys'] is defined %}
+    {%  for key in hostvars[mailserver]['dkim_pub_keys'] %}
+      {%  if key.dkim_domain == 'derksencomputing.nl' %}
+{{ key.mail_server }}._domainkey    IN    TXT    ( "v=DKIM1;k=rsa;" {% for line in key.dkim_pub_key.split('\n') %}{% if loop.first %}"p={{ line }}"{% endif %}    {% if not loop.first and not loop.last %}"{{ line }}"{% endif %} {% if loop.last %}"{{ line }}" ){% endif %}
+
+        {% endfor %}
       {%  endif %}
     {%  endfor %}
   {%  endif %}
@@ -47,6 +50,36 @@ opencomputing.nl._report._dmarc	TXT	"v=DMARC1"
 
 @	IN	CAA	0 issue "letsencrypt.org"
 @	IN	CAA	0 issuewild ";"
+
+;ssh fingerprints
+;Keys are hardcoded so they can't be dynamically changed by Ansible.
+
+wormhole       IN         SSHFP 1 1 059af01d7f852344e61629155eb980c90cf8f742
+wormhole       IN         SSHFP 1 2 08e541b5e7fb2931603ed53d212a983e77a2b7e20b7684228043f8293fdb4357
+wormhole       IN         SSHFP 2 1 9ed9e389f880821f1d301c2998e006f3aca233a0
+wormhole       IN         SSHFP 2 2 18dff3bebd8fc275043b5a03600a9fd8e387c010c73da7886765f9d94ea63fb7
+wormhole       IN         SSHFP 3 1 309e3aef2e538c0c42aaa914151ee6249820ffa5
+wormhole       IN         SSHFP 3 2 b10840d8d120e5d3acb8082989e72deff0f9992c14d2a02aafbd0ed1da5dc16f
+wormhole       IN         SSHFP 4 1 ea4f42eae69346a96bf0e11ff3d11b37d613f61f
+wormhole       IN         SSHFP 4 2 32c6c6ef5b2dfe4af992e7fa6d8a2c2ec8b0acb382973ca91088ad51ff720136
+
+blackhole      IN         SSHFP 1 1 898b05b6b3ecead61467d25072b534373ed2521c
+blackhole      IN         SSHFP 1 2 46a9a247883426ab67f9a08131c360da5630e7f7f1469fe67cc88a8d6bd79f66
+blackhole      IN         SSHFP 2 1 5f428ac4f180378d3cf096d6f1a79a65cd339865
+blackhole      IN         SSHFP 2 2 3215d03d46ccd27522ae36a835bbdd8fd93ca2ac93903ca846cdc03fe137a1aa
+blackhole      IN         SSHFP 3 1 c6c9eda8c2e46ec8f6839573a75856bbde9bfec1
+blackhole      IN         SSHFP 3 2 38a2788b18843d2903ac63a9fc09575155bbefc10f8dbc858c25250d8e2a07ba
+blackhole      IN         SSHFP 4 1 0a0cf53d4ce043b74f6f489bb33d2d6f83912a84
+blackhole      IN         SSHFP 4 2 ed50c02bf820b495d7118be8fb072a8f2224d429c4b6f30c154bd5dfa023269f
+
+quasar        IN         SSHFP 1 1 81efeb047e30600c1d6917cba2de2a4f76fbbcda
+quasar        IN         SSHFP 1 2 d7da4982d28e66162096fa029df09ce159228d7a61eed4b4f53abb6de79d97fb
+quasar        IN         SSHFP 2 1 62a8fae15a83c7484037eef0388c6b0fcb15f790
+quasar        IN         SSHFP 2 2 792a99f55df6bd33588d6f1f91994b44670b82f90ceed8714899a693afe90c0b
+quasar        IN         SSHFP 3 1 b9fbe6d79e34fe127c188eae1c9e7a62ff491352
+quasar        IN         SSHFP 3 2 7668b54b084816157c43acc27a84801783a9219de954b47ae5ca595f06a8d3fe
+quasar        IN         SSHFP 4 1 534ddcb88cf6d0f0f3c49b628e75eb2b0dd4a8f8
+quasar        IN         SSHFP 4 2 dd5e2470cf87ab8f81b04c0d192e41c76594e4d54d73790d8e63b1179e3991f4
 
 ;------------------------------------------------------------------------------
 ;Copyright (c) 2017 by {{ name }} - {{ company }}

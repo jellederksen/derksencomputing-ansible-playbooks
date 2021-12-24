@@ -1,0 +1,31 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+{% if ntp_time_server is defined and ntp_time_server == True %}
+# $OpenBSD: ntpd.conf,v 1.16 2019/11/06 19:04:12 deraadt Exp $
+#
+# See ntpd.conf(5) and /etc/examples/ntpd.conf
+
+listen on 10.0.0.1
+listen on 10.0.1.1
+listen on 172.16.0.1
+
+servers pool.ntp.org
+server time.cloudflare.com
+sensor *
+
+constraint from "9.9.9.9"              # quad9 v4 without DNS
+constraint from "2620:fe::fe"          # quad9 v6 without DNS
+constraints from "www.google.com"      # intentionally not 8.8.8.8
+
+{% else %}
+
+servers {{ ansible_default_ipv4.gateway }}
+
+{% endif %}
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

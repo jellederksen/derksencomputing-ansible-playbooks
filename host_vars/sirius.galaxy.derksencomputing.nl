@@ -1,14 +1,12 @@
 ansible_become_method: doas
-mailserver_type: forwarder
 external_fqdn: wormhole.derksencomputing.nl
-dns_listen_ip: 45.83.232.124
-secondary_server: 149.210.150.253
+ntp_time_server: True
+recursive_dns_server: True
+dns_listen_ip: 127.0.0.1@10053
 primary_zones:
-  - edunix.nl
-  - epsilix.com
-  - epsilix.nl
-  - jdcomputing.nl
-  - jellederksen.nl
-  - kuberoot.nl
-  - opencomputing.nl
-  - derksencomputing.nl
+  - galaxy.derksencomputing.nl
+  - 0.0.10.in-addr.arpa
+  - 1.0.10.in-addr.arpa
+  - 0.16.172.in-addr.arpa
+  - 1.16.172.in-addr.arpa
+  - 0.168.192.in-addr.arpa

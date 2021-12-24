@@ -1,31 +1,24 @@
-#- name: "Ensure mail packages are installed"
-#  yum:
-#    name: "{{ packages }}"
-#  vars:
-#    packages:
-#    - postfix
-#    - dovecot
-#    - procmail
-#    - epel-release
-
-- name: "Ensure Postfix config"
+- name: "Ensure OpenSMTPD config"
   template:
-    src: templates/main.cf.j2
-    dest: /etc/postfix/main.cf
-  notify: restart_postfix
+    src: templates/smtpd.conf.j2
+    dest: /etc/mail/smtpd.conf
+  notify: restart_smtpd
 
-- name: "Ensure Postfix aliases table"
+- name: "Ensure OpenSMTPD is enabled and started"
+  service:
+    name: smtpd
+    enabled: yes
+    state: started
+
+- name: "Ensure Dovecot is installed"
+  openbsd_pkg:
+    name: dovecot
+    state: installed
+
+- name: "Ensure login.conf contains dovecot entry"
   template:
-    src: templates/aliases.j2
-    dest: /etc/postfix/aliases
-  notify:
-    - update_aliases_table
-    - restart_postfix
-
-- name: "Ensure diffie Hellman parameters file"
-  shell: dd if=/var/lib/dovecot/ssl-parameters.dat bs=1 skip=88 | openssl dhparam 2048 -inform der > /etc/dovecot/dh.pem
-  args:
-    creates: /etc/dovecot/dh.pem
+    src: ../templates/login.conf.j2
+    dest: /etc/login.conf
 
 - name: "Ensure Dovecot SSL config"
   template:
@@ -33,24 +26,8 @@
     dest: /etc/dovecot/conf.d/10-ssl.conf
   notify: restart_dovecot
 
-- name: "Ensure Postfix is enabled and started"
-  service:
-    name: postfix
-    enabled: yes
-    state: started
-
 - name: "Ensure Dovecot is enabled and started"
   service:
     name: dovecot
     enabled: yes
     state: started
-
-- name: "Ensure imaps port is open"
-  firewalld:
-    service: "{{ item }}"
-    permanent: yes
-    state: enabled
-  with_items:
-    - imaps
-    - smtp
-  notify: reload_firewalld

@@ -1,131 +1,87 @@
-- name: "Ensure mail packages are installed"
-  openbsd_pkg:
-    name: "{{ packages }}"
-  vars:
-    packages:
-      - rspamd-2.5p1
-      - postfix-3.6.20200627-sasl2-ldap
-      - opendkim-2.10.3p2
+---
 
-- name: "Ensure OpenSMTP is stopped and disabled"
+- name: Ensure mail packages are installed
+  openbsd_pkg:
+    name: ['redis', 'rspamd-2.7p0', 'opensmtpd-filter-rspamd', 'py3-cryptography']
+    state: present
+
+- name: Ensure OpenSMTPD config file
+  template:
+    src: ../templates/smtpd.conf.j2
+    dest: /etc/mail/smtpd.conf
+  notify:
+    - restart_smtpd
+
+- name: Ensure OpenSMTPD is enabled and started
   service:
     name: smtpd
-    enabled: False
-    state: stopped
+    enabled: True
+    state: started
 
-- name: "Enasure OpenDKIM config directory exists"
+- name: "Ensure OpenDKIM config directory exists"
   file:
-    path: /etc/opendkim
+    path: /etc/mail/dkim
     state: directory
-    owner: _opendkim
-    group: _opendkim
     mode: '0750'
+    owner: _rspamd
+    group: _rspamd
+
+- name: "Ensure OpenDKIM keys directory exists"
+  file:
+    path: /etc/mail/dkim/keys
+    state: directory
+    mode: '0750'
+    owner: _rspamd
+    group: _rspamd
 
 - name: "Ensure OpenDKIM keys directories exist"
   file:
-    path: "/etc/opendkim/keys/{{ item }}"
+    path: "/etc/mail/dkim/keys/{{ item }}"
     state: directory
-    owner: _opendkim
-    group: _opendkim
     mode: '0750'
+    owner: _rspamd
+    group: _rspamd
   with_items: "{{ mail_domains }}"
 
-- name: "Ensure OpenDKIM keys exist"
-  command: "/usr/local/sbin/opendkim-genkey -s {{ ansible_hostname }} -d {{ item }}"
-  args:
-    chdir: /etc/opendkim/keys/{{ item }}/
-    creates: /etc/opendkim/keys/{{ item }}/{{ ansible_hostname }}.private
+- name: "Ensure DKIM private key file"
+  openssl_privatekey:
+    path: "/etc/mail/dkim/keys/{{ item }}/{{ item }}.key"
+    size: 2048
+    owner: _rspamd
+    group: _rspamd
   with_items: "{{ mail_domains }}"
 
-#We need the OpenDKIM public key for the DNS zone file in the dns role
-- name: "Ensure OpenDKIM keys are available for DNS role"
+- name: "Ensure DKIM public key file"
+  openssl_publickey:
+    path: "/etc/mail/dkim/keys/{{ item }}/{{ item }}.pub"
+    privatekey_path: "/etc/mail/dkim/keys/{{ item }}/{{ item }}.key"
+    owner: _rspamd
+    group: _rspamd
+  with_items: "{{ mail_domains }}"
+
+#We need the OpenDKIM public key for the DNS zone file in the DNS role
+- name: "Fetch DKIM public key files for DNS role"
   slurp:
-    src: "/etc/opendkim/keys/{{ item }}/{{ ansible_hostname }}.txt"
-  register: opendkim_keys
+    src: "/etc/mail/dkim/keys/{{ item }}/{{ item }}.pub"
+  register: dkim_pub_files
   with_items: "{{ mail_domains }}"
 
-#opendkim-genkey Runs as root so we must chown to _opendkim for OpenDKIM to work
-- name: "Ensure OpenDKIM keys are owned by _opendkim"
-  file:
-    path: /etc/opendkim/keys
-    state: directory
-    recurse: yes
-    owner: _opendkim
-    group: _opendkim
+- name: Extract DKIM Public key from saved public pey file for DNS role
+  set_fact: 
+    dkim_pub_keys: "{{ dkim_pub_keys | default([]) + [ { 'mail_server': inventory_hostname_short, 'dkim_domain': item.item, 'dkim_pub_key': item.content | b64decode | regex_replace('^-----BEGIN PUBLIC KEY-----\n', '') | regex_replace('\n-----END PUBLIC KEY-----\n', '') } ] }}"
+  with_items: "{{ dkim_pub_files.results }}"
 
-- name: "Ensure OpenDKIM main config file"
+- name: Ensure Rspamd DKIM config file
   template:
-    src: templates/opendkim.conf.j2
-    dest: /etc/opendkim.conf
-    owner: _opendkim
-    group: _opendkim
-    mode: 0640
-  notify: restart_opendkim
-
-- name: "Ensure OpenDKIM KeyTable config file"
-  template:
-    src: templates/KeyTable.j2
-    dest: /etc/opendkim/KeyTable
-    owner: _opendkim
-    group: _opendkim
-    mode: 0640
-  notify: restart_opendkim
-
-- name: "Ensure OpenDKIM SigningTable config file"
-  template:
-    src: templates/SigningTable.j2
-    dest: /etc/opendkim/SigningTable
-    owner: _opendkim
-    group: _opendkim
-    mode: 0640
-  notify: restart_opendkim
-
-- name: "Ensure OpenDKIM TrustedHosts config file"
-  template:
-    src: templates/TrustedHosts.j2
-    dest: /etc/opendkim/TrustedHosts
-    owner: _opendkim
-    group: _opendkim
-    mode: 0640
-  notify: restart_opendkim
-
-
-- name: "Ensure OpenDKIM is enabled and started"
+    src: ../templates/dkim_signing.conf.j2
+    dest: /etc/rspamd/local.d/dkim_signing.conf
+  notify: restart_rspamd
+  
+- name: Ensure rspamd is enabled and started
   service:
-    name: opendkim
-    enabled: yes
+    name: "{{ item }}"
     state: started
-
-- name: "Ensure Rspamd is enabled and started"
-  service:
-    name: rspamd
-    enabled: yes
-    state: started
-
-- name: "Ensure Postfix transport table"
-  template:
-    src: templates/transport.j2
-    dest: /etc/postfix/transport
-  notify: 
-    - update_transport_table
-    - restart_postfix
-
-- name: "Ensure Postfix aliases table"
-  template:
-    src: templates/aliases.j2
-    dest: /etc/postfix/aliases
-  notify: 
-    - update_aliases_table
-    - restart_postfix
-
-- name: "Ensure Postfix config"
-  template:
-    src: templates/main.cf.j2
-    dest: /etc/postfix/main.cf
-  notify: restart_postfix
-
-- name: "Ensure Postfix is enabled and started"
-  service:
-    name: postfix
-    enabled: yes
-    state: started
+    enabled: True
+  with_items:
+    - redis
+    - rspamd

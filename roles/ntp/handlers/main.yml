@@ -1,5 +1,5 @@
 ---
-# handlers file for time
+# handlers file for ntp
 
 - name: restart_ntpd
   service:

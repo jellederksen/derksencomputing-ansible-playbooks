@@ -1,0 +1,89 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+{% if mailserver_type == 'forwarder' %}
+
+# This is the smtpd server system-wide configuration file.
+# See smtpd.conf(5) for more information.
+
+pki "internal_mailname" cert "/etc/ssl/{{ internal_mailname }}.crt"
+pki "internal_mailname" key "/etc/ssl/private/{{ internal_mailname }}.key"
+
+pki "external_mailname" cert "/etc/ssl/{{ external_mailname }}.crt"
+pki "external_mailname" key "/etc/ssl/private/{{ external_mailname }}.key"
+
+table aliases file:/etc/mail/aliases
+
+listen on socket
+
+filter "rspamd" proc-exec "/usr/local/libexec/smtpd/filter-rspamd"
+
+# To accept external mail, replace with: listen on all
+#
+listen on vio0 tls pki "external_mailname" hostname "{{ external_mailname }}" filter "rspamd"
+listen on vio1 tls pki "internal_mailname" hostname "{{ internal_mailname }}" filter "rspamd"
+
+action "relay" relay host "smtp://172.16.0.3"
+action "local_mail" mbox alias <aliases>
+action "outbound" relay
+
+# Uncomment the following to accept external mail for domain "example.org"
+#
+# match from any for domain "example.org" action "local_mail"
+match from any for domain edunix.nl action "relay"
+match from any for domain epsilix.com action "relay"
+match from any for domain epsilix.nl action "relay"
+match from any for domain jdcomputing.nl action "relay"
+match from any for domain jellederksen.nl action "relay"
+match from any for domain kuberoot.nl action "relay"
+match from any for domain opencomputing.nl action "relay"
+match from any for domain derksencomputing.nl action "relay"
+
+match from src 172.16.0.3 for any action "outbound"
+
+match from local for local action "local_mail"
+match from local for any action "outbound"
+
+{% elif mailserver_type == 'destination' %}
+
+# This is the smtpd server system-wide configuration file.
+# See smtpd.conf(5) for more information.
+
+pki "mailname" cert "/etc/ssl/{{ mailname }}.crt"
+pki "mailname" key "/etc/ssl/private/{{ mailname }}.key"
+
+table external_mailservers { 172.16.1.1, 172.16.1.2 }
+
+table aliases file:/etc/mail/aliases
+
+listen on socket
+
+# To accept external mail, replace with: listen on all
+#
+listen on all tls pki "mailname" hostname "{{ mailname }}"
+
+action "relay" relay host "smtp://172.16.1.1"
+action "local_mail" maildir alias <aliases>
+
+# Uncomment the following to accept external mail for domain "example.org"
+#
+match from src <external_mailservers> for domain edunix.nl action "local_mail"
+match from src <external_mailservers> for domain epsilix.com action "local_mail"
+match from src <external_mailservers> for domain epsilix.nl action "local_mail"
+match from src <external_mailservers> for domain jdcomputing.nl action "local_mail"
+match from src <external_mailservers> for domain jellederksen.nl action "local_mail"
+match from src <external_mailservers> for domain kuberoot.nl action "local_mail"
+match from src <external_mailservers> for domain opencomputing.nl action "local_mail"
+match from src <external_mailservers> for domain derksencomputing.nl action "local_mail"
+
+match from src 10.0.0.0/24 for any action "relay"
+
+match from local for local action "local_mail"
+match from local for any action "relay"
+
+{% endif %}
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

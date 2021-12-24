@@ -1,22 +1,14 @@
 #!/usr/bin/ansible-playbook --ask-vault-pass
 ---
 
-# We first run the vpn role so we can connect to Alcor over IPsec
-#- name: Configure IPSec tunnel between wormhole and blackhole
-#  hosts: vpn
-#  become: True
-#  roles:
-#    - vpn
-#  tags:
-#    - vpn
-
-- name: Configure nodes with common settings
-  hosts: all:!vpn
+# We first run the vpn role so we can connect to Alcor and antares over IPsec
+- name: Configure IPSec tunnel between wormhole, blackhole and quasar
+  hosts: vpn
   become: True
   roles:
-    - common
+    - vpn
   tags:
-    - common
+    - vpn
 
 - name: Configure firewall's 
   hosts: firewall
@@ -26,37 +18,21 @@
   tags:
     - firewall
 
-- name: Install and configure ipa server and clients
-  hosts: ipa
+- name: Setup DHCP server
+  hosts: dhcp
   become: True
   roles:
-    - role: ipa
+    - dhcp
   tags:
-    - ipa
+    - dhcp
 
-- name: Configure time server and clients
-  hosts: all:!vpn
+- name: Setup NTP server
+  hosts: ntp
   become: True
   roles:
-    - time
+    - ntp
   tags:
-    - time
-
-- name: Configure file services
-  hosts: fileservers
-  become: True
-  roles:
-    - fileserver
-  tags:
-    - fileserver
-
-- name: Configure backups
-  hosts: backup
-  become: True
-  roles:
-    - backup
-  tags:
-    - backup
+    - ntp
 
 - name: Setup and configure mail
   hosts: mail
@@ -74,30 +50,6 @@
   tags:
     - dns
 
-- name: Configure websites
-  hosts: webservers
-  become: True
-  roles:
-    - website
-  tags:
-    - website
-
-- name: Configure desktop nodes
-  hosts: desktops
-  become: True
-  roles:
-    - desktop
-  tags:
-    - desktop
-
-- name: Setup monitoring
-  hosts: monitoring
-  become: True
-  roles:
-    - monitoring
-  tags:
-    - monitoring
-
 - name: Setup Hasicorp Vault
   hosts: vault
   become: True
@@ -114,10 +66,67 @@
   tags:
     - kanboard
 
-- name: Setup dhcp server
-  hosts: dhcp
+- name: Manage x509 certificates
+  hosts: x509_certificates
   become: True
   roles:
-    - dhcp
+    - x509_certificates
   tags:
-    - dhcp
+    - x509_certificates
+
+#- name: Configure nodes with common settings
+#  hosts: all:!vpn
+#  become: True
+#  roles:
+#    - common
+#  tags:
+#    - common
+
+#- name: Install and configure ipa server and clients
+#  hosts: ipa
+#  become: True
+#  roles:
+#    - role: ipa
+#  tags:
+#    - ipa
+
+#- name: Configure file services
+#  hosts: fileservers
+#  become: True
+#  roles:
+#    - fileserver
+#  tags:
+#    - fileserver
+
+#- name: Configure backups
+#  hosts: backup
+#  become: True
+#  roles:
+#    - backup
+#  tags:
+#    - backup
+
+#- name: Configure websites
+#  hosts: webservers
+#  become: True
+#  roles:
+#    - website
+#  tags:
+#    - website
+
+#- name: Configure desktop nodes
+#  hosts: desktops
+#  become: True
+#  roles:
+#    - desktop
+#  tags:
+#    - desktop
+
+#- name: Setup monitoring
+#  hosts: monitoring
+#  become: True
+#  roles:
+#    - monitoring
+#  tags:
+#    - monitoring
+

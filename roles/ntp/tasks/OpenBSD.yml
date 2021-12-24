@@ -6,3 +6,9 @@
     dest: /etc/ntpd.conf
   notify:
     - restart_ntpd
+
+- name: "Ensure ntpd is enabled and started"
+  service:
+    name: ntpd
+    enabled: True
+    state: started

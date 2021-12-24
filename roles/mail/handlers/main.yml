@@ -1,30 +1,29 @@
 ---
 # handlers file for mail
 
-- name: restart_postfix
-  service:
-    name: postfix
-    state: restarted
-
-- name: update_transport_table
-  command: /usr/local/sbin/postmap transport
-  args:
-    chdir: /etc/postfix
-
-- name: update_aliases_table
-  command: postalias -f aliases
-  args:
-    chdir: /etc/postfix
-
 - name: restart_dovecot
+  listen: x509_certificate_event
   service:
     name: dovecot
     state: restarted
 
 - name: restart_opendkim
+  listen: x509_certificate_event
   service:
     name: opendkim
     state: restarted
 
 - name: reload_firewalld
   command: /usr/bin/firewall-cmd --reload
+
+- name: restart_smtpd
+  listen: x509_certificate_event
+  service:
+    name: smtpd
+    state: restarted
+
+- name: restart_rspamd
+  listen: x509_certificate_event
+  service:
+    name: rspamd
+    state: restarted

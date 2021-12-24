@@ -1,0 +1,29 @@
+#jinja2:lstrip_blocks: True
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+<VirtualHost *:80>
+   ServerName kanboard.galaxy.derksencomputing.nl
+   DocumentRoot /var/www/html/kanboard
+   Redirect / https://kanboard.galaxy.derksencomputing.nl
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName kanboard.galaxy.derksencomputing.nl
+    DocumentRoot /var/www/html/kanboard
+
+    CustomLog /var/log/httpd/kanboard.galaxy.derksencomputing.nl-access.log combined
+    ErrorLog /var/log/httpd/kanboard.galaxy.derksencomputing.nl-error.log
+
+    SSLEngine on
+    SSLProtocol all -SSLv2
+    SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5
+    SSLCertificateFile "/etc/pki/tls/certs/kanboard.galaxy.derksencomputing.nl.crt"
+    SSLCertificateKeyFile "/etc/pki/tls/private/kanboard.galaxy.derksencomputing.nl.key"
+</VirtualHost>
+
+#------------------------------------------------------------------------------
+#Copyright (c) 2017 by {{ name }} - {{ company }}
+#------------------------------------------------------------------------------

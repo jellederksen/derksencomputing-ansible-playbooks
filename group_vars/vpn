@@ -1,4 +1,5 @@
 ipsec_dmz_net: 172.16.0.0/24
-ipsec_cld_net: 172.16.1.0/24
+ipsec_cld_east_net: 172.16.1.1/32
+ipsec_cld_west_net: 172.16.1.2/32
 ipsec_lan_net: 10.0.0.0/24
 ipsec_wls_net: 10.0.1.0/24

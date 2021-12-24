@@ -1,0 +1,23 @@
+#jinja2:lstrip_blocks: True
+;Ansible information:
+;    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+;    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+;    Hostname: {{ template_host }}
+
+$ORIGIN 1.0.10.in-addr.arpa.
+$TTL 3600
+
+@ IN SOA sirius.galaxy.derksencomputing.nl. jelle.galaxy.derksencomputing.nl. (
+        2021122201       ;Serial number
+        1200             ;Refresh
+        120              ;Retry
+        2419200          ;Expire
+        3600             ;Min TTL
+)
+        NS        sirius.galaxy.derksencomputing.nl.
+
+1         IN        PTR        sirius.galaxy.derksencomputing.nl.
+
+;------------------------------------------------------------------------------
+;Copyright (c) 2017 by {{ name }} - {{ company }}
+;------------------------------------------------------------------------------

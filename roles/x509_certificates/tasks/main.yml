@@ -1,0 +1,9 @@
+---
+# tasks file for x509_certificates
+
+- name: x509 self signed certificates
+  include_tasks: x509_self_signed_certificate.yml
+  when: x509_certificates.self_signed_certificates is defined
+  loop: "{{ x509_certificates.self_signed_certificates }}"
+  loop_control:
+    loop_var: x509_certificate

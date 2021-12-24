@@ -1,0 +1,107 @@
+#jinja2:lstrip_blocks: True
+;Ansible information:
+;    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+;    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+;    Hostname: {{ template_host }}
+
+$ORIGIN galaxy.derksencomputing.nl.
+$TTL 3600
+
+@ IN SOA sirius.galaxy.derksencomputing.nl. jelle.galaxy.derksencomputing.nl. (
+        2021122201       ;Serial number
+        1200             ;Refresh
+        120              ;Retry
+        2419200          ;Expire
+        3600             ;Min TTL
+)
+        NS        sirius.galaxy.derksencomputing.nl.
+        MX        10 naos.galaxy.derksencomputing.nl.
+
+@               IN        A        172.16.0.1
+
+;dmz servers
+sirius          IN        A        172.16.0.1
+alcor           IN	  A        172.16.0.2
+naos            IN        A        172.16.0.3
+altair          IN        A        172.16.0.4
+alnitak         IN        A        172.16.0.5
+vega		IN        A        172.16.0.6
+izar            IN        A        172.16.0.7
+geminga         IN        A        172.16.0.8
+centaurus       IN        A        172.16.0.9
+vela            IN        A        172.16.0.10
+
+;cld servers
+algol           IN        A        172.16.1.1
+antares         IN        A        172.16.1.2
+
+;lan workstations 
+megrez          IN        A        10.0.0.2
+pollux          IN        A        10.0.0.3
+
+vault		IN        CNAME    alnitak.galaxy.derksencomputing.nl.
+kanboard        IN        CNAME    alnitak.galaxy.derksencomputing.nl.
+
+;ssh fingerprints
+;Keys are hardcoded so they can't be dynamically changed by Ansible.
+
+sirius          IN        SSHFP 1 1 059af01d7f852344e61629155eb980c90cf8f742
+sirius          IN        SSHFP 1 2 08e541b5e7fb2931603ed53d212a983e77a2b7e20b7684228043f8293fdb4357
+sirius          IN        SSHFP 2 1 9ed9e389f880821f1d301c2998e006f3aca233a0
+sirius          IN        SSHFP 2 2 18dff3bebd8fc275043b5a03600a9fd8e387c010c73da7886765f9d94ea63fb7
+sirius          IN        SSHFP 3 1 309e3aef2e538c0c42aaa914151ee6249820ffa5
+sirius          IN        SSHFP 3 2 b10840d8d120e5d3acb8082989e72deff0f9992c14d2a02aafbd0ed1da5dc16f
+sirius          IN        SSHFP 4 1 ea4f42eae69346a96bf0e11ff3d11b37d613f61f
+sirius          IN        SSHFP 4 2 32c6c6ef5b2dfe4af992e7fa6d8a2c2ec8b0acb382973ca91088ad51ff720136
+
+alcor           IN        SSHFP 1 1 df59286b688e5e98e5300e5f58ceff0aa5c51f4c
+alcor           IN        SSHFP 1 2 ff2a6e679c9e517689e216e303b25f19e6be5832238266599e57e046e5aa93ef
+alcor           IN        SSHFP 3 1 e9eaca3669cc353186d1f37bf7b97cb3abbaec88
+alcor           IN        SSHFP 3 2 2699a30d2c2e5c4d47e5967a74304c15cc6d157c0fc89c4839943732179af852
+alcor           IN        SSHFP 4 1 d5dec77a857f5eb7123851547f771df5a42351e9
+alcor           IN        SSHFP 4 2 8484c605733400a6174780e68bbaefbfa6a8bafa29887c7a49af524edaf40656
+
+naos            IN        SSHFP 1 1 d92c6410e0f35c5586a998fdb935ec39e70153e1
+naos            IN        SSHFP 1 2 d449f373638caf7cafbe2662d044ba49829df637687a0686bc6aeb724e7bac27
+naos            IN        SSHFP 2 1 96cc8c75471a9616c1cefcdd5cd3c4b127ba88d7
+naos            IN        SSHFP 2 2 7c8c533921d5c26a5a50f01ffc40fe892aaffdb460974691f289b0253b2680f7
+naos            IN        SSHFP 3 1 0d87a8182ddb35582d5f151f5f07753265253800
+naos            IN        SSHFP 3 2 9ade640fa1107c7fd0d4c7353b545ab640f085169aa86a2576ba2286ff6babc4
+naos            IN        SSHFP 4 1 3cf87267a55c2e0ba340bbbb92a76d1ceabbca0b
+naos            IN        SSHFP 4 2 359d5fb4aa488a779c9f7a8d3634ede45bcb61e555fc37b1e17e93b30394afb4
+
+algol           IN        SSHFP 1 1 898b05b6b3ecead61467d25072b534373ed2521c
+algol           IN        SSHFP 1 2 46a9a247883426ab67f9a08131c360da5630e7f7f1469fe67cc88a8d6bd79f66
+algol           IN        SSHFP 2 1 5f428ac4f180378d3cf096d6f1a79a65cd339865
+algol           IN        SSHFP 2 2 3215d03d46ccd27522ae36a835bbdd8fd93ca2ac93903ca846cdc03fe137a1aa
+algol           IN        SSHFP 3 1 c6c9eda8c2e46ec8f6839573a75856bbde9bfec1
+algol           IN        SSHFP 3 2 38a2788b18843d2903ac63a9fc09575155bbefc10f8dbc858c25250d8e2a07ba
+algol           IN        SSHFP 4 1 0a0cf53d4ce043b74f6f489bb33d2d6f83912a84
+algol           IN        SSHFP 4 2 ed50c02bf820b495d7118be8fb072a8f2224d429c4b6f30c154bd5dfa023269f
+
+antares         IN        SSHFP 1 1 81efeb047e30600c1d6917cba2de2a4f76fbbcda
+antares         IN        SSHFP 1 2 d7da4982d28e66162096fa029df09ce159228d7a61eed4b4f53abb6de79d97fb
+antares         IN        SSHFP 2 1 62a8fae15a83c7484037eef0388c6b0fcb15f790
+antares         IN        SSHFP 2 2 792a99f55df6bd33588d6f1f91994b44670b82f90ceed8714899a693afe90c0b
+antares         IN        SSHFP 3 1 b9fbe6d79e34fe127c188eae1c9e7a62ff491352
+antares         IN        SSHFP 3 2 7668b54b084816157c43acc27a84801783a9219de954b47ae5ca595f06a8d3fe
+antares         IN        SSHFP 4 1 534ddcb88cf6d0f0f3c49b628e75eb2b0dd4a8f8
+antares         IN        SSHFP 4 2 dd5e2470cf87ab8f81b04c0d192e41c76594e4d54d73790d8e63b1179e3991f4
+
+alnitak         IN        SSHFP 1 1 f093aac8a1496a3321772b612dcad200e8f573f5
+alnitak         IN        SSHFP 1 2 2a4e1e820508e0669986d8dca8cb4f0916b289b447fd14ad85af537383bf4c97
+alnitak         IN        SSHFP 3 1 7ac1e5845467598d468a188f1c9ca0c1ba71f828
+alnitak         IN        SSHFP 3 2 e00e903d27720c7f6e98b1d71f54e2034c7ef07e8fed5020f4a94028ebf80295
+alnitak         IN        SSHFP 4 1 3341c03846239076728caae3038f67ca0b871919
+alnitak         IN        SSHFP 4 2 cc8779bc6d999049773305cc68689cca73d79c961b9ddb19f6c830e17775747a
+
+altair          IN        SSHFP 1 1 4e47c39f0dc407ef85ac50bd0ddfffe68ee8e0e5
+altair          IN        SSHFP 1 2 24d91ed244e8d73b419dee59b70aa7076e13f471eb790cabff644ae1ffdc1f87
+altair          IN        SSHFP 3 1 b606656a8b62ceb6f38848c226eee3e1a51a086f
+altair          IN        SSHFP 3 2 1febbbe86bb3851f37354b992f0f1629ae61d1eb084e23ff455b0a5e7e898880
+altair          IN        SSHFP 4 1 460e2944c5c5d3c08020cb7df119154ab8102b33
+altair          IN        SSHFP 4 2 59a3dd06d96ec3e8264e67e08f459e04a7392061a22bb2b16f1f346ea9d478ca
+
+;------------------------------------------------------------------------------
+;Copyright (c) 2017 by {{ name }} - {{ company }}
+;------------------------------------------------------------------------------

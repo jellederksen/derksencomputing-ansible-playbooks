@@ -2,3 +2,4 @@
 # tasks file for mail
 
 - include_tasks: "{{ mailserver_type }}_mailserver.yml"
+  when: mailserver_type is defined

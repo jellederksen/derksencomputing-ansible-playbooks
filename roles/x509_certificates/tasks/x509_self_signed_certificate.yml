@@ -1,0 +1,24 @@
+- name: "Ensure private key for {{ x509_certificate.cn }}"
+  openssl_privatekey:
+    path: "{{ x509_certificate.key_path }}"
+    size: 2048
+    type: RSA
+  notify: x509_certificate_event
+
+- name: "Ensure CSR key for {{ x509_certificate.cn }}"
+  openssl_csr:
+    path: "{{ x509_certificate.csr_path }}"
+    privatekey_path: "{{ x509_certificate.key_path }}"
+    country_name: "{{ x509_certificate.country_name }}"
+    organization_name: "{{ x509_certificate.company }}"
+    email_address: "{{ x509_certificate.email_address }}"
+    common_name: "{{ x509_certificate.cn }}"
+  notify: x509_certificate_event
+
+- name: "Ensure self signed certficate for {{ x509_certificate.cn }}"
+  openssl_certificate:
+    path: "{{ x509_certificate.crt_path }}"
+    privatekey_path: "{{ x509_certificate.key_path }}"
+    csr_path: "{{ x509_certificate.csr_path }}"
+    provider: selfsigned
+  notify: x509_certificate_event

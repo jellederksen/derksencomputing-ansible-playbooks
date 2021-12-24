@@ -15,23 +15,34 @@
 # Default router:       192.168.1.1
 # Addresses:            192.168.1.32 - 192.168.1.127
 #
-option  domain-name "{{ domain_name }}";
-option  domain-name-servers 172.16.0.2;
 
 #lan network
 subnet 10.0.0.0 netmask 255.255.255.0 {
+        option  domain-name "{{ domain_name }}";
         option routers 10.0.0.1;
+        option domain-name-servers 10.0.0.1;
         range 10.0.0.100 10.0.0.200;
 }
 
 #wls network
 subnet 10.0.1.0 netmask 255.255.255.0 {
+        option  domain-name "{{ domain_name }}";
         option routers 10.0.1.1;
+        option domain-name-servers 10.0.1.1;
         range 10.0.1.100 10.0.1.200;
 }
 
 #dmz network
 subnet 172.16.0.0 netmask 255.255.255.0 {
+        option  domain-name "{{ domain_name }}";
         option routers 172.16.0.1;
+        option domain-name-servers 172.16.0.1;
         range 172.16.0.100 172.16.0.200;
+}
+
+#kam network
+subnet 192.168.0.1 netmask 255.255.255.0 {
+        option routers 192.168.0.1;
+        option domain-name-servers 8.8.8.8, 8.8.4.4;
+        range 192.168.0.100 192.168.0.200;
 }

@@ -7,26 +7,28 @@
 $ORIGIN epsilix.nl.
 $TTL 3600
 
-@ IN SOA wormhole.derksencomputing.nl. jelle.derksencomputing.nl. (
-        2021073001        ;Serial number
-        3600              ;Refresh
-        600               ;Retry
-        2764800           ;Expire
-        3600              ;Min TTL
+@ IN SOA quasar.derksencomputing.nl. jelle.derksencomputing.nl. (
+        2021122201       ;Serial number
+        1200             ;Refresh
+        120              ;Retry
+        2419200          ;Expire
+        3600             ;Min TTL
 )
-        NS        wormhole.derksencomputing.nl.
+        NS        quasar.derksencomputing.nl.
         NS        blackhole.derksencomputing.nl.
         MX        10 blackhole.derksencomputing.nl.
-        MX        20 wormhole.derksencomputing.nl.
+        MX        10 quasar.derksencomputing.nl.
 
 @               IN        A        149.210.150.253
 www             IN        A        149.210.150.253
 
 {% for mailserver in groups['mail'] %}
-  {%  if hostvars[mailserver]['opendkim_keys'] is defined %}
-    {%  for opendkim_key in hostvars[mailserver]['opendkim_keys']['results'] %}
-      {%  if opendkim_key.item == 'epsilix.nl' %}
-{{ opendkim_key.content | b64decode }}
+  {%  if hostvars[mailserver]['dkim_pub_keys'] is defined %}
+    {%  for key in hostvars[mailserver]['dkim_pub_keys'] %}
+      {%  if key.dkim_domain == 'epsilix.nl' %}
+{{ key.mail_server }}._domainkey    IN    TXT    ( "v=DKIM1;k=rsa;" {% for line in key.dkim_pub_key.split('\n') %}{% if loop.first %}"p={{ line }}"{% endif %}    {% if not loop.first and not loop.last %}"{{ line }}"{% endif %} {% if loop.last %}"{{ line }}" ){% endif %}
+
+        {% endfor %}
       {%  endif %}
     {%  endfor %}
   {%  endif %}

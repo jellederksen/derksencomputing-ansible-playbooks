@@ -3,33 +3,50 @@
 #    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
 #    Hostname: {{ template_host }}
 
-{% if ansible_hostname == "sirius" %}
+{% if inventory_hostname == "sirius.galaxy.derksencomputing.nl" %}
 #macros
 ext_if="pppoe0"
 lan_if="vio1"
 wls_if="vio2"
 dmz_if="vio3"
 cld_if="enc0"
-xdz_if="vio4"
+kam_if="vio4"
 
 ext_ip="45.83.232.124"
 lan_ip="10.0.0.1"
 wls_ip="10.0.1.1"
 dmz_ip="172.16.0.1"
-xdz_ip="172.16.2.2"
+kam_ip="192.168.0.1"
+cld_ip="172.16.0.1"
 
 ext_net="45.83.232.124/32"
 lan_net="10.0.0.0/24"
 wls_net="10.0.1.0/24"
 dmz_net="172.16.0.0/24"
 cld_net="172.16.1.0/24"
-xdz_net="172.16.2.0/24"
+kam_net="192.168.0.0/24"
 
 table <wormhole> { 45.83.232.124 }
 table <blackhole> { 149.210.150.253 }
+table <quasar> { 136.144.215.240 }
+
+table <algol> { 172.16.1.1 }
+table <antares> { 172.16.1.2 }
+table <sirius> { 172.16.0.1 }
+table <alcor> { 172.16.0.2 }
+table <naos> { 172.16.0.3 }
+table <altair> { 172.16.0.4 }
+table <alnitak> { 172.16.0.5 }
+
+table <rocky_mirrors> { 151.101.38.132 }
+table <openbsd_mirrors> { 151.101.2.217, 151.101.66.217, 151.101.130.217, 151.101.194.217, 145.220.21.40, 151.101.38.217 }
+table <hashicorp_vault> { 151.101.38.49 }
+table <google_dns> { 8.8.8.8, 8.8.4.4 }
+table <google_time> { 216.239.35.0, 216.239.35.4 216.239.35.8, 216.239.35.12 }
+table <github> { 140.82.112.0/20 }
 
 #options
-set skip on { lo0, enc0 }
+set skip on lo0
 set block-policy return
 set loginterface $ext_if
 set state-policy if-bound
@@ -38,148 +55,182 @@ set limit states 10000
 set optimization normal
 set reassemble yes
 
-#scrub all traffic
 match in all scrub (random-id)
+
+#default queue's
+queue rootq on $ext_if bandwidth 200M max 200M
+queue defaultq parent rootq bandwidth 100M max 100M default
+
+#download queue's
+queue lanq parent rootq bandwidth 100M max 100M
+queue wlsq parent rootq bandwidth 100M max 100M
+queue dmzq parent rootq bandwidth 100M max 100M
+queue kamq parent rootq bandwidth 100M max 100M
+
+#upload queue's
+queue lan_ackq parent rootq bandwidth 1M max 1M
+queue wls_ackq parent rootq bandwidth 1M max 1M
+queue dmz_ackq parent rootq bandwidth 1M max 1M
+queue kam_ackq parent rootq bandwidth 1M max 1M
 
 #default drop rules
 block log all
 
 #ext rules
-#<ruleset id="00000" description="icmp rules" eol="20200101">
+#<ruleset id="00000" description="Default ICMP rules" eol="20230101">
 pass in log quick on $ext_if inet proto icmp from any to <wormhole>
-pass out log quick on $ext_if inet proto icmp from { $ext_net $lan_net $wls_net $dmz_net } to any nat-to <wormhole>
-#</ruleset>
-
-#<ruleset id="00001" description="allow smtp from internet to firewall for mail delivery" eol="20200101">
-pass in log quick on $ext_if inet proto tcp from any to <wormhole> port smtp
-#</ruleset>
-
-#<ruleset id="00002" description="allow dns from internet to firewall for domain resolving" eol="20200101">
-pass in log quick on $ext_if inet proto { udp, tcp } from any to <wormhole> port domain
-#</ruleset>
-
-#<ruleset id="00003" description="allow ssh from internet to firewall for access" eol="20200101">
-#pass in log quick on $ext_if inet proto tcp from any to <wormhole> port ssh
+pass out log quick on $ext_if inet proto icmp from { $lan_net, $wls_net, $dmz_net, $kam_net, $ext_ip } to any nat-to <wormhole>
 #</ruleset>
 
 #lan rules
-#<ruleset id="10000" description="icmp rules" eol="20200101">
+#<ruleset id="10000" description="Default ICMP rules" eol="20230101">
 pass in log quick on $lan_if inet proto icmp from $lan_net to any
-pass out log quick on $lan_if inet proto icmp from { $wls_net $dmz_net $cld_net } to $lan_net
+pass out log quick on $lan_if inet proto icmp from { $wls_net, $dmz_net, $cld_net $lan_ip } to $lan_net
 #</ruleset>
 
-#<ruleset id="10001" description="allow lan to internet" eol="20200101">
-pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname isakmp ipsec-nat-t bitcoin litecoin }
-pass out log quick on $ext_if inet proto { tcp udp } from $lan_net to any port { ssh www https nicname isakmp ipsec-nat-t bitcoin litecoin } nat-to <wormhole>
+#<ruleset id="10001" description="Allow lan to Sirius firewall for DNS resolving" eol="20230101">
+pass in log quick on $lan_if inet proto { udp tcp } from $lan_net to $lan_ip port domain
 #</ruleset>
 
-#<ruleset id="10002" description="allow lan to dmz" eol="20200101">
-pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to $dmz_net 
-pass out log quick on $dmz_if inet proto { tcp udp } from $lan_net to $dmz_net
+#<ruleset id="10002" description="Allow lan to internet with trusted protocols" eol="20230101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to any port { ssh, www, https, nicname }
+pass out log quick on $ext_if inet proto tcp from $lan_net to any port { ssh, www, https, nicname } nat-to <wormhole> set queue (lanq, lan_ackq)
 #</ruleset>
 
-#<ruleset id="10003" description="allow lan to cld" eol="20200101">
-pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to $cld_net 
-pass out log quick on $cld_if inet proto { tcp udp } from $lan_net to $cld_net
+#<ruleset id="10003" description="Allow lan to dmz with trusted protocols" eol="20230101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to $dmz_net port { ssh, www, https, imaps, smtp, telnet }
+pass out log quick on $dmz_if inet proto tcp from $lan_net to $dmz_net port { ssh, www, https, imaps, smtp, telnet }
 #</ruleset>
 
-#<ruleset id="10003" description="allow lan to wls" eol="20200101">
-pass in log quick on $lan_if inet proto { tcp udp } from $lan_net to $wls_net 
-pass out log quick on $wls_if inet proto { tcp udp } from $lan_net to $wls_net
+#<ruleset id="10004" description="Allow lan to cld for trusted protocols" eol="20230101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to $cld_net port { ssh }
+pass out log quick on $cld_if inet proto tcp from $lan_net to $cld_net port { ssh }
+#</ruleset>
+
+#<ruleset id="10005" description="Allow lan to Sirius firewall with NTP" eol="20230101">
+pass in log quick on $lan_if inet proto udp from $lan_net to $lan_ip port ntp
+#</ruleset>
+
+#<ruleset id="10004" description="Allow lan to Alnitak for Vault" eol="20230101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to <alnitak> port vault
+pass out log quick on $dmz_if inet proto tcp from $lan_net to <alnitak> port vault
 #</ruleset>
 
 #wls rules
-#<ruleset id="20000" description="icmp rules" eol="20200101">
+#<ruleset id="20000" description="Default ICMP rules" eol="20230101">
 pass in log quick on $wls_if inet proto icmp from $wls_net to any
-pass out log quick on $wls_if inet proto icmp from { $lan_net $dmz_net $cld_net } to $wls_net
+pass out log quick on $wls_if inet proto icmp from { $lan_net $dmz_net $cld_net, $wls_ip } to $wls_net
 #</ruleset>
 
-#<ruleset id="20001" description="allow wls to internet" eol="20200101">
-pass in log quick on $wls_if inet proto { tcp udp } from $wls_net to any port { ssh www https nicname }
-pass out log quick on $ext_if inet proto {tcp udp } from $wls_net to any port { ssh www https nicname } nat-to <wormhole>
+#<ruleset id="20001" description="Allow wls to Sirius firewall for DNS resolving" eol="20230101">
+pass in log quick on $wls_if inet proto { udp tcp } from $wls_net to $wls_ip port domain
 #</ruleset>
 
-#<ruleset id="20002" description="allow wls to dmz" eol="20200101">
-pass in log quick on $wls_if inet proto { tcp udp } from $wls_net to $dmz_net
-pass out log quick on $dmz_if inet proto { tcp udp }  from $wls_net to $dmz_net
+#<ruleset id="20002" description="Allow wls freely to internet mainly for Chromecast to work properly" eol="20230101">
+pass in log quick on $wls_if inet proto { udp, tcp } from $wls_net to any
+pass out log quick on $ext_if inet proto { udp, tcp } from $wls_net to any nat-to <wormhole> set queue (wlsq, wls_ackq)
+#</ruleset>
+
+#<ruleset id="20005" description="Allow wls to Sirius firewall with NTP" eol="20230101">
+pass in log quick on $wls_if inet proto udp from $wls_net to $wls_ip port ntp
 #</ruleset>
 
 #dmz rules
-#<ruleset id="30000" description="icmp rules" eol="20200101">
+#<ruleset id="30000" description="Default ICMP rules" eol="20230101">
 pass in log quick on $dmz_if inet proto icmp from $dmz_net to any
-pass out log quick on $dmz_if inet proto icmp from { $lan_net $wls_net $cld_net } to $dmz_net
+pass out log quick on $dmz_if inet proto icmp from { $lan_net $wls_net $cld_net, $dmz_ip } to $dmz_net
 #</ruleset>
 
-#<ruleset id="30001" description="allow dmz to internet" eol="20200101">
-pass in log quick on $dmz_if inet proto { tcp udp } from $dmz_net to any port { www https domain ssh ntp }
-pass out log quick on $ext_if inet proto { tcp udp } from $dmz_net to any port { www https domain ssh ntp } nat-to <wormhole>
+#<ruleset id="30001" description="Allow dmz to Sirius firewall for DNS resolving" eol="20230101">
+pass in log quick on $dmz_if inet proto { udp tcp } from $dmz_net to $dmz_ip port domain
 #</ruleset>
 
-#<ruleset id="40003" description="allow dmz to cld" eol="20200101">
-pass in log quick on $dmz_if inet proto { tcp udp } from $dmz_net to $cld_net 
-pass out log quick on $dmz_if inet proto { tcp udp } from $cld_net to $dmz_net
+#<ruleset id="30002" description="Allow dmz to trusted destinations with trusted protocols for updates" eol="20230101">
+pass in log quick on $dmz_if inet proto tcp from $dmz_net to { <rocky_mirrors> } port { www, https }
+pass out log quick on $ext_if inet proto tcp from $dmz_net to { <rocky_mirrors> } port { www, https } nat-to <wormhole> set queue (dmzq, dmz_ackq)
 #</ruleset>
 
-#<ruleset id="40003" description="allow rigel to megrez for Prometheus monitoring" eol="20200101">
-pass in log quick on $dmz_if inet proto tcp from 172.16.0.8 to 10.0.0.2
-pass out log quick on $lan_if inet proto tcp from 172.16.0.8 to 10.0.0.2
+#<ruleset id="30003" description="Allow dmz to Sirius firewall with NTP" eol="20230101">
+pass in log quick on $dmz_if inet proto udp from $dmz_net to $dmz_ip port ntp
+#</ruleset>
+
+#<ruleset id="30004" description="Allow dmz to Sirius firewall with SSH" eol="20230101">
+pass in log quick on $dmz_if inet proto tcp from $dmz_net to $dmz_ip port ssh
+#</ruleset>
+
+#<ruleset id="30005" description="Allow Naos to Algol and Antares with SMTP for sending email" eol="20230101">
+pass in log quick on $dmz_if inet proto tcp from <naos> to { <algol>, <antares> } port smtp
+pass out log quick on $cld_if inet proto tcp from <naos> to { <algol>, <antares> } port smtp
+#</ruleset>
+
+#<ruleset id="30006" description="Allow Naos to OpeBSD mirrors for software and updates" eol="20230101">
+pass in log quick on $dmz_if inet proto tcp from <naos> to <openbsd_mirrors> port https
+pass out log quick on $ext_if inet proto tcp from <naos> to <openbsd_mirrors> port https nat-to <wormhole> set queue (dmzq, dmz_ackq)
+#</ruleset>
+
+#<ruleset id="30007" description="Allow Alnitak to Hashicorp for Vault software and updates" eol="20230101">
+pass in log quick on $dmz_if inet proto tcp from <alnitak> to <hashicorp_vault> port https
+pass out log quick on $ext_if inet proto tcp from <alnitak> to <hashicorp_vault> port https nat-to <wormhole> set queue (dmzq, dmz_ackq)
+#</ruleset>
+
+#<ruleset id="30007" description="Allow Alnitak to Hashicorp for Vault software and updates" eol="20230101">
+pass in log quick on $dmz_if inet proto tcp from <alnitak> to <hashicorp_vault> port https
+pass out log quick on $ext_if inet proto tcp from <alnitak> to <hashicorp_vault> port https nat-to <wormhole> set queue (dmzq, dmz_ackq)
+#</ruleset>
+
+#<ruleset id="30007" description="Allow Alnitak to Github for Kanboard software" eol="20230101">
+pass in log quick on $dmz_if inet proto tcp from <alnitak> to <github> port https
+pass out log quick on $ext_if inet proto tcp from <alnitak> to <github> port https nat-to <wormhole> set queue (dmzq, dmz_ackq)
 #</ruleset>
 
 #cld rules
-#<ruleset id="40003" description="allow wls to cld" eol="20200101">
-pass in log quick on $wls_if inet proto { tcp udp } from $wls_net to $cld_net 
-pass out log quick on $wls_if inet proto { tcp udp } from $cld_net to $wls_net
+#<ruleset id="20000" description="Default ICMP rules" eol="20230101">
+pass in log quick on $cld_if inet proto icmp from $cld_net to any
+pass out log quick on $cld_if inet proto icmp from { $lan_net $dmz_net $cld_net, $cld_ip } to $cld_net
 #</ruleset>
 
-#<ruleset id="40001" description="allow cloud net to dmz net" eol="20200101">
-pass out quick on $dmz_if from $cld_net to $dmz_net
+#<ruleset id="40001" description="Allow Algol and Antares to Naos mail server for mail delivery" eol="20230101">
+pass in log quick on $cld_if inet proto tcp from { <algol>, <antares> } to <naos> port smtp
+pass out log quick on $dmz_if inet proto tcp from { <algol>, <antares> } to <naos> port smtp
 #</ruleset>
 
-#host rules
-#<ruleset id="50000" description="allow ssh access from desktops to sirius" eol="20200101">
-pass in log quick on { $lan_if $wls_if } inet proto tcp from { $lan_net $wls_net } to $lan_ip port ssh
+#<ruleset id="40002" description="Allow cld to Sirius firewall dmz interface with NTP" eol="20230101">
+pass in log quick on $cld_if inet proto udp from $cld_net to $dmz_ip port ntp
 #</ruleset>
 
-#<ruleset id="50001" description="allow all traffic between wormhole and blackhole" eol="20200101">
-pass in log quick on $ext_if from <blackhole> to <wormhole> 
-pass out log quick on $ext_if from <wormhole> to <blackhole>
+#kam rules
+#<ruleset id="60001" description="Default ICMP rules only allow connections to the internet not wls, lan and dmz network" eol="20230101">
+pass out log quick on $kam_if inet proto icmp from $kam_ip to $kam_net
 #</ruleset>
 
-#<ruleset id="50002" description="allow traffic from sirius to dmz" eol="20200101">
-pass out log quick on $dmz_if inet proto { tcp udp } from $dmz_ip to $dmz_net
+#<ruleset id="60003" description="Allow kam network to the internet with all protocols and ports freely and without logging" eol="20230101">
+pass in quick on $kam_if from $kam_net to any
+pass out quick on $ext_if from $kam_net to any nat-to <wormhole> set queue (kamq, kam_ackq)
 #</ruleset>
 
-#<ruleset id="50002" description="allow sirius to internet for domain resolving" eol="20200101">
-pass out log quick on $ext_if inet proto { tcp udp } from $ext_ip to any port 53
+#Sirius host rules
+#<ruleset id="60000" description="Allow SSH access from lan network to Sirius" eol="20230101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to $lan_ip port ssh
 #</ruleset>
 
-#<ruleset id="50003" description="allow sirius to internet for updates and packages" eol="20200101">
-pass out log quick on $ext_if inet proto tcp from $ext_ip to any port { www https }
+#<ruleset id="60001" description="Allow all traffic between Wormhole, Blackhole and Quasar" eol="20230101">
+pass in log quick on $ext_if from { <quasar> <blackhole> } to <wormhole> 
+pass out log quick on $ext_if from <wormhole> to { <blackhole> <quasar> }
 #</ruleset>
 
-#<ruleset id="50004" description="allow rigel to sirius for Prometheus monitoring" eol="20200101">
-pass in log quick on $dmz_if inet proto tcp from 172.16.0.8 to $dmz_ip port 9100
+#<ruleset id="60002" description="Allow Sirius to internet for domain resolving" eol="20230101">
+pass out log quick on $ext_if inet proto { tcp udp } from $ext_ip to any port domain
 #</ruleset>
 
-#<ruleset id="50005" description="allow deneb to sirius for backup mail delivery" eol="20200101">
-pass in log quick on $dmz_if inet proto tcp from 172.16.0.4 to $dmz_ip port smtp
+#<ruleset id="60003" description="Allow sirius to specific destinations for updates and packages" eol="20230101">
+pass out log quick on $ext_if inet proto tcp from $ext_ip to { <openbsd_mirrors> } port { www, https }
 #</ruleset>
 
-#<ruleset id="50006" description="allow sirius to internet for mail delivery" eol="20200101">
-pass out log quick on $ext_if inet proto tcp from $ext_ip to any port smtp
+#<ruleset id="60002" description="Allow Sirius to internet with NTP service" eol="20230101">
+pass out log quick on $ext_if inet proto udp from $ext_ip to any port ntp
 #</ruleset>
 
-#xdz rules
-#<ruleset id="60001" description="icmp rules" eol="20200101">
-pass out log quick on $xdz_if inet proto icmp from { $xdz_net $wls_net $dmz_net $cld_net $lan_net } to $xdz_net
-#</ruleset>
-
-#<ruleset id="60002" description="allow ssh access to alnitak from lan" eol="20200101">
-pass out log quick on $xdz_if inet proto tcp from $lan_net to 172.16.2.2 port ssh
-#</ruleset>
-
-{% elif ansible_hostname == "algol" %}
-
+{% elif inventory_hostname == "algol.galaxy.derksencomputing.nl" %}
 #macros
 ext_if="vio0"
 int_if="vio1"
@@ -193,11 +244,19 @@ lan_net="10.0.0.0/24"
 wls_net="10.0.1.0/24"
 dmz_net="172.16.0.0/24"
 
+table <algol> { 172.16.1.1 }
+
 table <wormhole> { 45.83.232.124 }
 table <blackhole> { 149.210.150.253 }
+table <quasar> { 136.144.215.240 }
+
+table <naos> { 172.16.0.3 }
+
+table <openbsd_mirrors> { 151.101.2.217, 151.101.66.217, 151.101.130.217, 151.101.194.217, 145.220.21.40 }
+table <transip_dns> { 195.8.195.8, 195.135.195.135 }
 
 #options
-set skip on { lo0, enc0 }
+set skip on lo0
 set block-policy return
 set loginterface $ext_if
 set state-policy if-bound
@@ -213,55 +272,147 @@ match in all scrub (random-id)
 block log all
 
 #ext rules
-#<ruleset id="00000" description="icmp rules" eol="20200101">
+#<ruleset id="00000" description="Default ICMP rules" eol="20230101">
 pass in log quick on $ext_if inet proto icmp from any to <blackhole>
 pass out log quick on $ext_if inet proto icmp from <blackhole> to any
 #</ruleset>
 
-#<ruleset id="00001" description="allow smtp for mail delivery" eol="20200101">
+#<ruleset id="00001" description="Allow smtp from the internet to blackhole for mail delivery" eol="20230101">
 pass in log quick on $ext_if inet proto tcp from any to <blackhole> port smtp
 pass out log quick on $ext_if inet proto tcp from <blackhole> to any port smtp
 #</ruleset>
 
-#<ruleset id="00002" description="allow dns from internet to firewall for domain resolving" eol="20200101">
+#<ruleset id="00002" description="Allow DNS from internet to blackhole for domain resolving" eol="20230101">
 pass in log quick on $ext_if inet proto { udp, tcp } from any to <blackhole> port domain
 #</ruleset>
 
-#<ruleset id="00003" description="allow ssh from internet to firewall for access" eol="20200101">
-#pass in log quick on $ext_if inet proto tcp from any to <blackhole> port ssh
-#</ruleset>
-
-#<ruleset id="00004" description="allow http and https for website www.jellederksen.nl" eol="20200101">
-pass in log quick on $ext_if inet proto tcp from any to <blackhole> port { www https }
+#<ruleset id="00004" description="Allow HTTP and HTTPS for website www.jellederksen.nl" eol="20230101">
+#pass in log quick on $ext_if inet proto tcp from any to <blackhole> port { www, https }
 #</ruleset>
 
 #cld rules
-#<ruleset id="10000" description="allow ssh access from wls_net and lan_net to cld_if" eol="20200101">
-pass in log quick on $cld_if inet proto tcp from { $lan_net $wls_net } port ssh
-pass out log quick on $cld_if inet proto tcp to { $lan_net $wls_net } port ssh
+#<ruleset id="10000" description="Default ICMP rules" eol="20230101">
+pass in log quick on $cld_if inet proto icmp from { $wls_net, $lan_net, $dmz_net } to <algol>
+pass out log quick on $cld_if inet proto icmp from <algol> to { $wls_net, $lan_net, $dmz_net }
+#</ruleset>
+
+#<ruleset id="10001" description="Allow SSH access from lan_net to algol" eol="20230101">
+pass in log quick on $cld_if inet proto tcp from $lan_net to <algol> port ssh
+#</ruleset>
+
+#<ruleset id="10002" description="Allow SMTP access from naos to algol" eol="20230101">
+pass in log quick on $cld_if inet proto tcp from <naos> to <algol> port smtp
+#</ruleset>
+
+#<ruleset id="10002" description="Allow SMTP access from algol to naos" eol="20230101">
+pass out log quick on $cld_if inet proto tcp from <algol> to <naos> port smtp
 #</ruleset>
 
 #host rules
-#<ruleset id="20000" description="allow traffic between wormhole and blackhole" eol="20200101">
-pass in log quick on $ext_if from <wormhole> to <blackhole>
-pass out log quick on $ext_if from <blackhole> to <wormhole>
+#<ruleset id="20000" description="Allow all traffic between wormhole, quasar and blackhole" eol="20230101">
+pass in log quick on $ext_if from { <wormhole> <quasar> } to <blackhole>
+pass out log quick on $ext_if from <blackhole> to { <wormhole>, <quasar> }
 #</ruleset>
 
-#<ruleset id="20001" description="allow from blackhole to internet for packages and updates" eol="20200101">
-pass out log quick on $ext_if inet proto tcp from <blackhole> to any port { www https }
+#<ruleset id="20001" description="Allow from blackhole to specific destinations for packages and updates" eol="20230101">
+pass out log quick on $ext_if inet proto tcp from <blackhole> to <openbsd_mirrors> port { www, https }
 #</ruleset>
 
-#<ruleset id="20001" description="allow from blackhole to internet for dns" eol="20200101">
-pass out log quick on $ext_if inet proto { tcp, udp } from <blackhole> to any port 53
+#<ruleset id="20001" description="Allow from blackhole to google DNS-servers for DNS" eol="20230101">
+pass out log quick on $ext_if inet proto { tcp, udp } from <blackhole> to <transip_dns> port domain
 #</ruleset>
 
-#<ruleset id="20002" description="allow from derksencomputing networks to VPN cloud DMZ" eol="20200101">
-pass in log quick on $int_if from { $lan_net $wls_net $dmz_net } to $dmz_net
-pass out log quick on $int_if from $int_ip to { $lan_net $wls_net $dmz_net }
+{% elif inventory_hostname == "antares.galaxy.derksencomputing.nl" %}
+
+#macros
+ext_if="vio0"
+int_if="vio1"
+cld_if="enc0"
+
+ext_ip="136.144.215.240"
+ext_net="/136.144.215.0/24"
+int_ip="172.16.1.2"
+int_net="172.16.1.0/24"
+lan_net="10.0.0.0/24"
+wls_net="10.0.1.0/24"
+dmz_net="172.16.0.0/24"
+
+table <antares> { 172.16.1.2 }
+
+table <wormhole> { 45.83.232.124 }
+table <blackhole> { 149.210.150.253 }
+table <quasar> { 136.144.215.240 }
+
+table <naos> { 172.16.0.3 }
+
+table <openbsd_mirrors> { 151.101.2.217, 151.101.66.217, 151.101.130.217, 151.101.194.217, 145.220.21.40 }
+table <transip_dns> { 195.8.195.8, 195.135.195.135 }
+
+#options
+set skip on lo0
+set block-policy return
+set loginterface $ext_if
+set state-policy if-bound
+set debug emerg
+set limit states 10000
+set optimization normal
+set reassemble yes
+
+#scrub all traffic
+match in all scrub (random-id)
+
+#default drop rules
+block log all
+
+#ext rules
+#<ruleset id="00000" description="Default ICMP rules" eol="20230101">
+pass in log quick on $ext_if inet proto icmp from any to <quasar>
+pass out log quick on $ext_if inet proto icmp from <quasar> to any
 #</ruleset>
 
-#<ruleset id="20003" description="allow rigel to algol for Prometheus monitoring" eol="20200101">
-pass in log quick on $int_if inet proto tcp from 172.16.0.8 to $int_ip port 9100
+#<ruleset id="00001" description="Allow SMTP from the internet for mail delivery" eol="20230101">
+pass in log quick on $ext_if inet proto tcp from any to <quasar> port smtp
+pass out log quick on $ext_if inet proto tcp from <quasar> to any port smtp
+#</ruleset>
+
+#<ruleset id="00002" description="Allow DNS from internet to anatares for domain resolving" eol="20230101">
+pass in log quick on $ext_if inet proto { udp, tcp } from any to <quasar> port domain
+#</ruleset>
+
+#<ruleset id="00004" description="Allow HTTP and HTTPS for website www.jellederksen.nl" eol="20230101">
+#pass in log quick on $ext_if inet proto tcp from any to <quasar> port { www, https }
+#</ruleset>
+
+#cld rules
+#<ruleset id="10000" description="Default ICMP rules" eol="20230101">
+pass in log quick on $cld_if inet proto icmp from { $wls_net, $lan_net, $dmz_net } to <antares>
+pass out log quick on $cld_if inet proto icmp from <antares> to { $wls_net, $lan_net, $dmz_net }
+#</ruleset>
+
+#<ruleset id="10001" description="Allow SSH access from lan_net to Antares" eol="20230101">
+pass in log quick on $cld_if inet proto tcp from $lan_net to <antares> port ssh
+#</ruleset>
+
+#<ruleset id="10002" description="Allow SMTP access from Naos to Antares" eol="20230101">
+pass in log quick on $cld_if inet proto tcp from <naos> to <antares> port smtp
+#</ruleset>
+
+#<ruleset id="10002" description="Allow SMTP access from Antares to Naos" eol="20230101">
+pass out log quick on $cld_if inet proto tcp from <antares> to <naos> port smtp
+#</ruleset>
+
+#host rules
+#<ruleset id="20000" description="Allow traffic between Wormhole, Blackhole and Quasar" eol="20230101">
+pass in log quick on $ext_if from { <wormhole>, <blackhole> } to <quasar>
+pass out log quick on $ext_if from <quasar> to { <wormhole>, <blackhole> }
+#</ruleset>
+
+#<ruleset id="20001" description="Allow from Blackhole to specific destinaitons for packages and updates" eol="20230101">
+pass out log quick on $ext_if inet proto tcp from <quasar> to <openbsd_mirrors> port { www, https }
+#</ruleset>
+
+#<ruleset id="20001" description="Allow from Quasar to Google DNS-server for DNS" eol="20230101">
+pass out log quick on $ext_if inet proto { tcp, udp } from <quasar> to <transip_dns> port domain
 #</ruleset>
 
 {% endif %}

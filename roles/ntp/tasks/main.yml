@@ -1,5 +1,4 @@
 ---
-# tasks file for time
+# tasks file for ntp
 
 - include_tasks: "{{ ansible_os_family }}.yml"
-  #static: no
