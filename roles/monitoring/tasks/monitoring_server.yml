@@ -6,41 +6,37 @@
     shell: /bin/false
     create_home: False
 
+- name: Download Prometheus archive
+  get_url:
+    url: https://github.com/prometheus/prometheus/releases/download/v2.32.1/prometheus-2.32.1.linux-amd64.tar.gz
+    dest: /opt/prometheus.tar.gz
+    mode: '0440'
+
+- name: Unarchive Prometheus
+  unarchive:
+    src: /opt/prometheus.tar.gz
+    dest: /opt
+    remote_src: yes
+
+- name: Rename extracted Prometheus directory to prometheus
+  shell: mv prometheus*.linux-amd64 prometheus
+  args:
+    chdir: /opt
+    creates: prometheus
+
 - name: Create Prometheus configuration directory
   file:
     path: /etc/prometheus
     state: directory
     mode: '0755'
 
-- name: Create Prometheus configuration directory
+- name: Create Prometheus database storage directory
   file:
-    path: /var/lib/prometheus
+    path: /var/prometheus
     state: directory
     mode: '0755'
     owner: prometheus
     group: prometheus
-
-- name: Download Prometheus archive
-  get_url:
-    url: https://github.com/prometheus/prometheus/releases/download/v2.20.1/prometheus-2.20.1.linux-amd64.tar.gz
-    dest: /root
-    mode: '0440'
-
-- name: Unarchive Promethues
-  unarchive:
-    src: /root/prometheus-2.20.1.linux-amd64.tar.gz
-    dest: /root
-    remote_src: yes
-
-- name: Copy Prometheus binaries to correct path
-  copy:
-    src: "/root/prometheus-2.20.1.linux-amd64/{{ item }}"
-    dest: /usr/local/bin
-    remote_src: yes
-    mode: 0755
-  with_items:
-    - prometheus
-    - promtool
 
 - name: Setup Prometheus configuration file
   template:
@@ -78,31 +74,35 @@
 
 - name: Download Alertmanager archive
   get_url:
-    url: https://github.com/prometheus/alertmanager/releases/download/v0.21.0/alertmanager-0.21.0.linux-amd64.tar.gz
-    dest: /root
+    url: https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-amd64.tar.gz
+    dest: /opt
     mode: '0440'
 
 - name: Unarchive Alertmanager
   unarchive:
-    src: /root/alertmanager-0.21.0.linux-amd64.tar.gz
-    dest: /root
+    src: /opt/alertmanager-0.23.0.linux-amd64.tar.gz
+    dest: /opt
     remote_src: yes
 
-- name: Copy Alertmanager binaries to correct path
-  copy:
-    src: "/root/alertmanager-0.21.0.linux-amd64/{{ item }}"
-    dest: /usr/local/bin
-    remote_src: yes
-    mode: 0755
-  with_items:
-    - alertmanager
-    - amtool
+- name: Rename extracted Alertmanager directory to alertmanager
+  shell: mv alertmanager*.linux-amd64 alertmanager
+  args:
+    chdir: /opt
+    creates: alertmanager
 
 - name: Create Alertmanager configuration directory
   file:
     path: /etc/alertmanager
     state: directory
     mode: '0755'
+
+- name: Create Alertmanager data directory
+  file:
+    path: /var/alertmanager
+    state: directory
+    mode: '0755'
+    owner: alertmanager
+    group: alertmanager
 
 - name: Setup Alertmanager configuration file
   template:

@@ -9,6 +9,7 @@
     - vpn
   tags:
     - vpn
+    - never
 
 - name: Configure firewall's 
   hosts: firewall
@@ -17,6 +18,7 @@
     - firewall
   tags:
     - firewall
+    - never
 
 - name: Setup DHCP server
   hosts: dhcp
@@ -25,6 +27,7 @@
     - dhcp
   tags:
     - dhcp
+    - never
 
 - name: Setup NTP server
   hosts: ntp
@@ -33,6 +36,7 @@
     - ntp
   tags:
     - ntp
+    - never
 
 - name: Setup and configure mail
   hosts: mail
@@ -41,6 +45,7 @@
     - mail
   tags:
     - mail
+    - never
 
 - name: Setup and configure DNS-servers
   hosts: dns
@@ -49,6 +54,7 @@
     - dns
   tags:
     - dns
+    - never
 
 - name: Setup Hasicorp Vault
   hosts: vault
@@ -57,6 +63,7 @@
     - vault
   tags:
     - vault
+    - never
 
 - name: Setup project management Kanboard
   hosts: kanboard
@@ -65,6 +72,7 @@
     - kanboard
   tags:
     - kanboard
+    - never
 
 - name: Manage x509 certificates
   hosts: x509_certificates
@@ -73,6 +81,16 @@
     - x509_certificates
   tags:
     - x509_certificates
+    - never
+
+- name: Setup monitoring
+  hosts: monitoring
+  become: True
+  roles:
+    - monitoring
+  tags:
+    - monitoring
+    - never
 
 #- name: Configure nodes with common settings
 #  hosts: all:!vpn
@@ -81,6 +99,7 @@
 #    - common
 #  tags:
 #    - common
+#    - never
 
 #- name: Install and configure ipa server and clients
 #  hosts: ipa
@@ -89,6 +108,7 @@
 #    - role: ipa
 #  tags:
 #    - ipa
+#    - never
 
 #- name: Configure file services
 #  hosts: fileservers
@@ -97,6 +117,7 @@
 #    - fileserver
 #  tags:
 #    - fileserver
+#    - never
 
 #- name: Configure backups
 #  hosts: backup
@@ -105,6 +126,7 @@
 #    - backup
 #  tags:
 #    - backup
+#    - never
 
 #- name: Configure websites
 #  hosts: webservers
@@ -113,6 +135,7 @@
 #    - website
 #  tags:
 #    - website
+#    - never
 
 #- name: Configure desktop nodes
 #  hosts: desktops
@@ -121,12 +144,4 @@
 #    - desktop
 #  tags:
 #    - desktop
-
-#- name: Setup monitoring
-#  hosts: monitoring
-#  become: True
-#  roles:
-#    - monitoring
-#  tags:
-#    - monitoring
-
+#    - never

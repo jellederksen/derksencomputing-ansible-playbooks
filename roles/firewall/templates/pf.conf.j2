@@ -37,13 +37,16 @@ table <alcor> { 172.16.0.2 }
 table <naos> { 172.16.0.3 }
 table <altair> { 172.16.0.4 }
 table <alnitak> { 172.16.0.5 }
+table <procyon> { 172.16.0.6 }
 
 table <rocky_mirrors> { 151.101.38.132 }
+table <freebsd_mirrors> { 163.237.247.16, 204.15.11.69, 213.138.116.73, 139.178.72.201 }
 table <openbsd_mirrors> { 151.101.2.217, 151.101.66.217, 151.101.130.217, 151.101.194.217, 145.220.21.40, 151.101.38.217 }
 table <hashicorp_vault> { 151.101.38.49 }
 table <google_dns> { 8.8.8.8, 8.8.4.4 }
 table <google_time> { 216.239.35.0, 216.239.35.4 216.239.35.8, 216.239.35.12 }
-table <github> { 140.82.112.0/20 }
+table <github> { 140.82.112.0/20, 185.199.110.133, 185.199.111.133, 185.199.108.133 }
+table <grafana> { 151.101.38.217 }
 
 #options
 set skip on lo0
@@ -146,8 +149,8 @@ pass in log quick on $dmz_if inet proto { udp tcp } from $dmz_net to $dmz_ip por
 #</ruleset>
 
 #<ruleset id="30002" description="Allow dmz to trusted destinations with trusted protocols for updates" eol="20230101">
-pass in log quick on $dmz_if inet proto tcp from $dmz_net to { <rocky_mirrors> } port { www, https }
-pass out log quick on $ext_if inet proto tcp from $dmz_net to { <rocky_mirrors> } port { www, https } nat-to <wormhole> set queue (dmzq, dmz_ackq)
+pass in log quick on $dmz_if inet proto tcp from $dmz_net to { <rocky_mirrors>, <freebsd_mirrors> } port { www, https }
+pass out log quick on $ext_if inet proto tcp from $dmz_net to { <rocky_mirrors>, <freebsd_mirrors> } port { www, https } nat-to <wormhole> set queue (dmzq, dmz_ackq)
 #</ruleset>
 
 #<ruleset id="30003" description="Allow dmz to Sirius firewall with NTP" eol="20230101">
@@ -173,14 +176,24 @@ pass in log quick on $dmz_if inet proto tcp from <alnitak> to <hashicorp_vault> 
 pass out log quick on $ext_if inet proto tcp from <alnitak> to <hashicorp_vault> port https nat-to <wormhole> set queue (dmzq, dmz_ackq)
 #</ruleset>
 
-#<ruleset id="30007" description="Allow Alnitak to Hashicorp for Vault software and updates" eol="20230101">
+#<ruleset id="30008" description="Allow Alnitak to Hashicorp for Vault software and updates" eol="20230101">
 pass in log quick on $dmz_if inet proto tcp from <alnitak> to <hashicorp_vault> port https
 pass out log quick on $ext_if inet proto tcp from <alnitak> to <hashicorp_vault> port https nat-to <wormhole> set queue (dmzq, dmz_ackq)
 #</ruleset>
 
-#<ruleset id="30007" description="Allow Alnitak to Github for Kanboard software" eol="20230101">
-pass in log quick on $dmz_if inet proto tcp from <alnitak> to <github> port https
-pass out log quick on $ext_if inet proto tcp from <alnitak> to <github> port https nat-to <wormhole> set queue (dmzq, dmz_ackq)
+#<ruleset id="30009" description="Allow dmz to Github for software and packages" eol="20230101">
+pass in log quick on $dmz_if inet proto tcp from $dmz_net to <github> port https
+pass out log quick on $ext_if inet proto tcp from $dmz_net to <github> port https nat-to <wormhole> set queue (dmzq, dmz_ackq)
+#</ruleset>
+
+#<ruleset id="30010" description="Allow lan to Procyon Prometheus" eol="20230101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to <procyon> port { 9090, 3000 }
+pass out log quick on $dmz_if inet proto tcp from $lan_net to <procyon> port { 9090, 3000 }
+#</ruleset>
+
+#<ruleset id="30011" description="Allow Procyon to grafana for Grafana software packages" eol="20230101">
+pass in log quick on $dmz_if inet proto tcp from <procyon> to <grafana> port https
+pass out log quick on $ext_if inet proto tcp from <procyon> to <grafana> port https nat-to <wormhole> set queue (dmzq, dmz_ackq)
 #</ruleset>
 
 #cld rules
@@ -254,6 +267,7 @@ table <naos> { 172.16.0.3 }
 
 table <openbsd_mirrors> { 151.101.2.217, 151.101.66.217, 151.101.130.217, 151.101.194.217, 145.220.21.40 }
 table <transip_dns> { 195.8.195.8, 195.135.195.135 }
+table <rspamd> { 151.115.41.123, 88.198.198.21 }
 
 #options
 set skip on lo0
@@ -318,8 +332,12 @@ pass out log quick on $ext_if from <blackhole> to { <wormhole>, <quasar> }
 pass out log quick on $ext_if inet proto tcp from <blackhole> to <openbsd_mirrors> port { www, https }
 #</ruleset>
 
-#<ruleset id="20001" description="Allow from blackhole to google DNS-servers for DNS" eol="20230101">
+#<ruleset id="20002" description="Allow from blackhole to google DNS-servers for DNS" eol="20230101">
 pass out log quick on $ext_if inet proto { tcp, udp } from <blackhole> to <transip_dns> port domain
+#</ruleset>
+
+#<ruleset id="20003" description="Allow from blackhole to google DNS-servers for DNS" eol="20230101">
+pass out log quick on $ext_if inet proto tcp from <blackhole> to <rspamd> port { www, https }
 #</ruleset>
 
 {% elif inventory_hostname == "antares.galaxy.derksencomputing.nl" %}
@@ -347,6 +365,7 @@ table <naos> { 172.16.0.3 }
 
 table <openbsd_mirrors> { 151.101.2.217, 151.101.66.217, 151.101.130.217, 151.101.194.217, 145.220.21.40 }
 table <transip_dns> { 195.8.195.8, 195.135.195.135 }
+table <rspamd> { 151.115.41.123, 88.198.198.21 }
 
 #options
 set skip on lo0
@@ -411,8 +430,12 @@ pass out log quick on $ext_if from <quasar> to { <wormhole>, <blackhole> }
 pass out log quick on $ext_if inet proto tcp from <quasar> to <openbsd_mirrors> port { www, https }
 #</ruleset>
 
-#<ruleset id="20001" description="Allow from Quasar to Google DNS-server for DNS" eol="20230101">
+#<ruleset id="20002" description="Allow from Quasar to Google DNS-server for DNS" eol="20230101">
 pass out log quick on $ext_if inet proto { tcp, udp } from <quasar> to <transip_dns> port domain
+#</ruleset>
+
+#<ruleset id="20003" description="Allow from Quasar to rspamd for spamchecks" eol="20230101">
+pass out log quick on $ext_if inet proto tcp from <quasar> to <rspamd> port { www, https }
 #</ruleset>
 
 {% endif %}
