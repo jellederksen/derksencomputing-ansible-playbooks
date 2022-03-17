@@ -13,7 +13,7 @@
     state: present
   vars:
     packages:
-      - py37-borgbackup
+      - py38-borgbackup
 
 #Initialize the remote Borg archive. If the remote Borg archive already
 #exists, the command will exit with return code 2. We will ignore this

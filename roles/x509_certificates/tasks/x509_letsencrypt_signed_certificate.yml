@@ -1,0 +1,57 @@
+---
+
+- name: Check if there is a httpd config file present
+  stat:
+    path: /etc/httpd.conf
+  register: httpd_config
+
+- name: Check if the available httpd configuration file contains an acme challange setup
+  lineinfile:
+    path: /etc/httpd.conf
+    regexp: "acme-challenge"
+    state: absent
+  # We use check_mode just to confirm if the file contains the acme-challenge string
+  check_mode: True
+  ignore_errors: True
+  changed_when: False
+  register: httpd_acme_challange_check
+  when: httpd_config.stat.exists
+
+- name: Fail the playbook when there appears to be a custom httpd.conf file present
+  fail:
+    msg: "There appears to be a custom httpd.conf file present on the host
+          {{ inventory_hostname }}. Please add an acme challange configuration
+          section to the custom httpd.conf file, or remove the file and restart
+          the playbook"
+  when: (httpd_config.stat.exists) and (not httpd_acme_challange_check.found)
+
+- name: "Ensure httpd default configuration file"
+  template:
+    src: templates/acme_httpd.conf.j2
+    dest: /etc/httpd.conf
+  when: not httpd_config.stat.exists
+
+- name: "Ensure httpd daemon is enabled and started"
+  service:
+    name: httpd
+    state: started
+    enabled: true
+
+- name: "Ensure acme client configuration file"
+  template:
+    src: templates/acme-client.conf.j2
+    dest: /etc/acme-client.conf
+
+- name: "Ensure keypair is signed by Letsencrypt"
+  shell: /usr/sbin/acme-client "{{ x509_certificate.cn }}"
+  register: acme_client_result
+  #rc 0 == cert changed, rc 1 == command failed, rc 2 == nothing changed all ok
+  changed_when: acme_client_result.rc == 1
+  failed_when: acme_client_result.rc == 1
+
+- name: "Ensure certificate resign cronjob"
+  cron:
+    name: "letsencrypt certificate resign cronjob"
+    minute: "0"
+    hour: "5"
+    job: "/usr/sbin/acme-client {{ x509_certificate.cn }} && /usr/sbin/rcctl reload httpd"

@@ -1,7 +1,7 @@
 global:
-  smtp_smarthost: 'deneb.galaxy.derksencomputing.nl:25'
+  smtp_smarthost: 'naos.galaxy.derksencomputing.nl:25'
   smtp_from: 'AlertManager <altermanager@derksencomputing.nl>'
-  smtp_require_tls: True
+  smtp_require_tls: false
   #smtp_hello: 'alertmanager'
   #smtp_auth_username: 'username'
   #smtp_auth_password: 'password'
@@ -13,14 +13,17 @@ route:
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 3h
-  receiver: team-1
+  receiver: email
 
 receivers:
-  - name: 'team-1'
+  - name: 'email'
     email_configs:
-      - to: 'user@domain.com'
+      - to: 'jelle@derksencomputing.nl'
+        html: ''
     #slack_configs:
     #  # https://prometheus.io/docs/alerting/configuration/#slack_config
     #  - channel: 'system_events'
     #  - username: 'AlertManager'
     #  - icon_emoji: ':joy:'
+
+

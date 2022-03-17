@@ -16,10 +16,12 @@ authority letsencrypt-staging {
 	account key "/etc/acme/letsencrypt-staging-privkey.pem"
 }
 
-domain www.derksencomputing.nl {
-	alternative names { derksencomputing.nl www.jellederksen.nl jellederksen.nl }
-	domain key "/etc/ssl/private/www.derksencomputing.nl.key"
-	domain full chain certificate "/etc/ssl/www.derksencomputing.nl.fullchain.pem"
+domain "{{ x509_certificate.cn }}" {
+{% if x509_certificate.alt_names is defined %}
+	alternative names { {% for alt_name in x509_certificate.alt_names %}{{ alt_name }} {% endfor %}}
+{% endif %}
+	domain key "/etc/ssl/private/{{ x509_certificate.cn }}.key"
+	domain full chain certificate "/etc/ssl/{{ x509_certificate.cn }}.crt"
 	sign with letsencrypt
 }
 

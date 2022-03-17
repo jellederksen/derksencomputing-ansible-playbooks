@@ -1,0 +1,31 @@
+input {
+  syslog {
+    port => 5514
+  }
+}
+
+filter {
+  mutate {
+    copy => { "[host]" => "[fqdn]" }
+  }
+  dns {
+    reverse => [ "fqdn" ]
+    action => "replace"
+    hit_cache_size => 1000 
+    hit_cache_ttl => 300 
+    failed_cache_size => 1000 
+    failed_cache_ttl => 10
+  }
+}
+
+output {
+  if "_grokparsefailure_sysloginput" in [tags] {
+    file {
+      path => "/var/log/derksencomputing/grokparse_failure/%{+YYYYMMdd}_%{fqdn}.log"
+    }
+  } else {
+    file {
+      path => "/var/log/derksencomputing/%{+YYYYMMdd}_%{fqdn}.log"
+    }
+  }
+}

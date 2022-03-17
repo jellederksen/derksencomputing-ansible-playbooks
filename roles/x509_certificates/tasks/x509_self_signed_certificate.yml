@@ -1,3 +1,5 @@
+---
+
 - name: "Ensure private key for {{ x509_certificate.cn }}"
   openssl_privatekey:
     path: "{{ x509_certificate.key_path }}"

@@ -11,47 +11,42 @@ server "www.tastingtime.nl" {
   block return 301 "http://www.celiciaceramics.nl$REQUEST_URI"
 }
 
-server "www.celiciaceramics.com" {
-  alias celiciaceramics.com
-  listen on * port 80
-  block return 301 "http://www.celiciaceramics.nl$REQUEST_URI"
-}
-
-server "www.jellederksen.nl" {
-  alias jellederksen.nl
-  listen on * port 80
-  block return 301 "https://www.jellederksen.nl$REQUEST_URI"
+server "www.derksencomputing.nl" {
+  alias "derksencomputing.nl"
+  listen on egress port 80
+  block return 301 "https://www.derksencomputing.nl$REQUEST_URI"
 }
 
 server "www.derksencomputing.nl" {
   alias derksencomputing.nl
-  listen on * port 80
-  block return 301 "https://www.jellederksen.nl$REQUEST_URI"
-}
-
-server "www.derksencomputing.nl" {
-  alias derksencomputing.nl
-  listen on * tls port 443
-  tls {
-    certificate "/etc/ssl/www.derksencomputing.nl.fullchain.pem"
-    key "/etc/ssl/private/www.derksencomputing.nl.key"
-  }
-  block return 301 "https://www.jellederksen.nl$REQUEST_URI"
-}
-
-server "www.jellederksen.nl" {
   listen on * tls port 443
   hsts
   log style combined
-  root "/htdocs/www.jellederksen.nl"
+  root "/htdocs/www.derksencomputing.nl"
   tls {
-    certificate "/etc/ssl/www.derksencomputing.nl.fullchain.pem"
-    key "/etc/ssl/private/www.derksencomputing.nl.key"
+    certificate "/etc/ssl/{{ external_hostname }}.crt"
+    key "/etc/ssl/private/{{ external_hostname }}.key"
   }
   location "/.well-known/acme-challenge/*" {
     root "/acme"
     request strip 2
   }
+}
+
+# Catch all redirect to https://www.derksencomputing.nl
+server "*" {
+  listen on egress port 80
+  block return 301 "https://www.derksencomputing.nl$REQUEST_URI"
+}
+
+# Catch all redirect to https://www.derksencomputing.nl
+server "*" {
+  listen on * tls port 443
+  tls {
+    certificate "/etc/ssl/{{ external_hostname }}.crt"
+    key "/etc/ssl/private/{{ external_hostname }}.key"
+  }
+  block return 301 "https://www.derksencomputing.nl$REQUEST_URI"
 }
 
 #------------------------------------------------------------------------------

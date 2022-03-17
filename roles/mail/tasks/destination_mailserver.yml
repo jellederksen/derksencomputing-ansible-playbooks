@@ -20,11 +20,14 @@
     src: ../templates/login.conf.j2
     dest: /etc/login.conf
 
-- name: "Ensure Dovecot SSL config"
+- name: "Ensure Dovecot config"
   template:
-    src: templates/10-ssl.conf.j2
-    dest: /etc/dovecot/conf.d/10-ssl.conf
+    src: "templates/{{ item }}"
+    dest: "/etc/dovecot/conf.d/{{ item | regex_replace('\\.j2', '') }}"
   notify: restart_dovecot
+  loop:
+    - 10-ssl.conf.j2
+    - 10-mail.conf.j2
 
 - name: "Ensure Dovecot is enabled and started"
   service:

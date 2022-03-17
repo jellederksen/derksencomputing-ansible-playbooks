@@ -1,0 +1,8 @@
+---
+
+- name: Ensure syslog message are forwarded to the central logserver
+  template:
+    src: templates/RedHat/rsyslog.conf.j2
+    dest: /etc/rsyslog.conf
+  notify:
+    restart_rsyslog

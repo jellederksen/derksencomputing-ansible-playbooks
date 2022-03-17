@@ -7,3 +7,10 @@
   loop: "{{ x509_certificates.self_signed_certificates }}"
   loop_control:
     loop_var: x509_certificate
+
+- name: x509 letsencrypt signed certificates
+  include_tasks: x509_letsencrypt_signed_certificate.yml
+  when: x509_certificates.letsencrypt_signed_certificates is defined
+  loop: "{{ x509_certificates.letsencrypt_signed_certificates }}"
+  loop_control:
+    loop_var: x509_certificate

@@ -1,0 +1,45 @@
+#jinja2:lstrip_blocks: True
+;Ansible information:
+;    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+;    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+;    Hostname: {{ template_host }}
+
+$ORIGIN derksencomputing.com.
+$TTL 3600
+
+@ IN SOA quasar.derksencomputing.nl. jelle.derksencomputing.nl. (
+        2022031703       ;Serial number
+        1200             ;Refresh
+        120              ;Retry
+        2419200          ;Expire
+        3600             ;Min TTL
+)
+        NS        quasar.derksencomputing.nl.
+        NS        blackhole.derksencomputing.nl.
+        MX        10 blackhole.derksencomputing.nl.
+        MX        20 quasar.derksencomputing.nl.
+
+@               IN        A        149.210.150.253
+www             IN        A        149.210.150.253
+
+{% for mailserver in groups['mail'] %}
+  {%  if hostvars[mailserver]['dkim_pub_keys'] is defined %}
+    {%  for key in hostvars[mailserver]['dkim_pub_keys'] %}
+      {%  if key.dkim_domain == 'derksencomputing.com' %}
+{{ key.mail_server }}._domainkey    IN    TXT    ( "v=DKIM1;k=rsa;" {% for line in key.dkim_pub_key.split('\n') %}{% if loop.first %}"p={{ line }}"{% endif %}    {% if not loop.first and not loop.last %}"{{ line }}"{% endif %} {% if loop.last %}"{{ line }}" ){% endif %}
+
+        {% endfor %}
+      {%  endif %}
+    {%  endfor %}
+  {%  endif %}
+{% endfor %}
+
+@               IN      TXT     "v=spf1 mx -all"
+_DMARC          IN      TXT     "v=DMARC1; p=reject; rua=mailto:dmarc@derksencomputing.nl; ruf=mailto:dmarc@derksencomputing.nl; sp=reject; fo=1; pct=100; adkim=s; aspf=s"
+
+@       IN      CAA     0 issue "letsencrypt.org"
+@       IN      CAA     0 issuewild ";"
+
+;------------------------------------------------------------------------------
+;Copyright (c) 2017 by {{ name }} - {{ company }}
+;------------------------------------------------------------------------------

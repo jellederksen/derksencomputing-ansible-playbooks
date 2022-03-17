@@ -1,0 +1,49 @@
+---
+# tasks file for logging
+
+- name: Import Elastic GPG key
+  rpm_key:
+    state: present
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: Add Elastic yum repo
+  yum_repository:
+    name: elastic
+    description: Elasticsearch yum repo
+    file: elastic
+    baseurl: https://artifacts.elastic.co/packages/7.x/yum
+    gpgcheck: yes
+
+- name: Install Elastic Logstash
+  yum:
+    name: logstash
+    state: latest
+
+- name: Ensure Logstash configuration file
+  template:
+    src: templates/pipelines.yml.j2
+    dest: /etc/logstash/pipelines.yml
+  notify: restart_logstash
+
+- name: Ensure Logstash derksencomputing logging pipeline
+  template:
+    src: templates/derksencomputing_logging.conf.j2
+    dest: /etc/logstash/conf.d/derksencomputing_logging.conf
+  notify: restart_logstash
+
+- name: Ensure Firewalld forward's syslog traffic on port 514 to 5514 for Logstash
+  firewalld:
+    rich_rule: rule family=ipv4 forward-port port=514 protocol="{{ item }}" to-port=5514
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop:
+    - tcp
+    - udp
+
+- name: Enable and start Logstash service
+  service:
+    name: logstash
+    enabled: true
+    state: started

@@ -1,0 +1,12 @@
+---
+# tasks file for logging
+
+
+- name: Include tasks file for log server"
+  include: log_server.yml
+  when: "'log_servers' in group_names"
+
+- name: "Include tasks file for log client"
+  include: log_client.yml
+  when: "'log_clients' in group_names"
+

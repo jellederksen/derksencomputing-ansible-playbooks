@@ -1,0 +1,17 @@
+---
+# handlers file for logging
+
+- name: restart_logstash
+  service:
+    name: logstash
+    state: restarted
+
+- name: restart_syslog
+  service:
+    name: syslogd
+    state: restarted
+
+- name: restart_rsyslog
+  service:
+    name: rsyslog
+    state: restarted

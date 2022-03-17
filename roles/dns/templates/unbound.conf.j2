@@ -42,6 +42,9 @@ server:
 	auto-trust-anchor-file: "/var/unbound/db/root.key"
 	val-log-level: 2
 
+        # Log all DNS queries
+        log-queries: yes
+
         # Trusted local zone DNSSEC anchor files
         trust-anchor-file: ""
 

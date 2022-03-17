@@ -8,21 +8,48 @@
 
 - name: Download Prometheus archive
   get_url:
-    url: https://github.com/prometheus/prometheus/releases/download/v2.32.1/prometheus-2.32.1.linux-amd64.tar.gz
-    dest: /opt/prometheus.tar.gz
-    mode: '0440'
-
-- name: Unarchive Prometheus
-  unarchive:
-    src: /opt/prometheus.tar.gz
+    url: https://github.com/prometheus/prometheus/releases/download/v2.33.1/prometheus-2.33.1.linux-amd64.tar.gz
     dest: /opt
-    remote_src: yes
+    mode: '0440'
+  register: prometheus_download
 
-- name: Rename extracted Prometheus directory to prometheus
-  shell: mv prometheus*.linux-amd64 prometheus
-  args:
-    chdir: /opt
-    creates: prometheus
+- name: Install Prometheus and remove the old installation if necessary
+  block: 
+  - name: Find all Prometheus archives
+    find:
+      path: /opt
+      patterns: 'prometheus*.tar.gz'
+    register: prometheus_archives
+
+  - name: Remove old Prometheus archives
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    #Keep the Prometheus archive we just downloaded
+    when: item.path != prometheus_download.dest
+    loop: "{{ prometheus_archives.files }}"
+    loop_control:
+      label: "{{ item.path }}"
+    
+  - name: Remove old prometheus installation directory before installing the new verion
+    file:
+      dest: /opt/prometheus
+      state: absent
+  
+  - name: Unarchive downloaded Prometheus
+    unarchive:
+      src: "{{ prometheus_download.dest }}"
+      dest: /opt
+      remote_src: yes
+
+  - name: Rename extracted Prometheus directory to prometheus
+    shell: mv "{{ prometheus_download.dest | regex_replace('\.tar\.gz') }}" prometheus
+    args:
+      chdir: /opt
+      creates: prometheus
+    notify: restart_prometheus
+  when: 
+    - prometheus_download.changed
 
 - name: Create Prometheus configuration directory
   file:
@@ -47,7 +74,16 @@
     mode: '0644'
   notify: restart_prometheus
 
-- name: Setup Prometheus configuration file
+- name: Setup Prometheus rules file
+  template:
+    src: templates/rules.yml.j2
+    dest: /etc/prometheus/rules.yml
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+  notify: restart_prometheus
+
+- name: Setup Prometheus systemd service file
   template:
     src: templates/prometheus.service.j2
     dest: /etc/systemd/system/prometheus.service
@@ -77,18 +113,45 @@
     url: https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-amd64.tar.gz
     dest: /opt
     mode: '0440'
+  register: alertmanager_download
 
-- name: Unarchive Alertmanager
-  unarchive:
-    src: /opt/alertmanager-0.23.0.linux-amd64.tar.gz
-    dest: /opt
-    remote_src: yes
+- name: Install Alertmanager and remove the old installation if necessary
+  block: 
+  - name: Find all Alertmanager archives
+    find:
+      path: /opt
+      patterns: 'alertmanager*.tar.gz'
+    register: alertmanager_archives
 
-- name: Rename extracted Alertmanager directory to alertmanager
-  shell: mv alertmanager*.linux-amd64 alertmanager
-  args:
-    chdir: /opt
-    creates: alertmanager
+  - name: Remove old Alertmanager archives
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    #Keep the Alertmanager archive we just downloaded
+    when: item.path != alertmanager_download.dest
+    loop: "{{ alertmanager_archives.files }}"
+    loop_control:
+      label: "{{ item.path }}"
+    
+  - name: Remove old Alertmanager installation directory before installing the new verion
+    file:
+      dest: /opt/alertmanger
+      state: absent
+  
+  - name: Unarchive downloaded Alertmanager
+    unarchive:
+      src: "{{ alertmanager_download.dest }}"
+      dest: /opt
+      remote_src: yes
+
+  - name: Rename extracted Alertmanager directory to Alertmanager
+    shell: mv "{{ alertmanager_download.dest | regex_replace('\.tar\.gz') }}" alertmanager
+    args:
+      chdir: /opt
+      creates: alertmanager
+    notify: restart_alertmanager
+  when: 
+    - alertmanager_download.changed
 
 - name: Create Alertmanager configuration directory
   file:

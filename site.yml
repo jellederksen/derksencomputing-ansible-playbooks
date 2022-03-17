@@ -92,6 +92,42 @@
     - monitoring
     - never
 
+- name: Setup home automation
+  hosts: home_automation
+  become: true
+  roles:
+    - home_automation
+  tags:
+    - home_automation
+    - never
+
+- name: Setup logging
+  hosts: logging
+  become: True
+  roles:
+    - logging
+  tags:
+    - logging
+    - never
+
+- name: Configure backups
+  hosts: backup
+  become: True
+  roles:
+    - backup
+  tags:
+    - backup
+    - never
+
+- name: Configure websites
+  hosts: webservers
+  become: True
+  roles:
+    - website
+  tags:
+    - website
+    - never
+
 #- name: Configure nodes with common settings
 #  hosts: all:!vpn
 #  become: True
@@ -117,24 +153,6 @@
 #    - fileserver
 #  tags:
 #    - fileserver
-#    - never
-
-#- name: Configure backups
-#  hosts: backup
-#  become: True
-#  roles:
-#    - backup
-#  tags:
-#    - backup
-#    - never
-
-#- name: Configure websites
-#  hosts: webservers
-#  become: True
-#  roles:
-#    - website
-#  tags:
-#    - website
 #    - never
 
 #- name: Configure desktop nodes

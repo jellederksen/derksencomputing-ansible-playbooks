@@ -55,6 +55,7 @@ pki "mailname" cert "/etc/ssl/{{ mailname }}.crt"
 pki "mailname" key "/etc/ssl/private/{{ mailname }}.key"
 
 table external_mailservers { 172.16.1.1, 172.16.1.2 }
+table alertmanager_servers { 172.16.0.6 }
 
 table aliases file:/etc/mail/aliases
 
@@ -77,6 +78,7 @@ match from src <external_mailservers> for domain jellederksen.nl action "local_m
 match from src <external_mailservers> for domain kuberoot.nl action "local_mail"
 match from src <external_mailservers> for domain opencomputing.nl action "local_mail"
 match from src <external_mailservers> for domain derksencomputing.nl action "local_mail"
+match from src <alertmanager_servers> for domain derksencomputing.nl action "local_mail"
 
 match from src 10.0.0.0/24 for any action "relay"
 

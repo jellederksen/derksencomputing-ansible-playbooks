@@ -29,7 +29,7 @@
   block:
     - name: Download latest Kanboard from Github
       get_url:
-        url: https://github.com/kanboard/kanboard/archive/refs/tags/v1.2.20.tar.gz
+        url: https://github.com/kanboard/kanboard/archive/refs/tags/v1.2.21.tar.gz
         dest: /tmp
         mode: "0644"
 
@@ -43,7 +43,7 @@
 
     - name: Extract gzip tarball file in httpd directory
       unarchive:
-        src: /tmp/kanboard-1.2.20.tar.gz
+        src: /tmp/kanboard-1.2.21.tar.gz
         dest: /var/www/html/kanboard
         remote_src: True
         extra_opts: [--strip-components=1]

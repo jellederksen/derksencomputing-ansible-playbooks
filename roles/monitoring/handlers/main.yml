@@ -11,6 +11,11 @@
     state: restarted
     name: alertmanager
 
+- name: restart_node_exporter
+  service:
+    state: restarted
+    name: node_exporter
+
 - name: reload_firewalld
   service:
     state: restarted
