@@ -2,7 +2,7 @@
 
 - name: Ensure mail packages are installed
   openbsd_pkg:
-    name: ['redis', 'rspamd-2.7p0', 'opensmtpd-filter-rspamd', 'py3-cryptography']
+    name: ['redis', 'rspamd', 'opensmtpd-filter-rspamd', 'py3-cryptography']
     state: present
 
 - name: Ensure OpenSMTPD config file

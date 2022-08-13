@@ -137,15 +137,6 @@
 #    - common
 #    - never
 
-#- name: Install and configure ipa server and clients
-#  hosts: ipa
-#  become: True
-#  roles:
-#    - role: ipa
-#  tags:
-#    - ipa
-#    - never
-
 #- name: Configure file services
 #  hosts: fileservers
 #  become: True

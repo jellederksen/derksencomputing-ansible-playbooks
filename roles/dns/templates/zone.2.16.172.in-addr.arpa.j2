@@ -4,7 +4,7 @@
 ;    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
 ;    Hostname: {{ template_host }}
 
-$ORIGIN 1.16.172.in-addr.arpa.
+$ORIGIN 2.16.172.in-addr.arpa.
 $TTL 3600
 
 @ IN SOA sirius.galaxy.derksencomputing.nl. jelle.galaxy.derksencomputing.nl. (
@@ -16,8 +16,12 @@ $TTL 3600
 )
         NS        sirius.galaxy.derksencomputing.nl.
 
-1         IN        PTR        algol.galaxy.derksencomputing.nl.
-2         IN        PTR        antares.galaxy.derksencomputing.nl.
+1         IN        PTR        sirius.galaxy.derksencomputing.nl.
+2	  IN	    PTR	       mizar.galaxy.derksencomputing.nl.
+3	  IN	    PTR	       izar.galaxy.derksencomputing.nl.
+4	  IN	    PTR	       centaurus.galaxy.derksencomputing.nl.
+5	  IN	    PTR	       vela.galaxy.derksencomputing.nl.
+6	  IN	    PTR	       alcor.galaxy.derksencomputing.nl.
 
 ;------------------------------------------------------------------------------
 ;Copyright (c) 2017 by {{ name }} - {{ company }}

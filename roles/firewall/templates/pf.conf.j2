@@ -17,7 +17,8 @@ lan_ip="10.0.0.1"
 wls_ip="10.0.1.1"
 dmz_ip="172.16.0.1"
 kam_ip="192.168.0.1"
-cld_ip="172.16.0.1"
+cld_ip="172.16.1.1"
+mgt_ip="172.16.2.1"
 
 ext_net="45.83.232.124/32"
 lan_net="10.0.0.0/24"
@@ -25,6 +26,7 @@ wls_net="10.0.1.0/24"
 dmz_net="172.16.0.0/24"
 cld_net="172.16.1.0/24"
 kam_net="192.168.0.0/24"
+mgt_net="172.16.2.0/24"
 
 table <wormhole> { 45.83.232.124 }
 table <blackhole> { 149.210.150.253 }
@@ -296,6 +298,12 @@ pass in log quick on $dmz_if inet proto tcp from <procyon> to $dmz_if port 9100
 
 #<ruleset id="60004" description="Allow Sirius to Procyon for syslog" eol="20230101">
 pass out log quick on $dmz_if inet proto tcp from $dmz_ip to <procyon> port 514
+#</ruleset>
+
+# mgt rules
+#<ruleset id="60001" description="Allow lan to mgt alcor ipma (mizar) for out of band management" eol="20230101">
+pass in log quick on $lan_if from $lan_net to <mizar> port { www, https }
+pass out log quick on $mgt_if from $lan_net to <mizar> port { www, https } 
 #</ruleset>
 
 {% elif inventory_hostname == "algol.galaxy.derksencomputing.nl" %}

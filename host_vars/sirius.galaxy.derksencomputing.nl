@@ -10,3 +10,4 @@ primary_zones:
   - 0.16.172.in-addr.arpa
   - 1.16.172.in-addr.arpa
   - 0.168.192.in-addr.arpa
+  - 2.16.172.in-addr.arpa

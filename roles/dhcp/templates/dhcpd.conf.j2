@@ -41,10 +41,17 @@ subnet 172.16.0.0 netmask 255.255.255.0 {
 }
 
 #kam network
-subnet 192.168.0.1 netmask 255.255.255.0 {
+subnet 192.168.0.0 netmask 255.255.255.0 {
         option routers 192.168.0.1;
         option domain-name-servers 8.8.8.8, 8.8.4.4;
         range 192.168.0.100 192.168.0.200;
+}
+
+#mgt network
+subnet 172.16.2.0 netmask 255.255.255.0 {
+        option routers 192.168.0.1;
+        option domain-name-servers 172.16.2.1;
+        range 172.16.2.100 172.16.2.200;
 }
 
 host sun {
@@ -69,6 +76,12 @@ host regulus {
         hardware ethernet 18:ce:94:da:de:16;
         fixed-address 10.0.1.5;
         option host-name "regulus";
+}
+
+host deneb {
+        hardware ethernet 3c:6a:9d:1b:57:64;
+        fixed-address 10.0.1.6;
+        option host-name "deneb";
 }
 
 host megrez {

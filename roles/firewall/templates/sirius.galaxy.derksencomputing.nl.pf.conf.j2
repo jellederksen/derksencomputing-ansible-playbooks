@@ -10,6 +10,7 @@ wls_if="vio2"
 dmz_if="vio3"
 cld_if="enc0"
 kam_if="vio4"
+mgt_if="vio5"
 
 ext_ip="45.83.232.124"
 lan_ip="10.0.0.1"
@@ -17,6 +18,7 @@ wls_ip="10.0.1.1"
 dmz_ip="172.16.0.1"
 kam_ip="192.168.0.1"
 cld_ip="172.16.0.1"
+mgt_ip="172.16.2.1"
 
 ext_net="45.83.232.124/32"
 lan_net="10.0.0.0/24"
@@ -24,6 +26,7 @@ wls_net="10.0.1.0/24"
 dmz_net="172.16.0.0/24"
 cld_net="172.16.1.0/24"
 kam_net="192.168.0.0/24"
+mgt_net="172.16.2.0/24"
 
 table <wormhole> { 45.83.232.124 }
 table <blackhole> { 149.210.150.253 }
@@ -32,15 +35,21 @@ table <quasar> { 136.144.215.240 }
 table <algol> { 172.16.1.1 }
 table <antares> { 172.16.1.2 }
 table <sirius> { 172.16.0.1 }
-table <alcor> { 172.16.0.2 }
+table <alcor> { 172.16.2.6 }
 table <naos> { 172.16.0.3 }
 table <altair> { 172.16.0.4 }
 table <alnitak> { 172.16.0.5 }
 table <procyon> { 172.16.0.6 }
 table <sun> { 10.0.1.2 }
 table <vega> { 10.0.1.3 }
+table <deneb> { 10.0.1.6 }
+table <mizar> { 172.16.2.2 }
+table <izar> { 172.16.2.3 }
+table <centaurus> { 172.16.2.4 }
+table <vela> { 172.16.2.5 }
 
 table <rocky_mirrors> { 151.101.38.132 }
+table <fedora_mirrors> { 209.132.190.2 8.43.85.67 140.211.169.196 152.19.134.198 8.43.85.73 38.145.60.20 152.19.134.142 67.219.144.68 140.211.169.206 38.145.60.21 8.43.85.72 38.145.60.22 38.145.60.24 38.145.60.23 152.19.134.145 152.19.134.145 38.145.60.23 38.145.60.22 38.145.60.24 8.43.85.72 }
 table <freebsd_mirrors> { 163.237.247.16, 204.15.11.69, 213.138.116.73, 139.178.72.201 163.237.247.16 204.15.11.69 }
 table <openbsd_mirrors> { 151.101.2.217, 151.101.66.217, 151.101.130.217, 151.101.194.217, 145.220.21.40, 151.101.38.217 }
 table <python_mirrors> { 151.101.36.223, 151.101.128.223, 151.101.0.223, 151.101.192.223, 151.101.64.223, 151.101.65.63, 151.101.129.63, 151.101.1.63, 151.101.193.63 151.101.37.63 }
@@ -89,13 +98,13 @@ block log all
 #ext rules
 #<ruleset id="00000" description="Default ICMP rules" eol="20230101">
 pass in log quick on $ext_if inet proto icmp from any to <wormhole>
-pass out log quick on $ext_if inet proto icmp from { $lan_net, $wls_net, $dmz_net, $kam_net, $ext_ip } to any nat-to <wormhole>
+pass out log quick on $ext_if inet proto icmp from { $lan_net, $wls_net, $dmz_net, $kam_net, $mgt_net, $ext_ip } to any nat-to <wormhole>
 #</ruleset>
 
 #lan rules
 #<ruleset id="10000" description="Default ICMP rules" eol="20230101">
 pass in log quick on $lan_if inet proto icmp from $lan_net to any
-pass out log quick on $lan_if inet proto icmp from { $wls_net, $dmz_net, $cld_net $lan_ip } to $lan_net
+pass out log quick on $lan_if inet proto icmp from { $wls_net, $dmz_net, $cld_net $lan_ip, $mgt_net } to $lan_net
 #</ruleset>
 
 #<ruleset id="10001" description="Allow lan to Sirius firewall for DNS resolving" eol="20230101">
@@ -134,7 +143,7 @@ pass out log quick on $dmz_if inet proto tcp from $lan_net to <alnitak> port 812
 #wls rules
 #<ruleset id="20000" description="Default ICMP rules" eol="20230101">
 pass in log quick on $wls_if inet proto icmp from $wls_net to any
-pass out log quick on $wls_if inet proto icmp from { $lan_net $dmz_net $cld_net, $wls_ip } to $wls_net
+pass out log quick on $wls_if inet proto icmp from { $lan_net $dmz_net $cld_net, $wls_ip, $mgt_net } to $wls_net
 #</ruleset>
 
 #<ruleset id="20001" description="Allow wls to Sirius firewall for DNS resolving" eol="20230101">
@@ -158,7 +167,7 @@ pass out log quick on $dmz_if inet proto tcp from $wls_net to <alnitak> port 812
 #dmz rules
 #<ruleset id="30000" description="Default ICMP rules" eol="20230101">
 pass in log quick on $dmz_if inet proto icmp from $dmz_net to any
-pass out log quick on $dmz_if inet proto icmp from { $lan_net $wls_net $cld_net, $dmz_ip } to $dmz_net
+pass out log quick on $dmz_if inet proto icmp from { $lan_net $wls_net $cld_net, $dmz_ip, $mgt_net } to $dmz_net
 #</ruleset>
 
 #<ruleset id="30001" description="Allow dmz to Sirius firewall for DNS resolving" eol="20230101">
@@ -166,8 +175,8 @@ pass in log quick on $dmz_if inet proto { udp tcp } from $dmz_net to $dmz_ip por
 #</ruleset>
 
 #<ruleset id="30002" description="Allow dmz to trusted destinations with trusted protocols for updates" eol="20230101">
-pass in log quick on $dmz_if inet proto tcp from $dmz_net to { <rocky_mirrors>, <freebsd_mirrors> <python_mirrors> } port { www, https }
-pass out log quick on $ext_if inet proto tcp from $dmz_net to { <rocky_mirrors>, <freebsd_mirrors> <python_mirrors> } port { www, https } nat-to <wormhole> set queue (dmzq, dmz_ackq)
+pass in log quick on $dmz_if inet proto tcp from $dmz_net to { <rocky_mirrors>, <freebsd_mirrors>, <python_mirrors>, <fedora_mirrors> } port { www, https }
+pass out log quick on $ext_if inet proto tcp from $dmz_net to { <rocky_mirrors>, <freebsd_mirrors> <python_mirrors>, <fedora_mirrors> } port { www, https } nat-to <wormhole> set queue (dmzq, dmz_ackq)
 #</ruleset>
 
 #<ruleset id="30003" description="Allow dmz to Sirius firewall with NTP" eol="20230101">
@@ -232,10 +241,15 @@ pass in log quick on $dmz_if inet proto tcp from <altair> to <borgbase> port ssh
 pass out log quick on $ext_if inet proto tcp from <altair> to <borgbase> port ssh nat-to <wormhole> set queue (dmzq, dmz_ackq)
 #</ruleset>
 
+#<ruleset id="30016" description="Allow alnitak (Home Assistant) to deneb (key light) for control" eol="20230101">
+pass in log quick on $dmz_if inet proto tcp from <alnitak> to <deneb> port 9123
+pass out log quick on $wls_if inet proto tcp from <alnitak> to <deneb> port 9123
+#</ruleset>
+
 #cld rules
 #<ruleset id="20000" description="Default ICMP rules" eol="20230101">
 pass in log quick on $cld_if inet proto icmp from $cld_net to any
-pass out log quick on $cld_if inet proto icmp from { $lan_net $dmz_net $cld_net, $cld_ip } to $cld_net
+pass out log quick on $cld_if inet proto icmp from { $lan_net $dmz_net $cld_net, $cld_ip, $mgt_net } to $cld_net
 #</ruleset>
 
 #<ruleset id="40001" description="Allow Algol and Antares to Naos mail server for mail delivery" eol="20230101">
@@ -267,33 +281,59 @@ pass in quick on $kam_if from $kam_net to any
 pass out quick on $ext_if from $kam_net to any nat-to <wormhole> set queue (kamq, kam_ackq)
 #</ruleset>
 
+#mgt rules
+#<ruleset id="70000" description="Default ICMP rules" eol="20230101">
+pass in log quick on $mgt_if inet proto icmp from $mgt_net to any
+pass out log quick on $mgt_if inet proto icmp from { $lan_net $wls_net $cld_net, $dmz_ip } to $mgt_net
+#</ruleset>
+
+#<ruleset id="70001" description="Allow lan to mgt alcor ipma (mizar) for out of band management" eol="20230101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to <mizar> port { www, https }
+pass out log quick on $mgt_if inet proto tcp from $lan_net to <mizar> port { www, https }
+#</ruleset>
+
+#<ruleset id="70002" description="Allow lan to swtich izar for management" eol="20230101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to <izar> port { www, https, ssh }
+pass out log quick on $mgt_if inet proto tcp from $lan_net to <izar> port { www, https, ssh }
+#</ruleset>
+
+#<ruleset id="70003" description="Allow lan to vela and centaurus access points for management" eol="20230101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to { <centaurus>, <vela> } port { www, https, ssh }
+pass out log quick on $mgt_if inet proto tcp from $lan_net to { <centaurus>, <vela> } port { www, https, ssh }
+#</ruleset>
+
+#<ruleset id="70003" description="Allow lan to alcor via ssh for management to hypervisor" eol="20230101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to <alcor> port ssh
+pass out log quick on $mgt_if inet proto tcp from $lan_net to <alcor> port ssh
+#</ruleset>
+
 #Sirius host rules
-#<ruleset id="60000" description="Allow SSH access from lan network to Sirius" eol="20230101">
+#<ruleset id="80000" description="Allow SSH access from lan network to Sirius" eol="20230101">
 pass in log quick on $lan_if inet proto tcp from $lan_net to $lan_ip port ssh
 #</ruleset>
 
-#<ruleset id="60001" description="Allow all traffic between Wormhole, Blackhole and Quasar" eol="20230101">
+#<ruleset id="80001" description="Allow all traffic between Wormhole, Blackhole and Quasar" eol="20230101">
 pass in log quick on $ext_if from { <quasar> <blackhole> } to <wormhole> 
 pass out log quick on $ext_if from <wormhole> to { <blackhole> <quasar> }
 #</ruleset>
 
-#<ruleset id="60002" description="Allow Sirius to internet for domain resolving" eol="20230101">
+#<ruleset id="80002" description="Allow Sirius to internet for domain resolving" eol="20230101">
 pass out log quick on $ext_if inet proto { tcp udp } from $ext_ip to any port domain
 #</ruleset>
 
-#<ruleset id="60003" description="Allow sirius to specific destinations for updates and packages" eol="20230101">
+#<ruleset id="80003" description="Allow sirius to specific destinations for updates and packages" eol="20230101">
 pass out log quick on $ext_if inet proto tcp from $ext_ip to { <openbsd_mirrors> } port { www, https }
 #</ruleset>
 
-#<ruleset id="60002" description="Allow Sirius to internet with NTP service" eol="20230101">
+#<ruleset id="80002" description="Allow Sirius to internet with NTP service" eol="20230101">
 pass out log quick on $ext_if inet proto udp from $ext_ip to any port ntp
 #</ruleset>
 
-#<ruleset id="60003" description="Allow Procyon to Sirius port 9100 for Prometheus monitoring" eol="20230101">
+#<ruleset id="80003" description="Allow Procyon to Sirius port 9100 for Prometheus monitoring" eol="20230101">
 pass in log quick on $dmz_if inet proto tcp from <procyon> to $dmz_if port 9100
 #</ruleset>
 
-#<ruleset id="60004" description="Allow Sirius to Procyon for syslog" eol="20230101">
+#<ruleset id="80004" description="Allow Sirius to Procyon for syslog" eol="20230101">
 pass out log quick on $dmz_if inet proto tcp from $dmz_ip to <procyon> port 514
 #</ruleset>
 

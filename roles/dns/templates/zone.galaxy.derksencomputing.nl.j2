@@ -8,7 +8,7 @@ $ORIGIN galaxy.derksencomputing.nl.
 $TTL 3600
 
 @ IN SOA sirius.galaxy.derksencomputing.nl. jelle.galaxy.derksencomputing.nl. (
-        2022020301       ;Serial number
+        2022081301       ;Serial number
         1200             ;Refresh
         120              ;Retry
         2419200          ;Expire
@@ -21,19 +21,25 @@ $TTL 3600
 
 ;dmz servers
 sirius          IN        A        172.16.0.1
-alcor           IN	  A        172.16.0.2
 naos            IN        A        172.16.0.3
 altair          IN        A        172.16.0.4
 alnitak         IN        A        172.16.0.5
 procyon		IN        A        172.16.0.6
-izar            IN        A        172.16.0.7
 geminga         IN        A        172.16.0.8
-centaurus       IN        A        172.16.0.9
-vela            IN        A        172.16.0.10
+
+;wls clients
 sun             IN        A        10.0.1.2
 vega            IN        A        10.0.1.3
 rigel           IN        A        10.0.1.4
 regulus         IN        A        10.0.1.5
+deneb           IN        A        10.0.1.6
+
+;mgt access
+mizar		IN	  A	   172.16.2.2
+izar            IN        A        172.16.2.3
+centaurus       IN        A        172.16.2.4
+vela            IN        A        172.16.2.5
+alcor		IN	  A	   172.16.2.6
 
 ;cld servers
 algol           IN        A        172.16.1.1
@@ -46,6 +52,7 @@ pollux          IN        A        10.0.0.3
 vault		IN        CNAME    alnitak.galaxy.derksencomputing.nl.
 kanboard        IN        CNAME    alnitak.galaxy.derksencomputing.nl.
 homeassistant   IN        CNAME    alnitak.galaxy.derksencomputing.nl.
+ipmi		IN	  CNAME    mizar.galaxy.derksencomputing.nl.
 
 ;ssh fingerprints
 ;Keys are hardcoded so they can't be dynamically changed by Ansible.
