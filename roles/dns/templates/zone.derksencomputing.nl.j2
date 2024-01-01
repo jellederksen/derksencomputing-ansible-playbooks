@@ -8,7 +8,7 @@ $ORIGIN derksencomputing.nl.
 $TTL 3600
 
 @ IN SOA quasar.derksencomputing.nl. jelle.derksencomputing.nl. (
-        2022081301       ;Serial number
+        2023123101       ;Serial number
         1200             ;Refresh
         120              ;Retry
         2419200          ;Expire
@@ -19,11 +19,11 @@ $TTL 3600
         MX        10 blackhole.derksencomputing.nl.
         MX        20 quasar.derksencomputing.nl.
 
-@               IN        A        149.210.150.253
-www             IN        A        149.210.150.253
+@               IN        A        46.23.93.156
+www             IN        A        46.23.93.156
 wormhole        IN        A        45.83.232.124
-blackhole       IN        A        149.210.150.253
-quasar          IN        A        136.144.215.240
+blackhole       IN        A        46.23.93.156
+quasar          IN        A        46.23.93.162
 
 {% for mailserver in groups['mail'] %}
   {%  if hostvars[mailserver]['dkim_pub_keys'] is defined %}

@@ -5,6 +5,8 @@
     path: "{{ x509_certificate.key_path }}"
     size: 2048
     type: RSA
+    owner: "{{ x509_certificate.owner }}"
+    group: "{{ x509_certificate.group }}"
   notify: x509_certificate_event
 
 - name: "Ensure CSR key for {{ x509_certificate.cn }}"
@@ -15,6 +17,8 @@
     organization_name: "{{ x509_certificate.company }}"
     email_address: "{{ x509_certificate.email_address }}"
     common_name: "{{ x509_certificate.cn }}"
+    owner: "{{ x509_certificate.owner }}"
+    group: "{{ x509_certificate.group }}"
   notify: x509_certificate_event
 
 - name: "Ensure self signed certficate for {{ x509_certificate.cn }}"
@@ -23,4 +27,6 @@
     privatekey_path: "{{ x509_certificate.key_path }}"
     csr_path: "{{ x509_certificate.csr_path }}"
     provider: selfsigned
+    owner: "{{ x509_certificate.owner }}"
+    group: "{{ x509_certificate.group }}"
   notify: x509_certificate_event

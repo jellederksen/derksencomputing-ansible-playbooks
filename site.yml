@@ -1,8 +1,8 @@
-#!/usr/bin/ansible-playbook --ask-vault-pass
+#!/usr/bin/ansible-playbook --ask-vault-pass 
 ---
 
-# We first run the vpn role so we can connect to Alcor and antares over IPsec
-- name: Configure IPSec tunnel between wormhole, blackhole and quasar
+# We first run the vpn role so we can connect to Alcor and Antares over IPsec
+- name: Configure IPSec tunnel between Wormhole, Blackhole and Quasar
   hosts: vpn
   become: True
   roles:
@@ -29,24 +29,24 @@
     - dhcp
     - never
 
-- name: Setup NTP server
-  hosts: ntp
-  become: True
-  roles:
-    - ntp
-  tags:
-    - ntp
-    - never
-
-- name: Setup and configure mail
-  hosts: mail
-  become: True
-  roles:
-    - mail
-  tags:
-    - mail
-    - never
-
+#- name: Setup NTP server
+#  hosts: ntp
+#  become: True
+#  roles:
+#    - ntp
+#  tags:
+#    - ntp
+#    - never
+#
+#- name: Setup and configure mail
+#  hosts: mail
+#  become: True
+#  roles:
+#    - mail
+#  tags:
+#    - mail
+#    - never
+#
 - name: Setup and configure DNS-servers
   hosts: dns
   become: True
@@ -56,101 +56,101 @@
     - dns
     - never
 
-- name: Setup Hasicorp Vault
-  hosts: vault
-  become: True
-  roles:
-    - vault
-  tags:
-    - vault
-    - never
-
-- name: Setup project management Kanboard
-  hosts: kanboard
-  become: True
-  roles:
-    - kanboard
-  tags:
-    - kanboard
-    - never
-
-- name: Manage x509 certificates
-  hosts: x509_certificates
-  become: True
-  roles:
-    - x509_certificates
-  tags:
-    - x509_certificates
-    - never
-
-- name: Setup monitoring
-  hosts: monitoring
-  become: True
-  roles:
-    - monitoring
-  tags:
-    - monitoring
-    - never
-
-- name: Setup home automation
-  hosts: home_automation
-  become: true
-  roles:
-    - home_automation
-  tags:
-    - home_automation
-    - never
-
-- name: Setup logging
-  hosts: logging
-  become: True
-  roles:
-    - logging
-  tags:
-    - logging
-    - never
-
-- name: Configure backups
-  hosts: backup
-  become: True
-  roles:
-    - backup
-  tags:
-    - backup
-    - never
-
-- name: Configure websites
-  hosts: webservers
-  become: True
-  roles:
-    - website
-  tags:
-    - website
-    - never
-
-#- name: Configure nodes with common settings
-#  hosts: all:!vpn
+#- name: Setup Hasicorp Vault
+#  hosts: vault
 #  become: True
 #  roles:
-#    - common
+#    - vault
 #  tags:
-#    - common
+#    - vault
 #    - never
-
-#- name: Configure file services
-#  hosts: fileservers
+#
+#- name: Setup project management Kanboard
+#  hosts: kanboard
 #  become: True
 #  roles:
-#    - fileserver
+#    - kanboard
 #  tags:
-#    - fileserver
+#    - kanboard
 #    - never
-
-#- name: Configure desktop nodes
-#  hosts: desktops
+#
+#- name: Manage x509 certificates
+#  hosts: x509_certificates
 #  become: True
 #  roles:
-#    - desktop
+#    - x509_certificates
 #  tags:
-#    - desktop
+#    - x509_certificates
 #    - never
+#
+#- name: Setup monitoring
+#  hosts: monitoring
+#  become: True
+#  roles:
+#    - monitoring
+#  tags:
+#    - monitoring
+#    - never
+#
+#- name: Setup home automation
+#  hosts: home_automation
+#  become: true
+#  roles:
+#    - home_automation
+#  tags:
+#    - home_automation
+#    - never
+#
+#- name: Setup logging
+#  hosts: logging
+#  become: True
+#  roles:
+#    - logging
+#  tags:
+#    - logging
+#    - never
+#
+#- name: Configure backups
+#  hosts: backup
+#  become: True
+#  roles:
+#    - backup
+#  tags:
+#    - backup
+#    - never
+#
+#- name: Configure websites
+#  hosts: webservers
+#  become: True
+#  roles:
+#    - website
+#  tags:
+#    - website
+#    - never
+#
+##- name: Configure nodes with common settings
+##  hosts: all:!vpn
+##  become: True
+##  roles:
+##    - common
+##  tags:
+##    - common
+##    - never
+#
+##- name: Configure file services
+##  hosts: fileservers
+##  become: True
+##  roles:
+##    - fileserver
+##  tags:
+##    - fileserver
+##    - never
+#
+##- name: Configure desktop nodes
+##  hosts: desktops
+##  become: True
+##  roles:
+##    - desktop
+##  tags:
+##    - desktop
+##    - never

@@ -12,7 +12,9 @@ server:
 	interface: 10.0.0.1
 	interface: 10.0.1.1
 	interface: 172.16.0.1
+	interface: 172.16.2.1
 	interface: 192.168.0.1
+        interface: 10.0.2.1
 
 	#interface: 127.0.0.1@5353	# listen on alternative port
 	interface: ::1
@@ -32,7 +34,9 @@ server:
 	access-control: 10.0.0.0/24 allow
 	access-control: 10.0.1.0/24 allow
 	access-control: 172.16.0.0/24 allow
+	access-control: 172.16.2.6/32 allow
 	access-control: 192.168.0.0/24 allow
+        access-control: 10.0.2.0/24 allow
 
 	hide-identity: yes
 	hide-version: yes

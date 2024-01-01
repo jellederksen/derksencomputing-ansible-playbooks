@@ -8,77 +8,78 @@ ike esp from {{ ipsec_lan_net }} to {{ ipsec_cld_east_net }} \
         peer {{ hostvars['blackhole.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 ike esp from {{ ipsec_dmz_net }} to {{ ipsec_cld_east_net }} \
         peer {{ hostvars['blackhole.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 ike esp from {{ ipsec_wls_net }} to {{ ipsec_cld_east_net }} \
         peer {{ hostvars['blackhole.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 ike esp from {{ ipsec_lan_net }} to {{ ipsec_cld_west_net }} \
         peer {{ hostvars['quasar.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing//data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing//data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 ike esp from {{ ipsec_dmz_net }} to {{ ipsec_cld_west_net }} \
         peer {{ hostvars['quasar.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 ike esp from {{ ipsec_wls_net }} to {{ ipsec_cld_west_net }} \
         peer {{ hostvars['quasar.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 {% elif inventory_hostname == "blackhole.derksencomputing.nl" %}
 ike esp from {{ ipsec_cld_east_net }} to {{ ipsec_lan_net }} \
         peer {{ hostvars['wormhole.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 ike esp from {{ ipsec_cld_east_net }} to {{ ipsec_dmz_net }} \
         peer {{ hostvars['wormhole.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 ike esp from {{ ipsec_cld_east_net }} to {{ ipsec_wls_net }} \
         peer {{ hostvars['wormhole.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 {% elif inventory_hostname == "quasar.derksencomputing.nl" %}
 ike esp from {{ ipsec_cld_west_net }} to {{ ipsec_lan_net }} \
         peer {{ hostvars['wormhole.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 ike esp from {{ ipsec_cld_west_net }} to {{ ipsec_dmz_net }} \
         peer {{ hostvars['wormhole.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 
 ike esp from {{ ipsec_cld_west_net }} to {{ ipsec_wls_net }} \
         peer {{ hostvars['wormhole.derksencomputing.nl']['ansible_default_ipv4']['address'] }} \
         main auth hmac-sha2-256 enc blowfish \
         quick auth hmac-sha2-384 enc blowfish \
-        psk "{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
+        psk "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ipsec_psk'] }}"
 {% endif %}
 
 #------------------------------------------------------------------------------
 #Copyright (c) 2017 by {{ name }} - {{ company }}
 #------------------------------------------------------------------------------
+

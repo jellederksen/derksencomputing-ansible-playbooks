@@ -1,7 +1,14 @@
 ---
 # handlers file for vpn
 
-- name: restart_ipsec
+- name: restart_ipsec_daemon
   service:
     name: isakmpd
     state: restarted
+  listen: restart_ipsec
+
+- name: reload_ipsec_conf
+  command:
+    cmd: /sbin/ipsecctl -f /etc/ipsec.conf
+  listen: restart_ipsec
+

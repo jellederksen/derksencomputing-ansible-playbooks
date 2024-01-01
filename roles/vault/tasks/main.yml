@@ -1,20 +1,22 @@
 ---
 # tasks file for vault
 
-#Temp create a self signed certificate until the derksencomputing CA is online
-- name: Ensure private key for Vault
-  openssl_privatekey:
-    path: "/etc/pki/tls/private/{{ inventory_hostname }}.key"
-    size: 2048
-    type: RSA
-
-- name: Allow Vault to read the private key
-  acl:
-    path: "/etc/pki/tls/private/vault.galaxy.derksencomputing.nl.key"
-    entity: vault
-    etype: user
-    permissions: r
-    state: present
+##Temp create a self signed certificate until the derksencomputing CA is online
+#- name: Ensure private key for Vault
+#  openssl_privatekey:
+#    path: "/etc/pki/tls/private/{{ inventory_hostname }}.key"
+#    size: 2048
+#    type: RSA
+#    owner: vault
+#    group: vault
+#
+#    #- name: Allow Vault to read the private key
+#    #  acl:
+#    #    path: "/etc/pki/tls/private/vault.galaxy.derksencomputing.nl.key"
+#    # entity: vault
+#    # etype: user
+#    # permissions: r
+#    # state: present
 
 - name: Add Hasicorp vault repository
   yum_repository:

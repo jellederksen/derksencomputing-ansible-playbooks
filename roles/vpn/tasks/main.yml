@@ -19,3 +19,4 @@
     dest: /etc/ipsec.conf
     mode: "u=rw,g=,o="
   notify: restart_ipsec
+

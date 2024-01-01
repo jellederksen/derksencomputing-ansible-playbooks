@@ -28,7 +28,7 @@
     creates: "/var/nsd/zones/master/{{ item }}/dsset-{{ item }}."
 
 - name: "Ensure dnssec zone is (re)signed"
-  shell: doas -u _nsd /usr/local/sbin/dnssec-signzone -N date -S -K . -g -d . -a -o "{{ item }}" zone.db
+  shell: doas -u _nsd /usr/local/bin/dnssec-signzone -N date -S -K . -g -d . -a -o "{{ item }}" zone.db
   args:
     chdir: "/var/nsd/zones/master/{{ item }}"
   when: zone_file.changed
@@ -41,4 +41,4 @@
     minute: "30"
     hour: "3"
     weekday: "1"
-    job: "cd /var/nsd/zones/master/{{ item }} && /usr/local/sbin/dnssec-signzone -N date -S -K . -g -d . -a -r /dev/random -o {{ item }} zone.db && /etc/rc.d/nsd restart"
+    job: "cd /var/nsd/zones/master/{{ item }} && /usr/local/bin/dnssec-signzone -N date -S -K . -g -d . -a -r /dev/random -o {{ item }} zone.db && /etc/rc.d/nsd restart"

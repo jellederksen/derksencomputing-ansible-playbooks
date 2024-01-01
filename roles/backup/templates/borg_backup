@@ -5,8 +5,8 @@
 #    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
 #    Hostname: {{ template_host }}
 
-export BORG_PASSPHRASE="{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['borgbase_passphrase'] }}"
-repo="{{ lookup('hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }}:data token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['borgbase_repo'] }}"
+export BORG_PASSPHRASE="{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['borgbase_passphrase'] }}"
+repo="{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['borgbase_repo'] }}"
 date="$(/bin/date +%Y%m%d)"
 back_up="{{ borg_to_backup }}"
 
