@@ -8,7 +8,7 @@ $ORIGIN galaxy.derksencomputing.nl.
 $TTL 3600
 
 @ IN SOA sirius.galaxy.derksencomputing.nl. jelle.galaxy.derksencomputing.nl. (
-        2023123101       ;Serial number
+        2024010102       ;Serial number
         1200             ;Refresh
         120              ;Retry
         2419200          ;Expire
@@ -24,22 +24,38 @@ sirius          IN        A        172.16.0.1
 naos            IN        A        172.16.0.3
 altair          IN        A        172.16.0.4
 alnitak         IN        A        172.16.0.5
+vault		IN        CNAME    alnitak.galaxy.derksencomputing.nl.
+kanboard        IN        CNAME    alnitak.galaxy.derksencomputing.nl.
+homeassistant   IN        CNAME    alnitak.galaxy.derksencomputing.nl.
+photoprism      IN        CNAME    alnitak.galaxy.derksencomputing.nl.
+jellyfin        IN        CNAME    alnitak.galaxy.derksencomputing.nl.
+homer           IN        CNAME    alnitak.galaxy.derksencomputing.nl.
 procyon		IN        A        172.16.0.6
-geminga         IN        A        172.16.0.8
 
 ;wls clients
-sun             IN        A        10.0.1.2
 vega            IN        A        10.0.1.3
 rigel           IN        A        10.0.1.4
 regulus         IN        A        10.0.1.5
 deneb           IN        A        10.0.1.6
 
 ;mgt access
-mizar		IN	  A	   172.16.2.2
-izar            IN        A        172.16.2.3
-centaurus       IN        A        172.16.2.4
+solaris		IN	  A	   172.16.2.2
+ipmi		IN	  CNAME    solaris.galaxy.derksencomputing.nl.
+alcor		IN	  A	   172.16.2.3
+izar            IN        A        172.16.2.4
 vela            IN        A        172.16.2.5
-alcor		IN	  A	   172.16.2.6
+capella         IN        A        172.16.2.7
+betelgeuse      IN        A        172.16.2.8
+meissa          IN        A        172.16.2.9
+saiph           IN        A        172.16.2.10
+hamal           IN        A        172.16.2.11
+alberio         IN        A        172.16.2.12
+pollux          IN        A        172.16.2.13
+sun             IN        A        172.16.2.14
+geminga         IN        A        172.16.2.15
+calvera         IN        A        172.16.2.16
+lich            IN        A        172.16.2.17
+hercules        IN        A        172.16.2.18
 
 ;cld servers
 algol           IN        A        172.16.1.1
@@ -47,12 +63,6 @@ antares         IN        A        172.16.1.2
 
 ;lan workstations 
 megrez          IN        A        10.0.0.2
-pollux          IN        A        10.0.0.3
-
-vault		IN        CNAME    alnitak.galaxy.derksencomputing.nl.
-kanboard        IN        CNAME    alnitak.galaxy.derksencomputing.nl.
-homeassistant   IN        CNAME    alnitak.galaxy.derksencomputing.nl.
-ipmi		IN	  CNAME    mizar.galaxy.derksencomputing.nl.
 
 ;ssh fingerprints
 ;Keys are hardcoded so they can't be dynamically changed by Ansible.

@@ -62,30 +62,37 @@ host megrez {
 }
 
 # mgt network
+host solaris {
+	# Solaris hypervisor server IPMI
+        hardware ethernet d0:50:99:e5:38:4f;
+        fixed-address 172.16.2.2;
+        option host-name "solaris";
+}
+
 host alcor {
 	# Alcor hypervisor server
         hardware ethernet a8:a1:59:c0:4b:e1;
-        fixed-address 172.16.2.6;
+        fixed-address 172.16.2.3;
         option host-name "alcor";
 }
 
 host izar {
 	# Izar cisco core switch
         hardware ethernet 34:b8:83:9a:7b:c3;
-        fixed-address 172.16.2.3;
+        fixed-address 172.16.2.4;
         option host-name "izar";
 }
 
-host mizar {
-	# Mizar hypervisor server
-        hardware ethernet d0:50:99:e5:38:4f;
-        fixed-address 172.16.2.2;
-        option host-name "mizar";
+host vela {
+	# Cisco wireless access controller
+        hardware ethernet 00:00:5e:00:01:01;
+        fixed-address 172.16.2.5;
+        option host-name "vela";
 }
 
 host capella {
 	# Shelly power outlet controller room_tv
-        hardware ethernet 44:17:93:cf:c4:14
+        hardware ethernet 44:17:93:cf:c4:14;
         fixed-address 172.16.2.7;
         option host-name "capella";
 }
@@ -94,7 +101,7 @@ host betelgeuse {
 	# Shelly power outlet controller server
         hardware ethernet 0c:dc:7e:f6:6c:b0;
         fixed-address 172.16.2.8;
-        option host-name "betelgeuse
+        option host-name "betelgeuse";
 }
 
 host meissa {
@@ -140,37 +147,67 @@ host sun {
 }
 
 host geminga {
-	# Cisco access point 
-        hardware ethernet 34:b8:83:47:a9:0c;
-        fixed-address ???;
+	# Cisco access point hallway upstairs
+        hardware ethernet 34:b8:83:47:ab:c4;
+        fixed-address 172.16.2.15;
         option host-name "geminga";
 }
 
 host calvera {
-	# Cisco access point
-        hardware ethernet ???;
-        fixed-address ???;
+	# Cisco access point living room
+        hardware ethernet 34:b8:83:47:a9:0c;
+        fixed-address 172.16.2.16;
         option host-name "calvera";
 }
 
 host lich {
-	# Cisco access point
-        hardware ethernet ???;
-        fixed-address ???;
+	# Cisco access point server
+        hardware ethernet 14:84:73:64:45:88;
+        fixed-address 172.16.2.17;
         option host-name "lich";
 }
 
 host hercules {
-	# Cisco access point
-        hardware ethernet ???;
-        fixed-address ???;
+	# Cisco access point room
+        hardware ethernet 14:84:73:64:30:1c;
+        fixed-address 172.16.2.18;
         option host-name "hercules";
 }
 
-host vela {
-	# Cisco wireless access controller
-        hardware ethernet 00:00:5e:00:01:01;
-        fixed-address 172.16.2.5;
-        option host-name "vela";
+# dmz network
+host sirius {
+	# OpenBSD Firewall VM
+        hardware ethernet 52:54:00:65:a1:26;
+        fixed-address 172.16.0.1;
+        option host-name "sirius";
 }
 
+host naos {
+	# OpenBSD mail server
+        hardware ethernet 52:54:00:37:fb:bb;
+        fixed-address 172.16.0.3;
+        option host-name "naos";
+}
+
+host altair {
+	# FreeBSD fileserver
+        hardware ethernet 52:54:00:e4:a1:3f;
+        fixed-address 172.16.0.4;
+        option host-name "altair";
+}
+
+host alnitak {
+	# Podman container server photoprism, jellyfin, vault and homer
+        hardware ethernet 52:54:00:bd:ad:30;
+        fixed-address 172.16.0.5;
+        option host-name "alnitak";
+}
+
+host procyon {
+	# Logging and monitoring server
+        hardware ethernet 52:54:00:97:d5:8a;
+        fixed-address 172.16.0.6;
+        option host-name "procyon";
+}
+
+#wls network ???
