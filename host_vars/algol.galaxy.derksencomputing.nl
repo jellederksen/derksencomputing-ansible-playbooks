@@ -1,5 +1,5 @@
-ansible_ssh_pass: "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/algol.galaxy.derksencomputing.nl token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ansible'] }}"
-ansible_become_pass: "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/algol.galaxy.derksencomputing.nl token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ansible'] }}"
+ansible_ssh_pass: "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/algol.galaxy.derksencomputing.nl token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:443')['ansible'] }}"
+ansible_become_pass: "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/algol.galaxy.derksencomputing.nl token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:443')['ansible'] }}"
 ansible_become_method: doas
 #We need to set the private ip-address in the ipa-server so we override the public ip-address
 ansible_default_ipv4.address: 172.16.1.1
@@ -12,28 +12,14 @@ secondary_server: 46.23.93.162
 primary_zones:
   - derksencomputing.nl
   - jellederksen.nl
-  #- derksencomputing.com
-  #- edunix.nl
-  #- epsilix.nl
-  #- jdcomputing.nl
-  #- kubebackup.eu
-  #- kubebackup.nl
-  #- kuberoot.nl
-  #- opencomputing.nl
 x509_certificates:
   letsencrypt_signed_certificates:
     - cn: blackhole.derksencomputing.nl
       alt_names:
         - derksencomputing.nl
         - jellederksen.nl
-        - kubebackup.eu
-        - kubebackup.nl
-        - kuberoot.nl
         - www.derksencomputing.nl
         - www.jellederksen.nl
-        - www.kubebackup.eu
-        - www.kubebackup.nl
-        - www.kuberoot.nl
       country_name: NL
       company: Derksen Computing
       email_address: jelle@derksencomputing.nl
@@ -51,3 +37,4 @@ x509_certificates:
       crt_path: /etc/ssl/algol.galaxy.derksencomputing.nl.crt
       owner: root
       group: wheel
+

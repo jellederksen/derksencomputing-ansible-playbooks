@@ -54,7 +54,7 @@ table <megrez> { 10.0.0.2 } #Desktop office computer
 table <solaris> { 10.0.2.2 }
 
 #mgt network
-table <alcor> { 172.16.2.6 } #Hypervisor physical server
+table <alcor> { 172.16.2.3 } #Hypervisor physical server
 table <izar> { 172.16.2.3 } #Physical Cisco C1000 core switch
 table <mizar> { 172.16.2.2 } #Hypervisor physical server IPMI interface alias ipmi.galaxy.derksencomputing.nl
 table <shelly> { 172.16.2.7, 172.16.2.8, 172.16.2.9 172.16.2.10, 172.16.2.11, 172.16.2.12, 172.16.2.13 } #Power outlet controllers
@@ -81,7 +81,8 @@ table <openbsd_mirrors> { 151.101.2.217, 151.101.66.217, 151.101.130.217, 151.10
 table <rocky_mirrors> { 151.101.38.132, 185.31.172.243, 79.142.64.7, 31.214.178.54 }
 table <fedora_mirrors> { 152.19.134.142, 38.145.60.21, 67.219.144.68, 140.211.169.196, 38.145.60.20, 152.19.134.198, 34.221.3.152, 8.43.85.67, 8.43.85.73, 145.220.21.40, 5.79.108.33 }
 table <freebsd_mirrors> { 204.15.11.69 163.237.247.16 76.223.89.23 13.248.205.9 }
-table <docker_mirrors> { 34.226.69.105, 3.219.239.5, 104.16.101.207 }
+table <docker_mirrors> { 34.226.69.105, 3.219.239.5, 104.16.101.207, 95.101.74.121 }
+table <github> { 185.199.109.133, 185.199.110.133, 185.199.108.133, 185.199.111.133 }
 
 #options
 set block-policy return
@@ -127,8 +128,8 @@ pass in log quick on $lan_if inet proto { tcp } from $lan_net to $lan_ip port { 
 #</ruleset>
 
 #<ruleset id="10003" description="Allow lan to internet with trusted protocols" eol="20250101">
-pass in log quick on $lan_if inet proto tcp from $lan_net to any port { ssh, www, https, nicname }
-pass out log quick on $ext_if inet proto tcp from $lan_net to any port { ssh, www, https, nicname } nat-to <wormhole>
+pass in log quick on $lan_if inet proto tcp from $lan_net to any port { ssh, www, https, nicname, 6443 }
+pass out log quick on $ext_if inet proto tcp from $lan_net to any port { ssh, www, https, nicname, 6443 } nat-to <wormhole>
 #</ruleset>
 
 #<ruleset id="10004" description="Allow lan to dmz with trusted protocols" eol="20250101">
@@ -141,9 +142,11 @@ pass in log quick on $lan_if inet proto tcp from $lan_net to <naos> port { imaps
 pass out log quick on $dmz_if inet proto tcp from $lan_net to <naos> port { imaps, smtp }
 #</ruleset>
 
-#<ruleset id="10006" description="Allow lan to Alnitak for vault, homer, homeassistant, jellyfin and Photoprism" eol="20250101">
-pass in log quick on $lan_if inet proto tcp from $lan_net to $dmz_net port { vault, homeassistant, 2342, 8080, 8096 }
-pass out log quick on $dmz_if inet proto tcp from $lan_net to $dmz_net port { vault, homeassistant, 2342, 8080, 8096 }
+#<ruleset id="10006" description="Allow lan to Alnitak for www and https reverse proxy for all services and domain for pyhole" eol="20250101"> # tmp 8920 jellyfin port
+pass in log quick on $lan_if inet proto tcp from $lan_net to <alnitak> port { www, https, 8920 }
+pass out log quick on $dmz_if inet proto tcp from $lan_net to <alnitak> port { www, https, 8920 }
+pass in log quick on $lan_if inet proto { udp, tcp } from $lan_net to <alnitak> port domain
+pass out log quick on $dmz_if inet proto { udp, tcp } from $lan_net to <alnitak> port domain
 #</ruleset>
 
 #<ruleset id="10007" description="Allow lan to cld with trusted protocols" eol="20250101">
@@ -160,11 +163,6 @@ pass out log quick on $mgt_if inet proto tcp from $lan_net to $mgt_net port { ss
 #<ruleset id="20001" description="Default ICMP rules" eol="20250101">
 pass in log quick on $wls_if inet proto icmp from $wls_net to any
 pass out log quick on $wls_if inet proto icmp from { $lan_net $dmz_net $cld_net, $mgt_net, $wgt_net } to $wls_net
-#</ruleset>
-
-#<ruleset id="10009" description="Allow lan to mgt alcor for nut (ups) service" eol="20250101">
-pass in log quick on $lan_if inet proto tcp from $lan_net to <alcor> port 3493
-pass out log quick on $mgt_if inet proto tcp from $lan_net to <alcor> port 3493
 #</ruleset>
 
 #<ruleset id="20002" description="Allow wls to Sirius firewall for firewall services" eol="20250101">
@@ -191,9 +189,11 @@ pass in log quick on $wls_if inet proto tcp from $wls_net to any port { www, htt
 pass out log quick on $ext_if inet proto tcp from $wls_net to any port { www, https } nat-to <wormhole>
 #</ruleset>
 
-#<ruleset id="20007" description="Allow wls network to alnitak for jellyfin, homer and Photoprism" eol="20250101">
-pass in log quick on $wls_if inet proto tcp from $wls_net to <alnitak> port { 8096, 2342, 8080 }
-pass out log quick on $dmz_if inet proto tcp from $wls_net to <alnitak> port { 8096, 2342, 8080 }
+#<ruleset id="20007" description="Allow wls network to alnitak for reverse proxy for all services and domain for dns" eol="20250101"> # tmp jellyfin port
+pass in log quick on $wls_if inet proto tcp from $wls_net to <alnitak> port { www, https, 8920 }
+pass out log quick on $dmz_if inet proto tcp from $wls_net to <alnitak> port { www, https, 8920 }
+pass in log quick on $wls_if inet proto { udp, tcp } from $wls_net to <alnitak> port domain
+pass out log quick on $dmz_if inet proto { udp, tcp } from $wls_net to <alnitak> port domain
 #</ruleset>
 
 #<ruleset id="20008" description="Allow wls to internet free to test macbook internet" eol="20250101">
@@ -273,9 +273,19 @@ pass in log quick on $dmz_if inet proto tcp from <altair> to <freebsd_mirrors> p
 pass out log quick on $ext_if inet proto tcp from <altair> to <freebsd_mirrors> port www nat-to <wormhole>
 #</ruleset>
 
-#<ruleset id="30003" description="Allow Alnitak to docker hosts for pulling container images" eol="20250101">
+#<ruleset id="30013" description="Allow Alnitak to docker hosts for pulling container images" eol="20250101">
 pass in log quick on $dmz_if inet proto tcp from <alnitak> to <docker_mirrors> port https
 pass out log quick on $ext_if inet proto tcp from <alnitak> to <docker_mirrors> port https nat-to <wormhole>
+#</ruleset>
+
+#<ruleset id="30014" description="Allow Alnitak to github hosts for updating pi-hole lists" eol="20250101">
+pass in log quick on $dmz_if inet proto tcp from <alnitak> to <github> port https
+pass out log quick on $ext_if inet proto tcp from <alnitak> to <github> port https nat-to <wormhole>
+#</ruleset>
+
+#<ruleset id="30015" description="Allow alnitak (Home Assistant) to alcor (hypervisor) for NUT service" eol="20250101">
+pass in log quick on $dmz_if inet proto tcp from <alnitak> to <alcor> port 3493
+pass out log quick on $mgt_if inet proto tcp from <alnitak> to <alcor> port 3493
 #</ruleset>
 
 #cld rules
@@ -342,9 +352,9 @@ pass in log quick on $wgt_if from $wgt_net to any
 pass out log quick on $ext_if from $wgt_net to any nat-to <wormhole>
 #</ruleset>
 
-#<ruleset id="80003" description="Allow Jelle's phone to alnitak for photoprism, homer and jellyfin" eol="20250101">
-pass in log quick on $wgt_if inet proto tcp from <solaris> to <alnitak> port { 8096, 2342, 8080, 8123 } 
-pass out log quick on $dmz_if inet proto tcp from $wgt_net to <alnitak> port { 8096, 2342, 8080, 8123 }
+#<ruleset id="80003" description="Allow Jelle's phone to alnitak for reverse proxy to all services" eol="20250101"> # tmp jellyfin port
+pass in log quick on $wgt_if inet proto tcp from <solaris> to <alnitak> port { www, https, 8920 }
+pass out log quick on $dmz_if inet proto tcp from $wgt_net to <alnitak> port { www, https, 8920 }
 #</ruleset>
 
 #Sirius host rules

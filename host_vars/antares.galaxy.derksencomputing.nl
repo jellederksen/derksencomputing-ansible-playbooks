@@ -1,5 +1,5 @@
-ansible_ssh_pass: "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/antares.galaxy.derksencomputing.nl token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ansible'] }}"
-ansible_become_pass: "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/antares.galaxy.derksencomputing.nl token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:8200')['ansible'] }}"
+ansible_ssh_pass: "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/antares.galaxy.derksencomputing.nl token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:443')['ansible'] }}"
+ansible_become_pass: "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/antares.galaxy.derksencomputing.nl token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:443')['ansible'] }}"
 ansible_become_method: doas
 mailserver_type: forwarder
 external_hostname: quasar.derksencomputing.nl
@@ -11,15 +11,6 @@ primary_server: 46.23.93.156
 secondary_zones:
   - derksencomputing.nl
   - jellederksen.nl
-  #- derksencomputing.com
-  #- edunix.nl
-  #- epsilix.com
-  #- epsilix.nl
-  #- jdcomputing.nl
-  #- kubebackup.eu
-  #- kubebackup.nl
-  #- kuberoot.nl
-  #- opencomputing.nl
 x509_certificates:
   letsencrypt_signed_certificates:
     - cn: quasar.derksencomputing.nl
@@ -39,3 +30,4 @@ x509_certificates:
       crt_path: /etc/ssl/antares.galaxy.derksencomputing.nl.crt
       owner: root
       group: wheel
+

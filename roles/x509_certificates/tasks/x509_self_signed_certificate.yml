@@ -7,7 +7,7 @@
     type: RSA
     owner: "{{ x509_certificate.owner }}"
     group: "{{ x509_certificate.group }}"
-  notify: x509_certificate_event
+  #notify: x509_certificate_event
 
 - name: "Ensure CSR key for {{ x509_certificate.cn }}"
   openssl_csr:
@@ -19,7 +19,9 @@
     common_name: "{{ x509_certificate.cn }}"
     owner: "{{ x509_certificate.owner }}"
     group: "{{ x509_certificate.group }}"
-  notify: x509_certificate_event
+    # TMP fix because goog is stupid and works with fake security
+    basicConstraints: CA:TRUE
+  #notify: x509_certificate_event
 
 - name: "Ensure self signed certficate for {{ x509_certificate.cn }}"
   openssl_certificate:
@@ -29,4 +31,5 @@
     provider: selfsigned
     owner: "{{ x509_certificate.owner }}"
     group: "{{ x509_certificate.group }}"
-  notify: x509_certificate_event
+  #notify: x509_certificate_event
+
