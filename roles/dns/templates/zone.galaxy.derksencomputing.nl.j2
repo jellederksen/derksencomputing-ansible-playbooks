@@ -8,7 +8,7 @@ $ORIGIN galaxy.derksencomputing.nl.
 $TTL 3600
 
 @ IN SOA sirius.galaxy.derksencomputing.nl. jelle.galaxy.derksencomputing.nl. (
-        2024040401       ;Serial number
+        2024041401       ;Serial number
         1200             ;Refresh
         120              ;Retry
         2419200          ;Expire
@@ -21,9 +21,9 @@ $TTL 3600
 
 ;dmz servers
 sirius          IN        A        172.16.0.1
+alnitak         IN        A        172.16.0.2
 naos            IN        A        172.16.0.3
 altair          IN        A        172.16.0.4
-alnitak         IN        A        172.16.0.5
 vault		IN        CNAME    alnitak.galaxy.derksencomputing.nl.
 kanboard        IN        CNAME    alnitak.galaxy.derksencomputing.nl.
 homeassistant   IN        CNAME    alnitak.galaxy.derksencomputing.nl.
@@ -31,7 +31,6 @@ photoprism      IN        CNAME    alnitak.galaxy.derksencomputing.nl.
 jellyfin        IN        CNAME    alnitak.galaxy.derksencomputing.nl.
 pihole          IN        CNAME    alnitak.galaxy.derksencomputing.nl.
 homer           IN        CNAME    alnitak.galaxy.derksencomputing.nl.
-procyon		IN        A        172.16.0.6
 
 ;wls clients
 regulus         IN        A        10.0.1.2

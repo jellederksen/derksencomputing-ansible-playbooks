@@ -24,7 +24,6 @@ table <blackhole> { 46.23.93.156 }
 table <quasar> { 46.23.93.162 }
 
 table <naos> { 172.16.0.3 }
-table <procyon> { 172.16.0.6 }
 
 table <openbsd_mirrors> { 151.101.2.217, 151.101.66.217, 151.101.130.217, 151.101.194.217, 145.220.21.40, 151.101.38.217 151.101.39.52 }
 table <openbsd_amsterdam_dns> { 46.23.91.31 }
@@ -81,14 +80,6 @@ pass in log quick on $cld_if inet proto tcp from <naos> to <antares> port smtp
 
 #<ruleset id="10002" description="Allow SMTP access from Antares to Naos" eol="20250101">
 pass out log quick on $cld_if inet proto tcp from <antares> to <naos> port smtp
-#</ruleset>
-
-#<ruleset id="10003" description="Allow Procyon to Antares for Prometheus monitoring" eol="20250101">
-pass in log quick on $cld_if inet proto tcp from <procyon> to <antares> port 9100
-#</ruleset>
-
-#<ruleset id="10004" description="Allow syslog traffic from Antares to Procyon" eol="20250101">
-pass out log quick on $cld_if inet proto tcp from <antares> to <procyon> port 514
 #</ruleset>
 
 #host rules

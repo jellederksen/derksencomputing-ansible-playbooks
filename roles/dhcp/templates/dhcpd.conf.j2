@@ -91,6 +91,13 @@ host sirius {
         option host-name "sirius";
 }
 
+host alnitak {
+	# Podman container server photoprism, jellyfin, vault and homer
+        hardware ethernet 52:54:00:bd:ad:30;
+        fixed-address 172.16.0.2;
+        option host-name "alnitak";
+}
+
 host naos {
 	# OpenBSD mail server
         hardware ethernet 52:54:00:37:fb:bb;
@@ -105,22 +112,14 @@ host altair {
         option host-name "altair";
 }
 
-host alnitak {
-	# Podman container server photoprism, jellyfin, vault and homer
-        hardware ethernet 52:54:00:bd:ad:30;
-        fixed-address 172.16.0.5;
-        option host-name "alnitak";
-}
-
-host procyon {
-	# Logging and monitoring server
-        hardware ethernet 52:54:00:97:d5:8a;
-        fixed-address 172.16.0.6;
-        option host-name "procyon";
-}
-
-
 # mgt network
+host sirius {
+	# OpenBSD firewall VM
+        hardware ethernet 52:54:00:99:35:ec;
+        fixed-address 172.16.2.1;
+        option host-name "sirius";
+}
+
 host solaris {
 	# Solaris hypervisor server IPMI
         hardware ethernet d0:50:99:e5:38:4f;
