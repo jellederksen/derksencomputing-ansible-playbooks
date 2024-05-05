@@ -53,10 +53,12 @@ table <megrez> { 10.0.0.2 } #Desktop office computer
 table <solaris> { 10.0.2.2 }
 
 #mgt network
-table <alcor> { 172.16.2.3 } #Hypervisor physical server
-table <izar> { 172.16.2.3 } #Physical Cisco C1000 core switch
-table <mizar> { 172.16.2.2 } #Hypervisor physical server IPMI interface alias ipmi.galaxy.derksencomputing.nl
-table <shelly> { 172.16.2.7, 172.16.2.8, 172.16.2.9 172.16.2.10, 172.16.2.11, 172.16.2.12, 172.16.2.13 } #Power outlet controllers
+table <solaris> { 172.16.2.2 } #Hypervisor physical server IPMI alias ipmi.galaxy.derksercomputing.nl
+table <alcor> { 172.16.2.3 } #Hypervisor physical server OS
+table <izar> { 172.16.2.4 } #Physical Cisco C1000 core switch
+table <vela> { 172.16.2.5 } #Cisco wireless controller ip
+table <shelly> { 172.16.2.7, 172.16.2.8, 172.16.2.9 172.16.2.9, 172.16.2.10, 172.16.2.11, 172.16.2.12, 172.16.2.13 } #Power outlet controllers
+table <sun> { 172.16.2.6 } #Elgato keylight office
 table <capella> { 172.16.2.7 } # Shelly power outlet controller room_tv
 table <betelgeuse> { 172.16.2.8 } # Shelly power outlet controller server
 table <meissa> { 172.16.2.9 } # Shelly power outlet controller room_lights
@@ -64,9 +66,10 @@ table <saiph> { 172.16.2.10 } # Shelly power outlet controller room_play_lights_
 table <hamal> { 172.16.2.11 } # Shelly power outlet controller office desktop
 table <alberio> { 172.16.2.12 } # Shelly power outlet controller office_lights
 table <pollux> { 172.16.2.13 } # Shelly power outlet controller office_heater
-table <sun> { 172.16.2.14 } #Elgato keylight office
-table <vela> { 172.16.2.5 } #Cisco wireless controller ip
-# accesspoint ipadressses 1..4
+table <geminga> { 172.16.2.14 } # Cisco access point hallway upstairs
+table <calvera> { 172.16.2.15 } # Cisco access point living room
+table <lich> { 172.16.2.16 } # Cisco access point server room
+table <hercules> { 172.16.2.17 } # Cisco access point room
 
 #wls network
 table <vega> { 10.0.1.3 } #Philips TV room
@@ -245,7 +248,7 @@ pass out log quick on $mgt_if inet proto tcp from <alnitak> to <shelly> port { w
 
 #<ruleset id="30009" description="Allow Alnitak to Rocky Linux server for software updates" eol="20250101">
 pass in log quick on $dmz_if inet proto tcp from <alnitak> to { <rocky_mirrors>, <fedora_mirrors> } port { www, https }
-pass out log quick on $ext_if inet proto tcp from alnitak to { <rocky_mirrors>, <fedora_mirrors> } port { www, https } nat-to <wormhole>
+pass out log quick on $ext_if inet proto tcp from <alnitak> to { <rocky_mirrors>, <fedora_mirrors> } port { www, https } nat-to <wormhole>
 #</ruleset>
 
 #<ruleset id="30010" description="Allow OpenBSD hosts to OpenBSD mirror servers for software updates" eol="20250101">

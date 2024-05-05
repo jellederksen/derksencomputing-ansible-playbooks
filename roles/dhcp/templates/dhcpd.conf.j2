@@ -20,7 +20,7 @@
 subnet 10.0.0.0 netmask 255.255.255.0 {
         option domain-name "{{ domain_name }}";
         option routers 10.0.0.1;
-        option domain-name-servers 172.16.0.5;
+        option domain-name-servers 10.0.0.1;
         range 10.0.0.100 10.0.0.200;
 }
 
@@ -28,7 +28,7 @@ subnet 10.0.0.0 netmask 255.255.255.0 {
 subnet 10.0.1.0 netmask 255.255.255.0 {
         option  domain-name "{{ domain_name }}";
         option routers 10.0.1.1;
-        option domain-name-servers 172.16.0.5;
+        option domain-name-servers 10.0.1.1;
         range 10.0.1.100 10.0.1.200;
 }
 
@@ -148,6 +148,13 @@ host vela {
         option host-name "vela";
 }
 
+host sun {
+	# Elgato key-light
+        hardware ethernet 3c:6a:9d:1b:57:64;
+        fixed-address 172.16.2.06;
+        option host-name "sun";
+}
+
 host capella {
 	# Shelly power outlet controller room_tv
         hardware ethernet 44:17:93:cf:c4:14;
@@ -197,38 +204,31 @@ host pollux {
         option host-name "pollux";
 }
 
-host sun {
-	# Elgato key-light
-        hardware ethernet 3c:6a:9d:1b:57:64;
-        fixed-address 172.16.2.14;
-        option host-name "sun";
-}
-
 host geminga {
 	# Cisco access point hallway upstairs
         hardware ethernet 34:b8:83:47:ab:c4;
-        fixed-address 172.16.2.15;
+        fixed-address 172.16.2.14;
         option host-name "geminga";
 }
 
 host calvera {
 	# Cisco access point living room
         hardware ethernet 34:b8:83:47:a9:0c;
-        fixed-address 172.16.2.16;
+        fixed-address 172.16.2.15;
         option host-name "calvera";
 }
 
 host lich {
-	# Cisco access point server
+	# Cisco access point server room
         hardware ethernet 14:84:73:64:45:88;
-        fixed-address 172.16.2.17;
+        fixed-address 172.16.2.16;
         option host-name "lich";
 }
 
 host hercules {
 	# Cisco access point room
         hardware ethernet 14:84:73:64:30:1c;
-        fixed-address 172.16.2.18;
+        fixed-address 172.16.2.17;
         option host-name "hercules";
 }
 
