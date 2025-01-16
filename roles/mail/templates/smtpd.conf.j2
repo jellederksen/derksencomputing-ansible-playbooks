@@ -80,7 +80,7 @@ match from src <external_mailservers> for domain opencomputing.nl action "local_
 match from src <external_mailservers> for domain derksencomputing.nl action "local_mail"
 match from src <alertmanager_servers> for domain derksencomputing.nl action "local_mail"
 
-match from src { 10.0.0.0/24, 10.0.2.2/32 } for any action "relay"
+match from src { 10.0.0.0/24, 10.0.2.2/32, 172.16.2.18/32 } for any action "relay"
 
 match from local for local action "local_mail"
 match from local for any action "relay"

@@ -7,7 +7,7 @@
 cld_if="enc0"
 dmz_if="vio3"
 ext_if="pppoe0"
-kam_if="vio4"
+gst_if="vio4"
 lan_if="vio1"
 mgt_if="vio5"
 wls_if="vio2"
@@ -15,8 +15,8 @@ wgt_if="wg0"
 
 cld_ip="172.16.1.1"
 dmz_ip="172.16.0.1"
-ext_ip="45.83.232.124"
-kam_ip="192.168.0.1"
+ext_ip="178.239.16.130"
+gst_ip="192.168.0.1"
 lan_ip="10.0.0.1"
 mgt_ip="172.16.2.1"
 wls_ip="10.0.1.1"
@@ -24,8 +24,8 @@ wgt_ip="10.0.2.1"
 
 cld_net="172.16.1.0/24"
 dmz_net="172.16.0.0/24"
-ext_net="45.83.232.124/32"
-kam_net="192.168.0.0/24"
+ext_net="178.239.16.130/32"
+gst_net="192.168.0.0/24"
 lan_net="10.0.0.0/24"
 mgt_net="172.16.2.0/24"
 wls_net="10.0.1.0/24"
@@ -44,13 +44,13 @@ table <altair> { 172.16.0.4 } #File server VM
 #ext network (The external IP-adresses / servers that make up the derksencomputing.nl network)
 table <blackhole> { 46.23.93.156 } #Algol
 table <quasar> { 46.23.93.162 } #Alnitak
-table <wormhole> { 45.83.232.124 } #Sirius
+table <wormhole> { 178.239.16.130 } #Sirius
 
 #lan network
 table <megrez> { 10.0.0.2 } #Desktop office computer
 
 #wgt network
-table <solaris> { 10.0.2.2 }
+table <regulus> { 10.0.2.2 }
 
 #mgt network
 table <solaris> { 172.16.2.2 } #Hypervisor physical server IPMI alias ipmi.galaxy.derksercomputing.nl
@@ -70,6 +70,7 @@ table <geminga> { 172.16.2.14 } # Cisco access point hallway upstairs
 table <calvera> { 172.16.2.15 } # Cisco access point living room
 table <lich> { 172.16.2.16 } # Cisco access point server room
 table <hercules> { 172.16.2.17 } # Cisco access point room
+table <atlas> { 172.16.2.18 } # Brother laser printer
 
 #wls network
 table <vega> { 10.0.1.3 } #Philips TV room
@@ -78,7 +79,7 @@ table <rigel> { 10.0.1.4 } #Philips soundbar
 # Internet services for internet restricted networks
 table <elastic_repo> { 34.120.127.130 }
 table <grafana> { 151.101.38.217 }
-table <hashicorp_vault> { 18.239.69.92 18.239.69.104 18.239.69.124 18.239.69.29 }
+table <hashicorp_vault> { 18.239.69.92, 18.239.69.104, 18.239.69.124, 18.239.69.29 18.239.208.23, 18.239.208.39, 18.239.208.79, 18.239.208.118, 18.239.18.14, 18.239.18.10, 18.239.18.49, 18.239.18.66 }
 table <openbsd_mirrors> { 151.101.2.217, 151.101.66.217, 151.101.130.217, 151.101.194.217, 145.220.21.40, 151.101.38.217 151.101.39.52 }
 table <rocky_mirrors> { 151.101.38.132, 185.31.172.243, 79.142.64.7, 31.214.178.54 }
 table <fedora_mirrors> { 152.19.134.142, 38.145.60.21, 67.219.144.68, 140.211.169.196, 38.145.60.20, 152.19.134.198, 34.221.3.152, 8.43.85.67, 8.43.85.73, 145.220.21.40, 5.79.108.33 }
@@ -109,7 +110,7 @@ block log all
 #ext rules
 #<ruleset id="00001" description="Default ICMP rules" eol="20250101">
 pass in log quick on $ext_if inet proto icmp from any to <wormhole>
-pass out log quick on $ext_if inet proto icmp from { $ext_ip, $lan_net, $wls_net, $dmz_net, $kam_net, $mgt_net, $wgt_net } to any nat-to <wormhole>
+pass out log quick on $ext_if inet proto icmp from { $ext_ip, $lan_net, $wls_net, $dmz_net, $gst_net, $mgt_net, $wgt_net } to any nat-to <wormhole>
 #</ruleset>
 
 #<ruleset id="00002" description="Allow roadwarriors to wireguard for VPN service" eol="20250101">
@@ -144,11 +145,9 @@ pass in log quick on $lan_if inet proto tcp from $lan_net to <naos> port { imaps
 pass out log quick on $dmz_if inet proto tcp from $lan_net to <naos> port { imaps, smtp }
 #</ruleset>
 
-#<ruleset id="10006" description="Allow lan to Alnitak for www and https reverse proxy for all services and domain for pyhole" eol="20250101"> # tmp 8920 jellyfin port
-pass in log quick on $lan_if inet proto tcp from $lan_net to <alnitak> port { www, https, 8920 }
-pass out log quick on $dmz_if inet proto tcp from $lan_net to <alnitak> port { www, https, 8920 }
-pass in log quick on $lan_if inet proto { udp, tcp } from $lan_net to <alnitak> port domain
-pass out log quick on $dmz_if inet proto { udp, tcp } from $lan_net to <alnitak> port domain
+#<ruleset id="10006" description="Allow lan to Alnitak for www and https reverse proxy for all services and cups print servers" eol="20250101">
+pass in log quick on $lan_if inet proto tcp from $lan_net to <alnitak> port { www, https, 8920, 6631 }
+pass out log quick on $dmz_if inet proto tcp from $lan_net to <alnitak> port { www, https, 8920, 6631 }
 #</ruleset>
 
 #<ruleset id="10007" description="Allow lan to cld with trusted protocols" eol="20250101">
@@ -162,6 +161,11 @@ pass out log quick on $mgt_if inet proto tcp from $lan_net to $mgt_net port { ss
 #</ruleset>
 
 #wls rules
+
+#TMP
+pass in log quick on $wls_if from any to any
+pass out log quick on $ext_if from any to any nat-to <wormhole>
+
 #<ruleset id="20001" description="Default ICMP rules" eol="20250101">
 pass in log quick on $wls_if inet proto icmp from $wls_net to any
 pass out log quick on $wls_if inet proto icmp from { $lan_net $dmz_net $cld_net, $mgt_net, $wgt_net } to $wls_net
@@ -191,16 +195,9 @@ pass in log quick on $wls_if inet proto tcp from $wls_net to any port { www, htt
 pass out log quick on $ext_if inet proto tcp from $wls_net to any port { www, https } nat-to <wormhole>
 #</ruleset>
 
-#<ruleset id="20007" description="Allow wls network to alnitak for reverse proxy for all services and domain for dns" eol="20250101"> # tmp jellyfin port
-pass in log quick on $wls_if inet proto tcp from $wls_net to <alnitak> port { www, https, 8920 }
-pass out log quick on $dmz_if inet proto tcp from $wls_net to <alnitak> port { www, https, 8920 }
-pass in log quick on $wls_if inet proto { udp, tcp } from $wls_net to <alnitak> port domain
-pass out log quick on $dmz_if inet proto { udp, tcp } from $wls_net to <alnitak> port domain
-#</ruleset>
-
-#<ruleset id="20008" description="Allow wls to internet free to test macbook internet" eol="20250101">
-pass in log quick on $wls_if from $wls_net to any 
-pass out log quick on $ext_if from $wls_net to any nat-to <wormhole>
+#<ruleset id="20007" description="Allow wls network to alnitak for reverse proxy for all services and and cups print server" eol="20250101">
+pass in log quick on $wls_if inet proto tcp from $wls_net to <alnitak> port { www, https, 8920, 6631 }
+pass out log quick on $dmz_if inet proto tcp from $wls_net to <alnitak> port { www, https, 8920, 6631 }
 #</ruleset>
 
 #dmz rules
@@ -275,6 +272,11 @@ pass out log quick on $ext_if inet proto tcp from <alnitak> to <github> port htt
 pass in log quick on $dmz_if inet proto tcp from <alnitak> to <alcor> port 3493
 pass out log quick on $mgt_if inet proto tcp from <alnitak> to <alcor> port 3493
 #</ruleset>
+#
+#<ruleset id="30015" description="Allow alnitak (cups) to atlas (printer) for printing" eol="20250101">
+pass in log quick on $dmz_if inet proto tcp from <alnitak> to <atlas> port 631
+pass out log quick on $mgt_if inet proto tcp from <alnitak> to <atlas> port 631
+#</ruleset>
 
 #cld rules
 #<ruleset id="40001" description="Default ICMP rules" eol="20250101">
@@ -292,20 +294,20 @@ pass in log quick on $cld_if inet proto tcp from { <algol>, <antares> } to <naos
 pass out log quick on $dmz_if inet proto tcp from { <algol>, <antares> } to <naos> port smtp
 #</ruleset>
 
-#kam rules
+#gst rules
 #<ruleset id="50001" description="Default ICMP rules only allow connections to the internet not wls, lan, mgt, dmz, or wgt network" eol="20250101">
-pass in log quick on $kam_if inet proto icmp from $kam_net to any
-pass out log quick on $kam_if inet proto icmp from $kam_ip to $kam_net
+pass in log quick on $gst_if inet proto icmp from $gst_net to any
+pass out log quick on $gst_if inet proto icmp from $gst_ip to $gst_net
 #</ruleset>
 
-#<ruleset id="50002" description="Allow kam to Sirius firewall for firewall services" eol="20250101">
-pass in log quick on $kam_if inet proto udp from $kam_net to $kam_ip port { ntp }
-pass in log quick on $kam_if inet proto { tcp, udp } from $kam_net to $kam_ip port { domain }
+#<ruleset id="50002" description="Allow gst to Sirius firewall for firewall services" eol="20250101">
+pass in log quick on $gst_if inet proto udp from $gst_net to $gst_ip port { ntp }
+pass in log quick on $gst_if inet proto { tcp, udp } from $gst_net to $gst_ip port { domain }
 #</ruleset>
 
-#<ruleset id="50003" description="Allow kam network to the internet with all protocols and ports freely and without logging" eol="20250101">
-pass in quick on $kam_if from $kam_net to any
-pass out quick on $ext_if from $kam_net to any nat-to <wormhole>
+#<ruleset id="50003" description="Allow gst network to the internet with all protocols and ports freely and without logging" eol="20250101">
+pass in log quick on $gst_if inet proto tcp from $gst_net to any port { www, https }
+pass out quick on $ext_if inet proto tcp from $gst_net to any port { www, https } nat-to <wormhole>
 #</ruleset>
 
 #mgt rules
@@ -324,6 +326,11 @@ pass in log quick on $mgt_if inet proto tcp from <alcor> to { <rocky_mirrors>, <
 pass out log quick on $ext_if inet proto tcp from <alcor> to { <rocky_mirrors>, <fedora_mirrors> } port { www, https } nat-to <wormhole>
 #</ruleset>
 
+#<ruleset id="60004" description="Allow atlas printer to connect to naos mail server for sending scans via mail" eol="20250101">
+pass in log quick on $mgt_if inet proto tcp from <atlas> to <naos> port smtp
+pass out log quick on $dmz_if inet proto tcp from <atlas> to <naos> port smtp
+#</ruleset>
+
 # wgt rules
 #<ruleset id="80001" description="Default ICMP rules" eol="20250101">
 pass in log quick on $wgt_if inet proto icmp from $wgt_net to any
@@ -335,9 +342,14 @@ pass in log quick on $wgt_if from $wgt_net to any
 pass out log quick on $ext_if from $wgt_net to any nat-to <wormhole>
 #</ruleset>
 
-#<ruleset id="80003" description="Allow Jelle's phone to alnitak for reverse proxy to all services" eol="20250101"> # tmp jellyfin port
-pass in log quick on $wgt_if inet proto tcp from <solaris> to <alnitak> port { www, https, 8920 }
-pass out log quick on $dmz_if inet proto tcp from $wgt_net to <alnitak> port { www, https, 8920 }
+#<ruleset id="80003" description="Allow Jelle's phone to alnitak for reverse proxy to all services" eol="20250101">
+pass in log quick on $wgt_if inet proto tcp from <regulus> to <alnitak> port { www, https, 8920, 6631 }
+pass out log quick on $dmz_if inet proto tcp from $wgt_net to <alnitak> port { www, https, 8920, 6631 }
+#</ruleset>
+
+#<ruleset id="80003" description="Allow Jelle's phone to naos for mail sending and delivery" eol="20250101">
+pass in log quick on $wgt_if inet proto tcp from <regulus> to <naos> port { imaps, smtp }
+pass out log quick on $dmz_if inet proto tcp from $wgt_net to <naos> port { imaps, smtp }
 #</ruleset>
 
 #Sirius host rules

@@ -47,10 +47,10 @@ subnet 172.16.2.0 netmask 255.255.255.0 {
         range 172.16.2.100 172.16.2.200;
 }
 
-#kam network
+#gst network
 subnet 192.168.0.0 netmask 255.255.255.0 {
         option routers 192.168.0.1;
-        option domain-name-servers 8.8.8.8, 8.8.4.4;
+        option domain-name-servers 192.168.0.1;
         range 192.168.0.100 192.168.0.200;
 }
 
@@ -230,5 +230,12 @@ host hercules {
         hardware ethernet 14:84:73:64:30:1c;
         fixed-address 172.16.2.17;
         option host-name "hercules";
+}
+
+host atlas {
+	# Brother printer
+        hardware ethernet 14:AC:60:13:B6:17;
+        fixed-address 172.16.2.18;
+        option host-name "atlas";
 }
 
