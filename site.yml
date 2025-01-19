@@ -83,6 +83,26 @@
     - x509_certificates
     - never
 
+- name: Manage Homer service
+  hosts: homer
+  become: True
+  become_user: containers
+  roles:
+    - homer
+  tags:
+    - homer
+    - never
+
+- name: Manage Cups service
+  hosts: cups
+  become: True
+  become_user: containers
+  roles:
+    - cups
+  tags:
+    - cups
+    - never
+
 #- name: Setup monitoring
 #  hosts: monitoring
 #  become: True
@@ -92,14 +112,16 @@
 #    - monitoring
 #    - never
 #
-#- name: Setup home automation
-#  hosts: home_automation
-#  become: true
-#  roles:
-#    - home_automation
-#  tags:
-#    - home_automation
-#    - never
+
+- name: Setup homeassistant
+  hosts: homeassistant
+  become: true
+  become_user: containers
+  roles:
+    - homeassistant
+  tags:
+    - homeassistant
+    - never
 #
 #- name: Setup logging
 #  hosts: logging

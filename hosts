@@ -62,7 +62,7 @@ antares.galaxy.derksencomputing.nl
 algol.galaxy.derksencomputing.nl
 alcor.galaxy.derksencomputing.nl
 
-[home_automation]
+[homeassistant]
 alnitak.galaxy.derksencomputing.nl
 
 [logging]
@@ -93,3 +93,9 @@ altair.galaxy.derksencomputing.nl
 
 [webservers]
 algol.galaxy.derksencomputing.nl
+
+[homer]
+alnitak.galaxy.derksencomputing.nl
+
+[cups]
+alnitak.galaxy.derksencomputing.nl

@@ -1,0 +1,34 @@
+---
+# tasks file for cups
+#
+- name: Login to redhat registry
+  containers.podman.podman_login:
+    username: jellederksen
+    password: "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/redhat.com token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:443')['jellederksen'] }}"
+    registry: registry.redhat.io
+
+- name: Create Cups container
+  containers.podman.podman_container:
+    name: cups
+    image: "registry.redhat.io/rhel8/cups"
+    state: started
+    volume:
+      - "/home/containers/cups:/etc/cups:z"
+    ports:
+      - "6631:6631"
+
+- name: Create systemd unit file for Cups container
+  containers.podman.podman_generate_systemd:
+    name: cups
+    new: true
+    restart_policy: always
+    no_header: true
+    dest: /home/containers/.config/systemd/user
+
+- name: Ensure Cups container is started and enabled
+  ansible.builtin.systemd:
+    name: container-cups
+    daemon_reload: true
+    state: started
+    enabled: true
+    scope: user

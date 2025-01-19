@@ -1,0 +1,28 @@
+---
+# tasks file for homer
+
+- name: Create Homer container
+  containers.podman.podman_container:
+    name: homer
+    image: "docker.io/b4bz/homer:latest"
+    state: started
+    volume:
+      - "/home/containers/homer/assets:/www/assets:z"
+    ports:
+      - "8080:8080"
+
+- name: Create systemd unit file for Homer container
+  containers.podman.podman_generate_systemd:
+    name: homer
+    new: true
+    restart_policy: always
+    no_header: true
+    dest: /home/containers/.config/systemd/user
+
+- name: Ensure Homer container is started and enabled
+  ansible.builtin.systemd:
+    name: container-homer
+    daemon_reload: true
+    state: started
+    enabled: true
+    scope: user

@@ -1,0 +1,32 @@
+---
+# tasks file for homeassistant
+#
+# tasks file for homeassistant
+
+- name: Create Homeassistant container
+  containers.podman.podman_container:
+    name: homeassistant
+    image: "docker.io/homeassistant/home-assistant:stable"
+    state: started
+    volume:
+      - "/home/containers/homeassistant/config:/config:z"
+    ports:
+      - "8123:8123"
+    device:
+      - "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_c0067fda9d9ded11b9e1daa5a7669f5d-if00-port0:/dev/ttyUSB0"
+
+- name: Create systemd unit file for Homeassistant container
+  containers.podman.podman_generate_systemd:
+    name: homeassistant
+    new: true
+    restart_policy: always
+    no_header: true
+    dest: /home/containers/.config/systemd/user
+
+- name: Ensure Homeassistant container is started and enabled
+  ansible.builtin.systemd:
+    name: container-homeassistant
+    daemon_reload: true
+    state: started
+    enabled: true
+    scope: user

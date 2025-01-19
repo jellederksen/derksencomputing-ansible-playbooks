@@ -146,8 +146,8 @@ pass out log quick on $dmz_if inet proto tcp from $lan_net to <naos> port { imap
 #</ruleset>
 
 #<ruleset id="10006" description="Allow lan to Alnitak for www and https reverse proxy for all services and cups print servers" eol="20250101">
-pass in log quick on $lan_if inet proto tcp from $lan_net to <alnitak> port { www, https, 8920, 6631 }
-pass out log quick on $dmz_if inet proto tcp from $lan_net to <alnitak> port { www, https, 8920, 6631 }
+pass in log quick on $lan_if inet proto tcp from $lan_net to <alnitak> port { www, https, 8920, ipp }
+pass out log quick on $dmz_if inet proto tcp from $lan_net to <alnitak> port { www, https, 8920, ipp }
 #</ruleset>
 
 #<ruleset id="10007" description="Allow lan to cld with trusted protocols" eol="20250101">
@@ -196,8 +196,8 @@ pass out log quick on $ext_if inet proto tcp from $wls_net to any port { www, ht
 #</ruleset>
 
 #<ruleset id="20007" description="Allow wls network to alnitak for reverse proxy for all services and and cups print server" eol="20250101">
-pass in log quick on $wls_if inet proto tcp from $wls_net to <alnitak> port { www, https, 8920, 6631 }
-pass out log quick on $dmz_if inet proto tcp from $wls_net to <alnitak> port { www, https, 8920, 6631 }
+pass in log quick on $wls_if inet proto tcp from $wls_net to <alnitak> port { www, https, 8920, ipp }
+pass out log quick on $dmz_if inet proto tcp from $wls_net to <alnitak> port { www, https, 8920, ipp }
 #</ruleset>
 
 #dmz rules
@@ -274,8 +274,8 @@ pass out log quick on $mgt_if inet proto tcp from <alnitak> to <alcor> port 3493
 #</ruleset>
 #
 #<ruleset id="30015" description="Allow alnitak (cups) to atlas (printer) for printing" eol="20250101">
-pass in log quick on $dmz_if inet proto tcp from <alnitak> to <atlas> port 631
-pass out log quick on $mgt_if inet proto tcp from <alnitak> to <atlas> port 631
+pass in log quick on $dmz_if inet proto tcp from <alnitak> to <atlas> port ipp
+pass out log quick on $mgt_if inet proto tcp from <alnitak> to <atlas> port ipp
 #</ruleset>
 
 #cld rules
@@ -343,8 +343,8 @@ pass out log quick on $ext_if from $wgt_net to any nat-to <wormhole>
 #</ruleset>
 
 #<ruleset id="80003" description="Allow Jelle's phone to alnitak for reverse proxy to all services" eol="20250101">
-pass in log quick on $wgt_if inet proto tcp from <regulus> to <alnitak> port { www, https, 8920, 6631 }
-pass out log quick on $dmz_if inet proto tcp from $wgt_net to <alnitak> port { www, https, 8920, 6631 }
+pass in log quick on $wgt_if inet proto tcp from <regulus> to <alnitak> port { www, https, 8920, ipp }
+pass out log quick on $dmz_if inet proto tcp from $wgt_net to <alnitak> port { www, https, 8920, ipp }
 #</ruleset>
 
 #<ruleset id="80003" description="Allow Jelle's phone to naos for mail sending and delivery" eol="20250101">
