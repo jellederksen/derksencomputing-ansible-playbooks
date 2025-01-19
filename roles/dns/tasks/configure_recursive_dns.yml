@@ -14,6 +14,20 @@
     mode: 0644
   notify: restart_unbound
 
+- name: "Download Steven Blacklist"
+  shell: |
+    curl -s https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts | grep '^0.0.0.0' - | sed 's/ #.*$//; s/^0.0.0.0 \(.*\)/local-zone: "\1" refuse/'
+  register: dns_blacklist
+  delegate_to: localhost
+  become: False
+
+- name: "Ensure unbound blacklist file"
+  template:
+    src: templates/blacklist.conf.j2
+    dest: /var/unbound/etc/blacklist.conf
+    mode: 0644
+  notify: restart_unbound
+
 - name: "Ensure unbound is enabled and started"
   service:
     name: unbound

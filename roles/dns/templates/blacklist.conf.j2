@@ -1,0 +1,7 @@
+#Ansible information:
+#    Filename: {{ template_path | regex_replace(".*/ansible[^/]*", "..") }}
+#    Filedate: {{ template_mtime | regex_replace("\..*$", "")  }}
+#    Hostname: {{ template_host }}
+
+server:
+{{ dns_blacklist.stdout }}

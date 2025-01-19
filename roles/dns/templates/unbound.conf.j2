@@ -106,6 +106,10 @@ forward-zone:
 
 {% endfor %}
 
+# Include StevenBlack blacklist from https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+# for blocking ad's etc.
+include: /var/unbound/etc/blacklist.conf
+
 # Use an upstream DNS-over-TLS forwarder and do not fall back to cleartext
 # if that fails.
 #forward-zone:
