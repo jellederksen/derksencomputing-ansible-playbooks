@@ -1,0 +1,54 @@
+---
+# tasks file for ollama
+#
+- name: Create Ollama container
+  containers.podman.podman_container:
+    name: ollama
+    image: "docker.io/ollama/ollama:latest"
+    state: started
+    volume:
+      - "/home/containers/ollama/ollama:/root/.ollama"
+    ports:
+      - "11434:11434"
+
+- name: Create systemd unit file for Ollama container
+  containers.podman.podman_generate_systemd:
+    name: ollama
+    new: true
+    restart_policy: always
+    no_header: true
+    dest: /home/containers/.config/systemd/user
+
+- name: Ensure Ollama container is started and enabled
+  ansible.builtin.systemd:
+    name: container-ollama
+    daemon_reload: true
+    state: started
+    enabled: true
+    scope: user
+
+- name: Create Open-Webui container
+  containers.podman.podman_container:
+    name: open-webui
+    image: "ghcr.io/open-webui/open-webui"
+    state: started
+    volume:
+      - "/home/containers/ollama/open_webui:/app/backend/data"
+    ports:
+      - "8888:8080"
+
+- name: Create systemd unit file for Open-Webui container
+  containers.podman.podman_generate_systemd:
+    name: open-webui
+    new: true
+    restart_policy: always
+    no_header: true
+    dest: /home/containers/.config/systemd/user
+
+- name: Ensure Open-Webui container is started and enabled
+  ansible.builtin.systemd:
+    name: container-open-webui
+    daemon_reload: true
+    state: started
+    enabled: true
+    scope: user

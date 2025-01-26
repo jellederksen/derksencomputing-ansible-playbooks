@@ -1,52 +1,35 @@
 ---
 # tasks file for vault
-
-##Temp create a self signed certificate until the derksencomputing CA is online
-#- name: Ensure private key for Vault
-#  openssl_privatekey:
-#    path: "/etc/pki/tls/private/{{ inventory_hostname }}.key"
-#    size: 2048
-#    type: RSA
-#    owner: vault
-#    group: vault
 #
-#    #- name: Allow Vault to read the private key
-#    #  acl:
-#    #    path: "/etc/pki/tls/private/vault.galaxy.derksencomputing.nl.key"
-#    # entity: vault
-#    # etype: user
-#    # permissions: r
-#    # state: present
-
-- name: Add Hasicorp vault repository
-  yum_repository:
-    name: hashicorpvault
-    description: Hasicorp vault repository
-    file: hashicorpvault
-    baseurl: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable
-    gpgcheck: yes
-    gpgkey: https://rpm.releases.hashicorp.com/gpg
-
-- name: install the latest version Hasicorp Vault
-  yum:
+- name: Create Vault container
+  containers.podman.podman_container:
     name: vault
-    state: latest
-
-- name: Hasicorp vault server configuration file
-  template:
-    src: templates/vault.hcl.j2
-    dest: /etc/vault.d/vault.hcl
-  notify: restart_vault
-
-- name: Open firewall port for Hasicorp vault traffic
-  firewalld:
-    port: 8200/tcp
-    permanent: yes
-    state: enabled
-
-- name: Start and enable Hasicorp vault daemon
-  service:
-    name: vault
+    image: "docker.io/hashicorp/vault:latest"
     state: started
-    enabled: yes
-  notify: reload_firewalld
+    #entrypoint: vault server -config /vault/config/vault.hcl
+    entrypoint: /bin/vault
+    command:
+      - server
+      - -config
+      - /vault/config/vault.hcl
+    volume:
+      - "/home/containers/vault/config:/vault/config"
+      - "/home/containers/vault/file:/vault/file"
+    ports:
+      - "8200:8200"
+
+- name: Create systemd unit file for Vault container
+  containers.podman.podman_generate_systemd:
+    name: vault
+    new: true
+    restart_policy: always
+    no_header: true
+    dest: /home/containers/.config/systemd/user
+
+- name: Ensure Vault container is started and enabled
+  ansible.builtin.systemd:
+    name: container-vault
+    daemon_reload: true
+    state: started
+    enabled: true
+    scope: user

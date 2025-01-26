@@ -1,0 +1,31 @@
+---
+# tasks file for jellyfin
+
+- name: Create Jellyfin container
+  containers.podman.podman_container:
+    name: jellyfin
+    image: "docker.io/jellyfin/jellyfin"
+    state: started
+    volume:
+      - "/home/containers/jellyfin/jellyfin-config:/config"
+      - "/home/containers/jellyfin/jellyfin-cache:/cache"
+      - "/home/containers/jellyfin/jellyfin-media:/media"
+      - "/home/containers/jellyfin/jellyfin-photos:/photos"
+    ports:
+      - "8096:8096"
+
+- name: Create systemd unit file for Jellyfin container
+  containers.podman.podman_generate_systemd:
+    name: jellyfin
+    new: true
+    restart_policy: always
+    no_header: true
+    dest: /home/containers/.config/systemd/user
+
+- name: Ensure Jellyfin container is started and enabled
+  ansible.builtin.systemd:
+    name: container-jellyfin
+    daemon_reload: true
+    state: started
+    enabled: true
+    scope: user

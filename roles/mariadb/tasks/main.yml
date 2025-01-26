@@ -1,0 +1,33 @@
+---
+# tasks file for mariadb
+#
+
+- name: Create MariaDB container
+  containers.podman.podman_container:
+    name: mariadb
+    image: "docker.io/library/mariadb:latest"
+    state: started
+    user: 1012
+    userns: keep-id
+    volume:
+      - "/home/containers/mariadb/:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ lookup('community.general.hashi_vault', 'validate_certs=false secret=derksencomputing/data/{{ ansible_fqdn }} token={{ hasicorp_vault_token }} url=https://vault.galaxy.derksencomputing.nl:443')['mariadb_username_root'] }}"
+
+- name: Create systemd unit file for MariaDB container
+  containers.podman.podman_generate_systemd:
+    name: mariadb
+    new: true
+    restart_policy: always
+    no_header: true
+    dest: /home/containers/.config/systemd/user
+
+- name: Ensure MariaDB container is started and enabled
+  ansible.builtin.systemd:
+    name: container-mariadb
+    daemon_reload: true
+    state: started
+    enabled: true
+    scope: user

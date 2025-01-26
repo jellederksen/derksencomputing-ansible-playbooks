@@ -65,6 +65,12 @@ alcor.galaxy.derksencomputing.nl
 [homeassistant]
 alnitak.galaxy.derksencomputing.nl
 
+[photoprism]
+alnitak.galaxy.derksencomputing.nl
+
+[jellyfin]
+alnitak.galaxy.derksencomputing.nl
+
 [logging]
 procyon.galaxy.derksencomputing.nl
 sirius.galaxy.derksencomputing.nl
@@ -98,4 +104,10 @@ algol.galaxy.derksencomputing.nl
 alnitak.galaxy.derksencomputing.nl
 
 [cups]
+alnitak.galaxy.derksencomputing.nl
+
+[ollama]
+alnitak.galaxy.derksencomputing.nl
+
+[mariadb]
 alnitak.galaxy.derksencomputing.nl

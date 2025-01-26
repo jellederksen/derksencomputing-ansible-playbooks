@@ -56,15 +56,16 @@
     - dns
     - never
 
-#- name: Setup Hasicorp Vault
-#  hosts: vault
-#  become: True
-#  roles:
-#    - vault
-#  tags:
-#    - vault
-#    - never
-#
+- name: Setup Hasicorp Vault
+  hosts: vault
+  become: True
+  become_user: containers
+  roles:
+    - vault
+  tags:
+    - vault
+    - never
+
 #- name: Setup project management Kanboard
 #  hosts: kanboard
 #  become: True
@@ -103,6 +104,26 @@
     - cups
     - never
 
+- name: Manage MariDB service
+  hosts: mariadb
+  become: True
+  become_user: containers
+  roles:
+    - mariadb
+  tags:
+    - mariadb
+    - never
+
+- name: Manage Ollama service
+  hosts: ollama
+  become: True
+  become_user: containers
+  roles:
+    - ollama
+  tags:
+    - ollama
+    - never
+
 #- name: Setup monitoring
 #  hosts: monitoring
 #  become: True
@@ -122,6 +143,27 @@
   tags:
     - homeassistant
     - never
+
+- name: Setup Photoprism
+  hosts: photoprism
+  become: true
+  become_user: containers
+  roles:
+    - photoprism
+  tags:
+    - photoprism
+    - never
+
+- name: Setup Jellyfin
+  hosts: jellyfin
+  become: true
+  become_user: containers
+  roles:
+    - jellyfin
+  tags:
+    - jellyfin
+    - never
+
 #
 #- name: Setup logging
 #  hosts: logging
