@@ -7,7 +7,7 @@
     image: "docker.io/ollama/ollama:latest"
     state: started
     volume:
-      - "/home/containers/ollama/ollama:/root/.ollama"
+      - "/home/containers/container_datastore/container_datastore/ollama/ollama:/root/.ollama"
     ports:
       - "11434:11434"
 
@@ -33,7 +33,7 @@
     image: "ghcr.io/open-webui/open-webui"
     state: started
     volume:
-      - "/home/containers/ollama/open_webui:/app/backend/data"
+      - "/home/containers/container_datastore/container_datastore/ollama/open_webui:/app/backend/data"
     ports:
       - "8888:8080"
 

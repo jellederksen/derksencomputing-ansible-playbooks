@@ -8,9 +8,9 @@
     image: "docker.io/photoprism/photoprism"
     state: started
     volume:
-      - "/home/containers/photoprism/originals:/photoprism/originals"
-      - "/home/containers/photoprism/import:/photoprism/import"
-      - "/home/containers/photoprism/storage:/photoprism/storage"
+      - "/home/containers/container_datastore/photoprism/originals:/photoprism/originals"
+      - "/home/containers/container_datastore/photoprism/import:/photoprism/import"
+      - "/home/containers/container_datastore/photoprism/storage:/photoprism/storage"
     ports:
       - "2342:2342"
     security_opt:

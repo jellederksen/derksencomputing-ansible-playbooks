@@ -7,7 +7,7 @@
     image: "docker.io/b4bz/homer:latest"
     state: started
     volume:
-      - "/home/containers/homer/assets:/www/assets:z"
+      - "/home/containers/container_datastore/homer/assets:/www/assets"
     ports:
       - "8080:8080"
 

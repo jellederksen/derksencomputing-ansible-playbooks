@@ -7,10 +7,10 @@
     image: "docker.io/jellyfin/jellyfin"
     state: started
     volume:
-      - "/home/containers/jellyfin/jellyfin-config:/config"
-      - "/home/containers/jellyfin/jellyfin-cache:/cache"
-      - "/home/containers/jellyfin/jellyfin-media:/media"
-      - "/home/containers/jellyfin/jellyfin-photos:/photos"
+      - "/home/containers/container_datastore/jellyfin/jellyfin-config:/config"
+      - "/home/containers/container_datastore/jellyfin/jellyfin-cache:/cache"
+      - "/home/containers/container_datastore/jellyfin/jellyfin-media:/media"
+      - "/home/containers/container_datastore/jellyfin/jellyfin-photos:/photos"
     ports:
       - "8096:8096"
 

@@ -13,7 +13,7 @@
     image: "registry.redhat.io/rhel8/cups"
     state: started
     volume:
-      - "/home/containers/cups:/etc/cups:z"
+      - "/home/containers/container_datastore/cups:/etc/cups"
     ports:
       - "6631:6631"
 

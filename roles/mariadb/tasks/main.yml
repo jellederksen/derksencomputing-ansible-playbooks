@@ -10,7 +10,7 @@
     user: 1012
     userns: keep-id
     volume:
-      - "/home/containers/mariadb/:/var/lib/mysql"
+      - "/home/containers/container_datastore/mariadb/:/var/lib/mysql"
     ports:
       - "3306:3306"
     env:

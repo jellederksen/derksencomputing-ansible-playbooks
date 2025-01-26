@@ -9,7 +9,7 @@
     image: "docker.io/homeassistant/home-assistant:stable"
     state: started
     volume:
-      - "/home/containers/homeassistant/config:/config:z"
+      - "/home/containers/container_datastore/homeassistant/config:/config"
     ports:
       - "8123:8123"
     device:

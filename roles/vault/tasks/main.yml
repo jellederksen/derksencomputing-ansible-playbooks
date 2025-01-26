@@ -13,8 +13,8 @@
       - -config
       - /vault/config/vault.hcl
     volume:
-      - "/home/containers/vault/config:/vault/config"
-      - "/home/containers/vault/file:/vault/file"
+      - "/home/containers/container_datastore/vault/config:/vault/config"
+      - "/home/containers/container_datastore/vault/file:/vault/file"
     ports:
       - "8200:8200"
 
