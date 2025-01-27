@@ -1,0 +1,28 @@
+---
+# tasks file for searxng
+
+- name: Create searxng container
+  containers.podman.podman_container:
+    name: searxng
+    image: "docker.io/searxng/searxng:latest"
+    state: started
+    volume:
+      - "/home/containers/container_datastore/searxng/settings:/etc/searxng/settings"
+    ports:
+      - "18080:8080"
+
+- name: Create systemd unit file for searxng container
+  containers.podman.podman_generate_systemd:
+    name: searxng
+    new: true
+    restart_policy: always
+    no_header: true
+    dest: /home/containers/.config/systemd/user
+
+- name: Ensure searxng container is started and enabled
+  ansible.builtin.systemd:
+    name: container-searxng
+    daemon_reload: true
+    state: started
+    enabled: true
+    scope: user

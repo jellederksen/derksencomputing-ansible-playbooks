@@ -1,0 +1,31 @@
+---
+# tasks file for nginx
+
+- name: Create Nginx container
+  containers.podman.podman_container:
+    name: homer
+    image: "docker.io/library/nginx"
+    state: started
+    volume:
+      - "/home/containers/container_datastore/nginx:/etc/nginx/conf.d"
+    ports:
+      - "10080:80"
+      - "10443:443"
+      - "10631:631"
+      - "8920:8920"
+
+- name: Create systemd unit file for Nginx container
+  containers.podman.podman_generate_systemd:
+    name: homer
+    new: true
+    restart_policy: always
+    no_header: true
+    dest: /home/containers/.config/systemd/user
+
+- name: Ensure Nginx container is started and enabled
+  ansible.builtin.systemd:
+    name: container-homer
+    daemon_reload: true
+    state: started
+    enabled: true
+    scope: user

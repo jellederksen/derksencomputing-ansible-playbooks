@@ -94,6 +94,16 @@
     - homer
     - never
 
+- name: Manage Searxng service
+  hosts: searxng
+  become: True
+  become_user: containers
+  roles:
+    - searxng
+  tags:
+    - searxng
+    - never
+
 - name: Manage Cups service
   hosts: cups
   become: True
